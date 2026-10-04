@@ -1,6 +1,6 @@
 # PayProof canonical data contracts
 
-Status: v1 contracts implemented and tested. These contracts refine the frozen [architecture](ARCHITECTURE.md); they do not implement application services, storage, extraction calls, a comparison engine, or UI.
+Status: v1 contracts implemented and tested. These contracts refine the frozen [architecture](ARCHITECTURE.md). The extraction service is now implemented separately as documented in [EXTRACTION.md](EXTRACTION.md); comparison, storage, and UI remain later work.
 
 The canonical implementation is [payproof/schemas.py](../payproof/schemas.py). Python uses Pydantic v2. Dependencies are pinned in [pyproject.toml](../pyproject.toml), with a complete development dependency snapshot in [requirements-dev.txt](../requirements-dev.txt). No ORM, database driver, AI SDK, or frontend dependency is introduced.
 
@@ -21,7 +21,7 @@ For example:
 from payproof.schemas import CaseContract, ExtractionPayload
 
 validated = CaseContract.model_validate_json(snapshot_json)
-provider_response_schema = ExtractionPayload.model_json_schema()
+canonical_observation_schema = ExtractionPayload.model_json_schema()
 stored_json = validated.model_dump_json()
 ```
 
@@ -93,7 +93,7 @@ Repeated equivalent account mentions need not become ambiguity: retain a represe
 
 Failure codes are `TIMEOUT`, `PROVIDER_UNAVAILABLE`, `INVALID_RESPONSE`, `EVIDENCE_INVALID`, and `NOT_CONFIGURED`. A failed attempt contains only `UNREADABLE` fields with no candidates. Retain rejected raw provider responses privately outside the validated observation record if required by the architecture; never manufacture evidence to salvage a response. A later manual correction is a new attempt/review, and storage must retain the original attempt.
 
-`ExtractionPayload` is the provider-facing subset containing only extracted fields. Server attribution belongs in the enclosing `PaymentRequestEvidence` and must never be copied from model output. The provider has no destination comparison, baseline, review, human confirmation, or state field in its schema. Validate the payload, add server metadata, and then validate the source-bound case.
+`ExtractionPayload` is the canonical observation subset containing only extracted fields. The live adapter uses the private `WireExtractionPayload` transport format, derives canonical spans from exact source quotes, and then creates this canonical shape. Server attribution belongs in the enclosing `PaymentRequestEvidence` and must never be copied from model output. The provider has no destination comparison, baseline, review, human confirmation, or state field in its schema. Validate the transport payload, derive/validate canonical evidence, add server metadata, and then validate the source-bound case. See [EXTRACTION.md](EXTRACTION.md) for the implemented transport boundary.
 
 Example missing observation:
 
@@ -199,7 +199,7 @@ The future application must still:
 - Enforce append-only history, unique verification per comparison, idempotency, transaction success, retention, private storage, CSRF/access controls, and raw provider-response handling.
 - Require human review of instruction relevance and completeness. Evidence matching cannot establish that an AI found every payment instruction.
 
-No database, auth service, UI, provider call, or broad product feature is implemented in this phase.
+The schema layer implements no database, auth service, UI, or provider call. The separately implemented provider adapter and source grounding are documented in [EXTRACTION.md](EXTRACTION.md).
 
 ## Tests and reproducibility
 

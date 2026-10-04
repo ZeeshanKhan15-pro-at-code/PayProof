@@ -127,8 +127,7 @@ def test_placeholders_cannot_return_an_invented_decision_or_extraction():
     request = corpus.requests[0]
     baseline = next(v for v in corpus.vendors if v.revision_id == request.baseline_revision_id)
     case = CaseContract(sources=(request.source,), evidence=request.evidence, baseline=baseline)
-    with pytest.raises(NotImplementedError):
-        extract_document(request.source)
+    assert extract_document(request.source).extraction.failure_code == "NOT_CONFIGURED"
     with pytest.raises(NotImplementedError):
         compare(case)
 

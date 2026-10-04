@@ -200,7 +200,11 @@ class ExtractionMetadata(Contract):
 
 
 class ExtractionPayload(Contract):
-    """Provider-facing schema: only extracted fields, no server attribution/IDs."""
+    """Canonical observation fields without server attribution or decisions.
+
+    The live adapter uses a compact private wire schema, then derives canonical
+    evidence spans before creating this observation shape.
+    """
 
     vendor_name: ExtractedField[Text]
     sender_email: ExtractedField[Text]

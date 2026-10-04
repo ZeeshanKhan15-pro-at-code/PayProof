@@ -36,9 +36,9 @@ def create_app(settings: Settings | None = None) -> Flask:
                 "pasted_text_capture",
                 "normalization",
                 "synthetic_fixture_validation",
+                "structured_extraction",
             ],
             pending=[
-                "live_extraction",
                 "comparison",
                 "persistence",
                 "human_verification",
