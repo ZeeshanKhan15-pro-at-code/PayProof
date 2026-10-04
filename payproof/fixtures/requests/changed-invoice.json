@@ -1,0 +1,154 @@
+{
+  "fixture_id": "changed-invoice",
+  "dataset": "SYNTHETIC_DEVELOPMENT",
+  "description": "Invoice requests a different destination.",
+  "vendor_id": "a438bedb-78bb-5b5d-a514-6faf8f789f99",
+  "baseline_revision_id": "0f1673df-5f63-5d27-980a-aa4288e0592e",
+  "source": {
+    "source_id": "6701f822-7512-5673-87b0-cf86ec3903a3",
+    "kind": "INVOICE",
+    "text": "Invoice SYN-004\nAmount: 1,200.50 EUR\nPlease pay IBAN DE84000000000000000009.",
+    "sha256": "a45025e32afaabd44dd034a02e9783c279554b64e15b18cccc53d8068f4c8201",
+    "captured_at": "2026-10-04T08:00:00Z",
+    "captured_by": "synthetic-fixture-author",
+    "label": "Synthetic changed-invoice",
+    "page_number": null
+  },
+  "evidence": {
+    "vendor_name": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "sender_email": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "reply_to": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "invoice_number": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "SYN-004",
+          "evidence": {
+            "evidence_id": "d6840001-712f-531f-8dc0-9d2653102706",
+            "source_id": "6701f822-7512-5673-87b0-cf86ec3903a3",
+            "field": "invoice_number",
+            "extracted_value": "SYN-004",
+            "exact_excerpt": "SYN-004",
+            "location": {
+              "char_start": 8,
+              "char_end": 15,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "amount": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "1,200.50",
+          "evidence": {
+            "evidence_id": "e376bd50-85e1-5c4a-8438-c7707e228842",
+            "source_id": "6701f822-7512-5673-87b0-cf86ec3903a3",
+            "field": "amount",
+            "extracted_value": "1,200.50",
+            "exact_excerpt": "1,200.50",
+            "location": {
+              "char_start": 24,
+              "char_end": 32,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "currency": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "EUR",
+          "evidence": {
+            "evidence_id": "3740c3ea-9e73-5d9c-b719-c5c7bdc56a3a",
+            "source_id": "6701f822-7512-5673-87b0-cf86ec3903a3",
+            "field": "currency",
+            "extracted_value": "EUR",
+            "exact_excerpt": "EUR",
+            "location": {
+              "char_start": 33,
+              "char_end": 36,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "bank_name": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "account_identifier": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "DE84000000000000000009",
+          "evidence": {
+            "evidence_id": "70611ff9-183f-531c-a007-a54aab5b1ca3",
+            "source_id": "6701f822-7512-5673-87b0-cf86ec3903a3",
+            "field": "account_identifier",
+            "extracted_value": "DE84000000000000000009",
+            "exact_excerpt": "DE84000000000000000009",
+            "location": {
+              "char_start": 53,
+              "char_end": 75,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "routing_identifier": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "destination_scheme": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "claims_details_changed": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "stated_reason_for_change": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "request_id": "9bd6276b-23c6-5c00-8b93-8515b4937759",
+    "source_ids": [
+      "6701f822-7512-5673-87b0-cf86ec3903a3"
+    ],
+    "extraction": {
+      "attempt_id": "fa2bf247-8f58-5aed-a2cf-4cd71cefd0c1",
+      "method": "FIXTURE",
+      "extracted_at": "2026-10-04T08:01:00Z",
+      "schema_version": "1",
+      "prompt_version": null,
+      "provider": null,
+      "model": null,
+      "operator_id": "synthetic-fixture-author",
+      "failure_code": null
+    }
+  },
+  "expected_state_after_review": "VERIFY",
+  "expected_reason_codes": [
+    "DESTINATION_CHANGED"
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "fixture_id": "missing-destination",
+  "dataset": "SYNTHETIC_DEVELOPMENT",
+  "description": "Change claim without a destination.",
+  "vendor_id": "6d245a26-9592-50eb-bfa3-7147c080d9fe",
+  "baseline_revision_id": "e599defe-cc04-5d27-9db7-a082dc35f570",
+  "source": {
+    "source_id": "3b068f04-8c99-57c8-8572-33c90db5ace4",
+    "kind": "VENDOR_NOTICE",
+    "text": "Our payment details have changed. Contact us for the new details.",
+    "sha256": "f96d3a0e2a89d7751d5aae29427c177f3724f6ebf3d191cb127271430ff12eb6",
+    "captured_at": "2026-10-04T08:00:00Z",
+    "captured_by": "synthetic-fixture-author",
+    "label": "Synthetic missing-destination",
+    "page_number": null
+  },
+  "evidence": {
+    "vendor_name": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "sender_email": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "reply_to": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "invoice_number": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "amount": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "currency": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "bank_name": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "account_identifier": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "routing_identifier": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "destination_scheme": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "claims_details_changed": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": true,
+          "evidence": {
+            "evidence_id": "f7c3a762-fe7b-5a07-9588-d1b7f6c4afe9",
+            "source_id": "3b068f04-8c99-57c8-8572-33c90db5ace4",
+            "field": "claims_details_changed",
+            "extracted_value": "Our payment details have changed.",
+            "exact_excerpt": "Our payment details have changed.",
+            "location": {
+              "char_start": 0,
+              "char_end": 33,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "stated_reason_for_change": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "request_id": "1f72a43b-878b-5ff0-a2cd-9bf36a6eeb82",
+    "source_ids": [
+      "3b068f04-8c99-57c8-8572-33c90db5ace4"
+    ],
+    "extraction": {
+      "attempt_id": "6d953fe4-3a02-5c85-9398-414126773294",
+      "method": "FIXTURE",
+      "extracted_at": "2026-10-04T08:01:00Z",
+      "schema_version": "1",
+      "prompt_version": null,
+      "provider": null,
+      "model": null,
+      "operator_id": "synthetic-fixture-author",
+      "failure_code": null
+    }
+  },
+  "expected_state_after_review": "UNCERTAIN",
+  "expected_reason_codes": [
+    "DESTINATION_MISSING"
+  ]
+}

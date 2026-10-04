@@ -1,0 +1,120 @@
+{
+  "fixture_id": "unchanged",
+  "dataset": "SYNTHETIC_DEVELOPMENT",
+  "description": "Matching destination control.",
+  "vendor_id": "f88cb963-437a-53e6-b58f-6e46d0a6b265",
+  "baseline_revision_id": "37d28bf0-0def-5ba4-9177-7b7ed4be2913",
+  "source": {
+    "source_id": "4ecb7a62-68a6-56d7-93f1-d9fa435ac7e5",
+    "kind": "INVOICE",
+    "text": "Invoice SYN-001\nPlease pay IBAN GB75TEST00000000000001.",
+    "sha256": "9ff6299c566de087a7e16b6c4fd33a40474f9c298b05f6ce3c70e79b53f3bca2",
+    "captured_at": "2026-10-04T08:00:00Z",
+    "captured_by": "synthetic-fixture-author",
+    "label": "Synthetic unchanged",
+    "page_number": null
+  },
+  "evidence": {
+    "vendor_name": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "sender_email": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "reply_to": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "invoice_number": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "SYN-001",
+          "evidence": {
+            "evidence_id": "426a6606-2ad2-5653-9a9d-e5bcb8aa6b0b",
+            "source_id": "4ecb7a62-68a6-56d7-93f1-d9fa435ac7e5",
+            "field": "invoice_number",
+            "extracted_value": "SYN-001",
+            "exact_excerpt": "SYN-001",
+            "location": {
+              "char_start": 8,
+              "char_end": 15,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "amount": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "currency": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "bank_name": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "account_identifier": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "GB75TEST00000000000001",
+          "evidence": {
+            "evidence_id": "37d28826-77d3-5beb-bd7b-03478eb62c9b",
+            "source_id": "4ecb7a62-68a6-56d7-93f1-d9fa435ac7e5",
+            "field": "account_identifier",
+            "extracted_value": "GB75TEST00000000000001",
+            "exact_excerpt": "GB75TEST00000000000001",
+            "location": {
+              "char_start": 32,
+              "char_end": 54,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "routing_identifier": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "destination_scheme": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "claims_details_changed": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "stated_reason_for_change": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "request_id": "d7093664-467a-5ceb-b58e-fcd9283b4fcc",
+    "source_ids": [
+      "4ecb7a62-68a6-56d7-93f1-d9fa435ac7e5"
+    ],
+    "extraction": {
+      "attempt_id": "eed42e62-359e-56ce-9ded-e5a3598f087a",
+      "method": "FIXTURE",
+      "extracted_at": "2026-10-04T08:01:00Z",
+      "schema_version": "1",
+      "prompt_version": null,
+      "provider": null,
+      "model": null,
+      "operator_id": "synthetic-fixture-author",
+      "failure_code": null
+    }
+  },
+  "expected_state_after_review": "UNCHANGED",
+  "expected_reason_codes": [
+    "DESTINATION_MATCH"
+  ]
+}

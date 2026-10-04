@@ -7,12 +7,13 @@ CaseContract is the cross-record validation boundary, not an AI output schema.
 from __future__ import annotations
 
 import hashlib
-import re
 from datetime import datetime, timedelta
 from typing import Annotated, Generic, Literal, TypeVar
 from uuid import UUID
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator, model_validator
+
+from payproof.normalization import canonical_iban
 
 
 def nonblank(value: str) -> str:
@@ -31,21 +32,46 @@ Text = Annotated[str, Field(min_length=1, max_length=2000), AfterValidator(nonbl
 ShortText = Annotated[str, Field(min_length=1, max_length=256), AfterValidator(nonblank)]
 UTCDateTime = Annotated[datetime, AfterValidator(utc_timestamp)]
 Currency = Annotated[str, Field(min_length=3, max_length=3, pattern=r"^[A-Z]{3}$")]
-Email = Annotated[str, Field(max_length=254, pattern=r"^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}$")]
-Domain = Annotated[str, Field(max_length=253, pattern=r"^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$")]
+Email = Annotated[
+    str,
+    Field(
+        max_length=254,
+        pattern=r"^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}$",
+    ),
+]
+Domain = Annotated[
+    str, Field(max_length=253, pattern=r"^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$")
+]
 SourceKind = Literal["EMAIL", "INVOICE", "VENDOR_NOTICE", "PLAIN_TEXT"]
 EvidenceField = Literal[
-    "vendor_name", "sender_email", "reply_to", "invoice_number", "amount",
-    "currency", "bank_name", "account_identifier", "routing_identifier",
-    "destination_scheme", "claims_details_changed", "stated_reason_for_change",
+    "vendor_name",
+    "sender_email",
+    "reply_to",
+    "invoice_number",
+    "amount",
+    "currency",
+    "bank_name",
+    "account_identifier",
+    "routing_identifier",
+    "destination_scheme",
+    "claims_details_changed",
+    "stated_reason_for_change",
 ]
 ExtractionStatus = Literal["FOUND", "MISSING", "AMBIGUOUS", "UNREADABLE", "UNSUPPORTED"]
 ComparisonState = Literal["UNCHANGED", "VERIFY", "UNCERTAIN"]
 ReasonCode = Literal[
-    "BASELINE_UNAVAILABLE", "BASELINE_INVALID", "EXTRACTION_FAILED",
-    "EVIDENCE_INVALID", "REVIEW_REQUIRED", "DESTINATION_MISSING",
-    "DESTINATION_INCOMPLETE", "UNSUPPORTED_DESTINATION", "DESTINATION_INVALID",
-    "DESTINATION_AMBIGUOUS", "DESTINATION_MATCH", "DESTINATION_CHANGED",
+    "BASELINE_UNAVAILABLE",
+    "BASELINE_INVALID",
+    "EXTRACTION_FAILED",
+    "EVIDENCE_INVALID",
+    "REVIEW_REQUIRED",
+    "DESTINATION_MISSING",
+    "DESTINATION_INCOMPLETE",
+    "UNSUPPORTED_DESTINATION",
+    "DESTINATION_INVALID",
+    "DESTINATION_AMBIGUOUS",
+    "DESTINATION_MATCH",
+    "DESTINATION_CHANGED",
 ]
 
 
@@ -141,7 +167,16 @@ class ExtractionMetadata(Contract):
     provider: ShortText | None = None
     model: ShortText | None = None
     operator_id: ShortText | None = None
-    failure_code: Literal["TIMEOUT", "PROVIDER_UNAVAILABLE", "INVALID_RESPONSE", "EVIDENCE_INVALID", "NOT_CONFIGURED"] | None = None
+    failure_code: (
+        Literal[
+            "TIMEOUT",
+            "PROVIDER_UNAVAILABLE",
+            "INVALID_RESPONSE",
+            "EVIDENCE_INVALID",
+            "NOT_CONFIGURED",
+        ]
+        | None
+    ) = None
 
     @model_validator(mode="after")
     def attribution(self) -> ExtractionMetadata:
@@ -153,8 +188,12 @@ class ExtractionMetadata(Contract):
             if self.operator_id is not None:
                 raise ValueError("AI output cannot assert a human operator")
         elif self.method == "NOT_ATTEMPTED":
-            if self.failure_code != "NOT_CONFIGURED" or any((self.provider, self.model, self.prompt_version, self.operator_id)):
-                raise ValueError("unconfigured extraction must not invent provider or human attribution")
+            if self.failure_code != "NOT_CONFIGURED" or any(
+                (self.provider, self.model, self.prompt_version, self.operator_id)
+            ):
+                raise ValueError(
+                    "unconfigured extraction must not invent provider or human attribution"
+                )
         elif not self.operator_id or any((self.provider, self.model, self.prompt_version)):
             raise ValueError("manual/fixture extraction requires operator and no AI attribution")
         return self
@@ -206,27 +245,19 @@ class PaymentRequestEvidence(ExtractionPayload):
 
 
 EVIDENCE_FIELDS = (
-    "vendor_name", "sender_email", "reply_to", "invoice_number", "amount",
-    "currency", "bank_name", "account_identifier", "routing_identifier",
-    "destination_scheme", "claims_details_changed", "stated_reason_for_change",
+    "vendor_name",
+    "sender_email",
+    "reply_to",
+    "invoice_number",
+    "amount",
+    "currency",
+    "bank_name",
+    "account_identifier",
+    "routing_identifier",
+    "destination_scheme",
+    "claims_details_changed",
+    "stated_reason_for_change",
 )
-
-
-def canonical_iban(raw: str) -> str:
-    """Validate an identity representation, not bank ownership or payment safety."""
-    if not re.fullmatch(r"[A-Za-z0-9 ]+", raw):
-        raise ValueError("IBAN accepts ASCII letters, digits, and grouping spaces only")
-    canonical = raw.replace(" ", "").upper()
-    formats = {"GB": r"GB[0-9]{2}[A-Z]{4}[0-9]{14}", "DE": r"DE[0-9]{20}"}
-    if canonical[:2] not in formats:
-        raise ValueError("unsupported IBAN country; Phase 1 supports GB and DE")
-    if not re.fullmatch(formats[canonical[:2]], canonical):
-        raise ValueError("invalid country-specific IBAN format")
-    rotated = canonical[4:] + canonical[:4]
-    digits = "".join(str(ord(c) - 55) if "A" <= c <= "Z" else c for c in rotated)
-    if int(digits) % 97 != 1:
-        raise ValueError("invalid IBAN checksum")
-    return canonical
 
 
 class NormalizedPaymentIdentity(Contract):
@@ -239,12 +270,16 @@ class NormalizedPaymentIdentity(Contract):
     @model_validator(mode="after")
     def canonical_matches_raw(self) -> NormalizedPaymentIdentity:
         if canonical_iban(self.raw_account_identifier) != self.account_identifier:
-            raise ValueError("canonical account must equal deterministic normalization of raw account")
+            raise ValueError(
+                "canonical account must equal deterministic normalization of raw account"
+            )
         return self
 
 
 class TrustProvenance(Contract):
-    source_kind: Literal["PRIOR_VENDOR_RECORD", "ONBOARDING_RECORD", "INDEPENDENT_CALLBACK", "SYNTHETIC_FIXTURE"]
+    source_kind: Literal[
+        "PRIOR_VENDOR_RECORD", "ONBOARDING_RECORD", "INDEPENDENT_CALLBACK", "SYNTHETIC_FIXTURE"
+    ]
     source_reference: Text
     description: Text
     recorded_by: ShortText
@@ -381,12 +416,23 @@ class ComparisonResult(Contract):
             if any(r in ("DESTINATION_MATCH", "DESTINATION_CHANGED") for r in self.reason_codes):
                 raise ValueError("UNCERTAIN cannot assert a decisive reason")
             return self
-        if not (self.baseline_revision_id and self.review_id and self.baseline_identity and self.requested_identity):
-            raise ValueError("decisive comparisons require baseline, review, and both valid identities")
+        if not (
+            self.baseline_revision_id
+            and self.review_id
+            and self.baseline_identity
+            and self.requested_identity
+        ):
+            raise ValueError(
+                "decisive comparisons require baseline, review, and both valid identities"
+            )
         destination_fields = ("account_identifier", "routing_identifier", "destination_scheme")
-        if any(c.field in destination_fields for c in self.contradictions) or any(m.field in destination_fields for m in self.missing_information):
+        if any(c.field in destination_fields for c in self.contradictions) or any(
+            m.field in destination_fields for m in self.missing_information
+        ):
             raise ValueError("decisive comparison cannot have unresolved destination information")
-        equal = self.baseline_identity.account_identifier == self.requested_identity.account_identifier
+        equal = (
+            self.baseline_identity.account_identifier == self.requested_identity.account_identifier
+        )
         expected = "UNCHANGED" if equal else "VERIFY"
         reason = "DESTINATION_MATCH" if equal else "DESTINATION_CHANGED"
         if self.state != expected or self.reason_codes != (reason,):
@@ -395,8 +441,14 @@ class ComparisonResult(Contract):
         if len(accounts) != 1:
             raise ValueError("decisive result requires one account difference with evidence")
         diff = accounts[0]
-        if not diff.evidence_ids or diff.baseline_value != self.baseline_identity.account_identifier or diff.requested_value != self.requested_identity.account_identifier:
-            raise ValueError("account difference must match identity snapshots and reference evidence")
+        if (
+            not diff.evidence_ids
+            or diff.baseline_value != self.baseline_identity.account_identifier
+            or diff.requested_value != self.requested_identity.account_identifier
+        ):
+            raise ValueError(
+                "account difference must match identity snapshots and reference evidence"
+            )
         return self
 
 
@@ -452,32 +504,44 @@ class CaseContract(Contract):
         spans = {s.evidence_id: s for s in self.evidence.spans()}
         for span in spans.values():
             source = sources[span.source_id]
-            if source.text[span.location.char_start:span.location.char_end] != span.exact_excerpt:
+            if source.text[span.location.char_start : span.location.char_end] != span.exact_excerpt:
                 raise ValueError("evidence excerpt does not match immutable source offsets")
             if span.location.page_number != source.page_number:
                 raise ValueError("page location must come from source metadata")
         if any(s.captured_at > self.evidence.extraction.extracted_at for s in self.sources):
             raise ValueError("extraction cannot predate source capture")
-        if self.baseline and self.baseline.last_verified_at >= min(s.captured_at for s in self.sources):
+        if self.baseline and self.baseline.last_verified_at >= min(
+            s.captured_at for s in self.sources
+        ):
             raise ValueError("trusted baseline must predate the request's capture")
         review = self.review
         if review:
-            if review.request_id != self.evidence.request_id or review.attempt_id != self.evidence.extraction.attempt_id:
+            if (
+                review.request_id != self.evidence.request_id
+                or review.attempt_id != self.evidence.extraction.attempt_id
+            ):
                 raise ValueError("review must bind to this request and extraction attempt")
             if review.reviewed_at < self.evidence.extraction.extracted_at:
                 raise ValueError("review cannot predate extraction")
-            if len(set(review.reviewed_evidence_ids)) != len(review.reviewed_evidence_ids) or not set(review.reviewed_evidence_ids).issubset(spans):
+            if len(set(review.reviewed_evidence_ids)) != len(
+                review.reviewed_evidence_ids
+            ) or not set(review.reviewed_evidence_ids).issubset(spans):
                 raise ValueError("review must reference unique existing evidence")
             if review.payment_identity:
                 accounts = self.evidence.account_identifier
                 if accounts.status != "FOUND":
                     raise ValueError("reviewed identity requires an unambiguous account")
                 candidate = accounts.candidates[0]
-                if candidate.evidence.evidence_id not in review.reviewed_evidence_ids or candidate.value != review.payment_identity.raw_account_identifier:
+                if (
+                    candidate.evidence.evidence_id not in review.reviewed_evidence_ids
+                    or candidate.value != review.payment_identity.raw_account_identifier
+                ):
                     raise ValueError("reviewed identity must bind to the exact account evidence")
         result = self.comparison
         if result:
-            if result.request_id != self.evidence.request_id or not set(result.evidence_ids).issubset(spans):
+            if result.request_id != self.evidence.request_id or not set(
+                result.evidence_ids
+            ).issubset(spans):
                 raise ValueError("comparison must bind to this request and existing evidence")
             for difference in result.differences:
                 if any(spans[e].field != difference.field for e in difference.evidence_ids):
@@ -486,40 +550,79 @@ class CaseContract(Contract):
                     if not difference.evidence_ids:
                         raise ValueError("requested difference values require source evidence")
                     if difference.field != "account_identifier" and not any(
-                        spans[e].extracted_value == difference.requested_value for e in difference.evidence_ids
+                        spans[e].extracted_value == difference.requested_value
+                        for e in difference.evidence_ids
                     ):
-                        raise ValueError("contextual requested values must preserve raw extracted evidence")
+                        raise ValueError(
+                            "contextual requested values must preserve raw extracted evidence"
+                        )
             for contradiction in result.contradictions:
                 if any(spans[e].field != contradiction.field for e in contradiction.evidence_ids):
                     raise ValueError("contradiction evidence must belong to its field")
             if result.compared_at < self.evidence.extraction.extracted_at:
                 raise ValueError("comparison cannot predate extraction")
             if self.baseline:
-                if result.vendor_id != self.baseline.vendor_id or result.baseline_revision_id != self.baseline.revision_id or result.baseline_identity != self.baseline.payment_identity:
+                if (
+                    result.vendor_id != self.baseline.vendor_id
+                    or result.baseline_revision_id != self.baseline.revision_id
+                    or result.baseline_identity != self.baseline.payment_identity
+                ):
                     raise ValueError("comparison must bind to exact baseline snapshot")
-            elif result.baseline_revision_id is not None or result.baseline_identity is not None or result.state != "UNCERTAIN":
+            elif (
+                result.baseline_revision_id is not None
+                or result.baseline_identity is not None
+                or result.state != "UNCERTAIN"
+            ):
                 raise ValueError("missing baseline permits only UNCERTAIN without baseline claims")
             if review:
-                if result.review_id != review.review_id or result.requested_identity != review.payment_identity or result.compared_at < review.reviewed_at:
+                if (
+                    result.review_id != review.review_id
+                    or result.requested_identity != review.payment_identity
+                    or result.compared_at < review.reviewed_at
+                ):
                     raise ValueError("comparison must bind to the exact prior review")
-            elif result.review_id is not None or result.requested_identity is not None or result.state != "UNCERTAIN":
+            elif (
+                result.review_id is not None
+                or result.requested_identity is not None
+                or result.state != "UNCERTAIN"
+            ):
                 raise ValueError("missing review permits only UNCERTAIN without reviewed identity")
             if result.state != "UNCERTAIN":
-                if self.evidence.routing_identifier.status != "MISSING" or self.evidence.destination_scheme.status not in ("FOUND", "MISSING") or self.baseline.routing_identifier is not None:
-                    raise ValueError("separate routing or unresolved scheme is unsupported in Phase 1")
-                if self.evidence.destination_scheme.status == "FOUND" and self.evidence.destination_scheme.candidates[0].value.upper() != "IBAN":
+                assert self.baseline is not None  # Checked against result state above.
+                if (
+                    self.evidence.routing_identifier.status != "MISSING"
+                    or self.evidence.destination_scheme.status not in ("FOUND", "MISSING")
+                    or self.baseline.routing_identifier is not None
+                ):
+                    raise ValueError(
+                        "separate routing or unresolved scheme is unsupported in Phase 1"
+                    )
+                if (
+                    self.evidence.destination_scheme.status == "FOUND"
+                    and self.evidence.destination_scheme.candidates[0].value.upper() != "IBAN"
+                ):
                     raise ValueError("only IBAN is supported in Phase 1")
                 account_span = self.evidence.account_identifier.candidates[0].evidence.evidence_id
-                account_diff = next(d for d in result.differences if d.field == "account_identifier")
+                account_diff = next(
+                    d for d in result.differences if d.field == "account_identifier"
+                )
                 if account_span not in account_diff.evidence_ids:
                     raise ValueError("account difference must cite the reviewed account span")
             else:
-                if self.baseline is None and not set(result.reason_codes).intersection(("BASELINE_UNAVAILABLE", "BASELINE_INVALID")):
+                if self.baseline is None and not set(result.reason_codes).intersection(
+                    ("BASELINE_UNAVAILABLE", "BASELINE_INVALID")
+                ):
                     raise ValueError("missing baseline requires a baseline reason")
-                if review is None and not set(result.reason_codes).intersection(("REVIEW_REQUIRED", "EXTRACTION_FAILED", "EVIDENCE_INVALID")):
+                if review is None and not set(result.reason_codes).intersection(
+                    ("REVIEW_REQUIRED", "EXTRACTION_FAILED", "EVIDENCE_INVALID")
+                ):
                     raise ValueError("missing review requires an extraction/evidence/review reason")
                 if self.evidence.extraction.failure_code:
-                    expected = "EVIDENCE_INVALID" if self.evidence.extraction.failure_code == "EVIDENCE_INVALID" else "EXTRACTION_FAILED"
+                    expected = (
+                        "EVIDENCE_INVALID"
+                        if self.evidence.extraction.failure_code == "EVIDENCE_INVALID"
+                        else "EXTRACTION_FAILED"
+                    )
                     if expected not in result.reason_codes:
                         raise ValueError("failed extraction requires the corresponding reason")
         verification = self.verification
@@ -527,11 +630,27 @@ class CaseContract(Contract):
             if not result or result.state == "UNCERTAIN" or not self.baseline:
                 raise ValueError("verification requires a decisive comparison and baseline")
             contact = self.baseline.callback_contact
-            if verification.comparison_id != result.comparison_id or verification.vendor_id != result.vendor_id or verification.baseline_revision_id != result.baseline_revision_id:
+            if (
+                verification.comparison_id != result.comparison_id
+                or verification.vendor_id != result.vendor_id
+                or verification.baseline_revision_id != result.baseline_revision_id
+            ):
                 raise ValueError("verification must bind to the exact comparison and baseline")
             if verification.checked_identity != result.requested_identity:
                 raise ValueError("verification must check the exact requested destination snapshot")
-            if (verification.trusted_contact_id, verification.trusted_contact_revision_id, verification.callback_method, verification.trusted_callback_value, verification.trusted_source) != (contact.contact_id, contact.revision_id, contact.method, contact.value, contact.provenance):
+            if (
+                verification.trusted_contact_id,
+                verification.trusted_contact_revision_id,
+                verification.callback_method,
+                verification.trusted_callback_value,
+                verification.trusted_source,
+            ) != (
+                contact.contact_id,
+                contact.revision_id,
+                contact.method,
+                contact.value,
+                contact.provenance,
+            ):
                 raise ValueError("verification must use the previously trusted contact snapshot")
             if verification.confirmed_at < result.compared_at:
                 raise ValueError("verification cannot predate comparison")

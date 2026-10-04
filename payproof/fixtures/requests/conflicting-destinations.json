@@ -1,0 +1,119 @@
+{
+  "fixture_id": "conflicting-destinations",
+  "dataset": "SYNTHETIC_DEVELOPMENT",
+  "description": "Unresolved competing payment instructions.",
+  "vendor_id": "f88cb963-437a-53e6-b58f-6e46d0a6b265",
+  "baseline_revision_id": "37d28bf0-0def-5ba4-9177-7b7ed4be2913",
+  "source": {
+    "source_id": "dc41059f-3c69-5840-8f51-0e410c7b1eac",
+    "kind": "VENDOR_NOTICE",
+    "text": "Please pay IBAN GB75TEST00000000000001.\nPlease pay IBAN GB53TEST00000000000009.",
+    "sha256": "873098e989402b74f24a8bfa4e074305b4cdaf32c5024c87ae4bf6ba023efdb5",
+    "captured_at": "2026-10-04T08:00:00Z",
+    "captured_by": "synthetic-fixture-author",
+    "label": "Synthetic conflicting-destinations",
+    "page_number": null
+  },
+  "evidence": {
+    "vendor_name": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "sender_email": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "reply_to": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "invoice_number": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "amount": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "currency": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "bank_name": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "account_identifier": {
+      "status": "AMBIGUOUS",
+      "candidates": [
+        {
+          "value": "GB75TEST00000000000001",
+          "evidence": {
+            "evidence_id": "cd4cbfdf-f211-5246-a0ea-89d02ca9b6af",
+            "source_id": "dc41059f-3c69-5840-8f51-0e410c7b1eac",
+            "field": "account_identifier",
+            "extracted_value": "GB75TEST00000000000001",
+            "exact_excerpt": "GB75TEST00000000000001",
+            "location": {
+              "char_start": 16,
+              "char_end": 38,
+              "page_number": null
+            },
+            "extraction_status": "AMBIGUOUS"
+          }
+        },
+        {
+          "value": "GB53TEST00000000000009",
+          "evidence": {
+            "evidence_id": "47aecc56-2f3f-5853-a869-f732038c0739",
+            "source_id": "dc41059f-3c69-5840-8f51-0e410c7b1eac",
+            "field": "account_identifier",
+            "extracted_value": "GB53TEST00000000000009",
+            "exact_excerpt": "GB53TEST00000000000009",
+            "location": {
+              "char_start": 56,
+              "char_end": 78,
+              "page_number": null
+            },
+            "extraction_status": "AMBIGUOUS"
+          }
+        }
+      ]
+    },
+    "routing_identifier": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "destination_scheme": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "claims_details_changed": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "stated_reason_for_change": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "request_id": "d042bb94-81f2-5f27-a2fe-fe21d8695894",
+    "source_ids": [
+      "dc41059f-3c69-5840-8f51-0e410c7b1eac"
+    ],
+    "extraction": {
+      "attempt_id": "79ca0f10-fff8-5fd0-943c-fa1aed101f7b",
+      "method": "FIXTURE",
+      "extracted_at": "2026-10-04T08:01:00Z",
+      "schema_version": "1",
+      "prompt_version": null,
+      "provider": null,
+      "model": null,
+      "operator_id": "synthetic-fixture-author",
+      "failure_code": null
+    }
+  },
+  "expected_state_after_review": "UNCERTAIN",
+  "expected_reason_codes": [
+    "DESTINATION_AMBIGUOUS"
+  ]
+}

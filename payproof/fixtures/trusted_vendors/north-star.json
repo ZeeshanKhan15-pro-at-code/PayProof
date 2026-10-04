@@ -1,0 +1,39 @@
+{
+  "vendor_id": "f88cb963-437a-53e6-b58f-6e46d0a6b265",
+  "revision_id": "37d28bf0-0def-5ba4-9177-7b7ed4be2913",
+  "canonical_vendor_name": "Synthetic North Star Supplies",
+  "trusted_email": "accounts@north-star.example",
+  "trusted_domain": "north-star.example",
+  "callback_contact": {
+    "contact_id": "3edff001-c62e-5399-83be-e32a30e0f1e8",
+    "revision_id": "aa3dd507-50a4-5bc1-ac25-11cb0b48c111",
+    "method": "PHONE",
+    "value": "+1-202-555-0101",
+    "provenance": {
+      "source_kind": "SYNTHETIC_FIXTURE",
+      "source_reference": "synthetic-onboarding/north-star",
+      "description": "Fictional hackathon baseline and contact; no real vendor or ownership claim.",
+      "recorded_by": "synthetic-fixture-author",
+      "recorded_at": "2026-10-01T08:00:00Z"
+    },
+    "last_verified_at": "2026-10-02T08:00:00Z"
+  },
+  "bank_name": "Synthetic Test Bank",
+  "payment_identity": {
+    "normalization_version": "iban-gb-de-v1",
+    "scheme": "IBAN",
+    "raw_account_identifier": "GB75TEST00000000000001",
+    "account_identifier": "GB75TEST00000000000001",
+    "routing_identifier": null
+  },
+  "routing_identifier": null,
+  "currency": "GBP",
+  "provenance": {
+    "source_kind": "SYNTHETIC_FIXTURE",
+    "source_reference": "synthetic-onboarding/north-star",
+    "description": "Fictional hackathon baseline and contact; no real vendor or ownership claim.",
+    "recorded_by": "synthetic-fixture-author",
+    "recorded_at": "2026-10-01T08:00:00Z"
+  },
+  "last_verified_at": "2026-10-03T08:00:00Z"
+}

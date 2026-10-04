@@ -1,0 +1,5 @@
+include README.md Makefile .env.example requirements-dev.txt
+recursive-include docs *.md
+recursive-include tests *.py
+recursive-include scripts *.py
+recursive-include payproof/fixtures *.json

@@ -1,0 +1,39 @@
+{
+  "vendor_id": "a438bedb-78bb-5b5d-a514-6faf8f789f99",
+  "revision_id": "0f1673df-5f63-5d27-980a-aa4288e0592e",
+  "canonical_vendor_name": "Synthetic Rhein Paper",
+  "trusted_email": "accounts@rhein-paper.example",
+  "trusted_domain": "rhein-paper.example",
+  "callback_contact": {
+    "contact_id": "5d8750bf-1bd9-55c9-a1a4-1f58ad999c04",
+    "revision_id": "ddca4a29-7f2e-54be-909a-9e85866fb022",
+    "method": "PHONE",
+    "value": "+1-202-555-0102",
+    "provenance": {
+      "source_kind": "SYNTHETIC_FIXTURE",
+      "source_reference": "synthetic-onboarding/rhein-paper",
+      "description": "Fictional hackathon baseline and contact; no real vendor or ownership claim.",
+      "recorded_by": "synthetic-fixture-author",
+      "recorded_at": "2026-10-01T08:00:00Z"
+    },
+    "last_verified_at": "2026-10-02T08:00:00Z"
+  },
+  "bank_name": "Synthetic Test Bank",
+  "payment_identity": {
+    "normalization_version": "iban-gb-de-v1",
+    "scheme": "IBAN",
+    "raw_account_identifier": "DE09000000000000000001",
+    "account_identifier": "DE09000000000000000001",
+    "routing_identifier": null
+  },
+  "routing_identifier": null,
+  "currency": "EUR",
+  "provenance": {
+    "source_kind": "SYNTHETIC_FIXTURE",
+    "source_reference": "synthetic-onboarding/rhein-paper",
+    "description": "Fictional hackathon baseline and contact; no real vendor or ownership claim.",
+    "recorded_by": "synthetic-fixture-author",
+    "recorded_at": "2026-10-01T08:00:00Z"
+  },
+  "last_verified_at": "2026-10-03T08:00:00Z"
+}

@@ -1,0 +1,171 @@
+{
+  "fixture_id": "changed-email",
+  "dataset": "SYNTHETIC_DEVELOPMENT",
+  "description": "Legitimate-looking email requests a new valid destination.",
+  "vendor_id": "f88cb963-437a-53e6-b58f-6e46d0a6b265",
+  "baseline_revision_id": "37d28bf0-0def-5ba4-9177-7b7ed4be2913",
+  "source": {
+    "source_id": "a1439cf9-ec23-59eb-9875-688c87e25e18",
+    "kind": "EMAIL",
+    "text": "From: accounts@north-star.example\nReply-To: new-contact@request.example\nOur payment details have changed. We moved banks.\nPlease pay IBAN GB53TEST00000000000009.",
+    "sha256": "340be25b51f555f977bf203b4371dabbe4d764583865c05dd4da752cfab51803",
+    "captured_at": "2026-10-04T08:00:00Z",
+    "captured_by": "synthetic-fixture-author",
+    "label": "Synthetic changed-email",
+    "page_number": null
+  },
+  "evidence": {
+    "vendor_name": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "sender_email": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "accounts@north-star.example",
+          "evidence": {
+            "evidence_id": "599a59a6-f18b-5718-9d16-fd5c7cf96304",
+            "source_id": "a1439cf9-ec23-59eb-9875-688c87e25e18",
+            "field": "sender_email",
+            "extracted_value": "accounts@north-star.example",
+            "exact_excerpt": "accounts@north-star.example",
+            "location": {
+              "char_start": 6,
+              "char_end": 33,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "reply_to": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "new-contact@request.example",
+          "evidence": {
+            "evidence_id": "10095720-2aa0-5652-b65e-e2fd5e4fa805",
+            "source_id": "a1439cf9-ec23-59eb-9875-688c87e25e18",
+            "field": "reply_to",
+            "extracted_value": "new-contact@request.example",
+            "exact_excerpt": "new-contact@request.example",
+            "location": {
+              "char_start": 44,
+              "char_end": 71,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "invoice_number": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "amount": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "currency": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "bank_name": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "account_identifier": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "GB53TEST00000000000009",
+          "evidence": {
+            "evidence_id": "f2e605f3-f7ba-5418-8108-38d7e6465fd4",
+            "source_id": "a1439cf9-ec23-59eb-9875-688c87e25e18",
+            "field": "account_identifier",
+            "extracted_value": "GB53TEST00000000000009",
+            "exact_excerpt": "GB53TEST00000000000009",
+            "location": {
+              "char_start": 138,
+              "char_end": 160,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "routing_identifier": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "destination_scheme": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "claims_details_changed": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": true,
+          "evidence": {
+            "evidence_id": "9f52f49e-e56b-5631-bf95-631fe5dbd01e",
+            "source_id": "a1439cf9-ec23-59eb-9875-688c87e25e18",
+            "field": "claims_details_changed",
+            "extracted_value": "Our payment details have changed.",
+            "exact_excerpt": "Our payment details have changed.",
+            "location": {
+              "char_start": 72,
+              "char_end": 105,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "stated_reason_for_change": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "We moved banks.",
+          "evidence": {
+            "evidence_id": "88439cef-70fc-57b5-883e-242945769628",
+            "source_id": "a1439cf9-ec23-59eb-9875-688c87e25e18",
+            "field": "stated_reason_for_change",
+            "extracted_value": "We moved banks.",
+            "exact_excerpt": "We moved banks.",
+            "location": {
+              "char_start": 106,
+              "char_end": 121,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "request_id": "ce5bd877-756e-526f-95a9-001f07e9bbb0",
+    "source_ids": [
+      "a1439cf9-ec23-59eb-9875-688c87e25e18"
+    ],
+    "extraction": {
+      "attempt_id": "46c7411b-2e60-5a91-b762-f00a5a7f2093",
+      "method": "FIXTURE",
+      "extracted_at": "2026-10-04T08:01:00Z",
+      "schema_version": "1",
+      "prompt_version": null,
+      "provider": null,
+      "model": null,
+      "operator_id": "synthetic-fixture-author",
+      "failure_code": null
+    }
+  },
+  "expected_state_after_review": "VERIFY",
+  "expected_reason_codes": [
+    "DESTINATION_CHANGED"
+  ]
+}

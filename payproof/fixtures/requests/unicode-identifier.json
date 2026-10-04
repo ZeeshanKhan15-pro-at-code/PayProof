@@ -1,0 +1,103 @@
+{
+  "fixture_id": "unicode-identifier",
+  "dataset": "SYNTHETIC_DEVELOPMENT",
+  "description": "Unicode lookalike must not be silently repaired.",
+  "vendor_id": "6d245a26-9592-50eb-bfa3-7147c080d9fe",
+  "baseline_revision_id": "e599defe-cc04-5d27-9db7-a082dc35f570",
+  "source": {
+    "source_id": "e772a982-4006-5dcc-bc31-6b698723dc47",
+    "kind": "INVOICE",
+    "text": "Please pay IBAN ＧB21TEST00000000000003.",
+    "sha256": "a0039f506e0d7aff40e0f826d89244a3e09cea9c5fdefbf79150d566559b3d24",
+    "captured_at": "2026-10-04T08:00:00Z",
+    "captured_by": "synthetic-fixture-author",
+    "label": "Synthetic unicode-identifier",
+    "page_number": null
+  },
+  "evidence": {
+    "vendor_name": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "sender_email": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "reply_to": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "invoice_number": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "amount": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "currency": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "bank_name": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "account_identifier": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "ＧB21TEST00000000000003",
+          "evidence": {
+            "evidence_id": "70ac9dcc-cd03-5d90-8703-a74280576c4f",
+            "source_id": "e772a982-4006-5dcc-bc31-6b698723dc47",
+            "field": "account_identifier",
+            "extracted_value": "ＧB21TEST00000000000003",
+            "exact_excerpt": "ＧB21TEST00000000000003",
+            "location": {
+              "char_start": 16,
+              "char_end": 38,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "routing_identifier": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "destination_scheme": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "claims_details_changed": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "stated_reason_for_change": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "request_id": "0dc8b497-ed55-5dcf-8edf-598f04f0eccd",
+    "source_ids": [
+      "e772a982-4006-5dcc-bc31-6b698723dc47"
+    ],
+    "extraction": {
+      "attempt_id": "7a343183-29e6-5a1e-a001-c476189162a8",
+      "method": "FIXTURE",
+      "extracted_at": "2026-10-04T08:01:00Z",
+      "schema_version": "1",
+      "prompt_version": null,
+      "provider": null,
+      "model": null,
+      "operator_id": "synthetic-fixture-author",
+      "failure_code": null
+    }
+  },
+  "expected_state_after_review": "UNCERTAIN",
+  "expected_reason_codes": [
+    "DESTINATION_INVALID"
+  ]
+}

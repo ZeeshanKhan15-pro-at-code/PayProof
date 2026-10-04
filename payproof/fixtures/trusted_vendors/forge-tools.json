@@ -1,0 +1,39 @@
+{
+  "vendor_id": "6d245a26-9592-50eb-bfa3-7147c080d9fe",
+  "revision_id": "e599defe-cc04-5d27-9db7-a082dc35f570",
+  "canonical_vendor_name": "Synthetic Forge Tools",
+  "trusted_email": "accounts@forge-tools.example",
+  "trusted_domain": "forge-tools.example",
+  "callback_contact": {
+    "contact_id": "51148ce5-c822-5a5b-92bf-1c5df2bd86a6",
+    "revision_id": "9ff948ff-127b-547c-87a1-02ff34f2cb04",
+    "method": "PHONE",
+    "value": "+1-202-555-0103",
+    "provenance": {
+      "source_kind": "SYNTHETIC_FIXTURE",
+      "source_reference": "synthetic-onboarding/forge-tools",
+      "description": "Fictional hackathon baseline and contact; no real vendor or ownership claim.",
+      "recorded_by": "synthetic-fixture-author",
+      "recorded_at": "2026-10-01T08:00:00Z"
+    },
+    "last_verified_at": "2026-10-02T08:00:00Z"
+  },
+  "bank_name": "Synthetic Test Bank",
+  "payment_identity": {
+    "normalization_version": "iban-gb-de-v1",
+    "scheme": "IBAN",
+    "raw_account_identifier": "GB21TEST00000000000003",
+    "account_identifier": "GB21TEST00000000000003",
+    "routing_identifier": null
+  },
+  "routing_identifier": null,
+  "currency": "GBP",
+  "provenance": {
+    "source_kind": "SYNTHETIC_FIXTURE",
+    "source_reference": "synthetic-onboarding/forge-tools",
+    "description": "Fictional hackathon baseline and contact; no real vendor or ownership claim.",
+    "recorded_by": "synthetic-fixture-author",
+    "recorded_at": "2026-10-01T08:00:00Z"
+  },
+  "last_verified_at": "2026-10-03T08:00:00Z"
+}
