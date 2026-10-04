@@ -1,0 +1,54 @@
+PYTHON ?= python3
+VENV := .venv
+PY := $(VENV)/bin/python
+
+.PHONY: setup verify lint format typecheck test build debug benchmark serve production
+
+setup: $(VENV)/.ready
+
+$(VENV)/.ready: pyproject.toml requirements-dev.txt
+	$(PYTHON) -m venv $(VENV)
+	$(PY) -m pip install --disable-pip-version-check --no-cache-dir -r requirements-dev.txt
+	$(PY) -m pip install --disable-pip-version-check --no-build-isolation --no-deps -e .
+	touch $(VENV)/.ready
+
+# Sequential sub-make keeps verification deterministic, even under make -j.
+verify: setup
+	$(MAKE) lint
+	$(MAKE) typecheck
+	$(MAKE) test
+	$(PY) -m payproof check
+	$(MAKE) benchmark
+	$(MAKE) build
+
+lint: setup
+	$(VENV)/bin/ruff check .
+	$(VENV)/bin/ruff format --check .
+
+format: setup
+	$(VENV)/bin/ruff check --fix .
+	$(VENV)/bin/ruff format .
+
+typecheck: setup
+	$(PY) -m mypy
+
+test: setup
+	$(PY) -m pytest -q
+
+# Standard distributable Python artifacts; no frontend asset compilation.
+build: setup
+	$(PY) -m build --no-isolation
+
+debug: setup
+	$(PY) -m payproof debug
+
+benchmark: setup
+	$(PY) -m payproof benchmark
+
+# Local read-only debug server, without the interactive debugger or reloader.
+serve: setup
+	$(PY) -m payproof serve
+
+# A host/reverse proxy must restrict access and provide HTTPS.
+production: setup
+	PAYPROOF_ENV=production $(VENV)/bin/gunicorn --bind 127.0.0.1:8000 --workers 1 --threads 2 'payproof.web:create_app()'
