@@ -1,0 +1,1112 @@
+{
+  "$defs": {
+    "BenchmarkBaseline": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "record": {
+          "$ref": "#/$defs/TrustedVendorRecord"
+        }
+      },
+      "required": [
+        "key",
+        "record"
+      ],
+      "title": "BenchmarkBaseline",
+      "type": "object"
+    },
+    "BenchmarkCase": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^PP-[0-9]{2}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "coverage_bucket": {
+          "enum": [
+            "TRUE_CHANGE",
+            "NO_CONSEQUENTIAL_CHANGE",
+            "UNCERTAIN"
+          ],
+          "title": "Coverage Bucket",
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Tags",
+          "type": "array"
+        },
+        "baseline_key": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Baseline Key"
+        },
+        "selected_vendor_id": {
+          "format": "uuid",
+          "title": "Selected Vendor Id",
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/SourceDocument"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Sources",
+          "type": "array"
+        },
+        "gold_evidence": {
+          "$ref": "#/$defs/PaymentRequestEvidence"
+        },
+        "non_destination_spans": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/NonDestinationSpan"
+          },
+          "title": "Non Destination Spans",
+          "type": "array"
+        },
+        "normalized_gold_requested_identity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NormalizedPaymentIdentity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ground_truth": {
+          "$ref": "#/$defs/BenchmarkTruth"
+        },
+        "after_gold_source_review": {
+          "$ref": "#/$defs/BenchmarkExpectation"
+        },
+        "without_source_review": {
+          "$ref": "#/$defs/BenchmarkExpectation"
+        }
+      },
+      "required": [
+        "case_id",
+        "title",
+        "coverage_bucket",
+        "tags",
+        "baseline_key",
+        "selected_vendor_id",
+        "sources",
+        "gold_evidence",
+        "normalized_gold_requested_identity",
+        "ground_truth",
+        "after_gold_source_review",
+        "without_source_review"
+      ],
+      "title": "BenchmarkCase",
+      "type": "object"
+    },
+    "BenchmarkExpectation": {
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "UNCHANGED",
+            "VERIFY",
+            "UNCERTAIN"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "reason_codes": {
+          "items": {
+            "enum": [
+              "BASELINE_UNAVAILABLE",
+              "BASELINE_INVALID",
+              "EXTRACTION_FAILED",
+              "EVIDENCE_INVALID",
+              "REVIEW_REQUIRED",
+              "DESTINATION_MISSING",
+              "DESTINATION_INCOMPLETE",
+              "UNSUPPORTED_DESTINATION",
+              "DESTINATION_INVALID",
+              "DESTINATION_AMBIGUOUS",
+              "DESTINATION_MATCH",
+              "DESTINATION_CHANGED"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Reason Codes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "state",
+        "reason_codes"
+      ],
+      "title": "BenchmarkExpectation",
+      "type": "object"
+    },
+    "BenchmarkTruth": {
+      "additionalProperties": false,
+      "properties": {
+        "destination_relation": {
+          "enum": [
+            "CHANGED",
+            "UNCHANGED",
+            "UNRESOLVED"
+          ],
+          "title": "Destination Relation",
+          "type": "string"
+        },
+        "consequential_changes": {
+          "items": {
+            "$ref": "#/$defs/ConsequentialChange"
+          },
+          "title": "Consequential Changes",
+          "type": "array"
+        },
+        "contextual_changes": {
+          "items": {
+            "enum": [
+              "vendor_name",
+              "sender_email",
+              "reply_to",
+              "invoice_number",
+              "amount",
+              "currency",
+              "bank_name",
+              "account_identifier",
+              "routing_identifier",
+              "destination_scheme",
+              "claims_details_changed",
+              "stated_reason_for_change"
+            ],
+            "type": "string"
+          },
+          "title": "Contextual Changes",
+          "type": "array"
+        },
+        "phase1_comparable": {
+          "title": "Phase1 Comparable",
+          "type": "boolean"
+        },
+        "boundary": {
+          "enum": [
+            "SUPPORTED",
+            "SEPARATE_ROUTING",
+            "INVALID_REPRESENTATION",
+            "INSUFFICIENT_INFORMATION",
+            "MISSING_TRUSTED_HISTORY",
+            "UNSUPPORTED_COUNTRY"
+          ],
+          "title": "Boundary",
+          "type": "string"
+        },
+        "rationale": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "destination_relation",
+        "consequential_changes",
+        "contextual_changes",
+        "phase1_comparable",
+        "boundary",
+        "rationale"
+      ],
+      "title": "BenchmarkTruth",
+      "type": "object"
+    },
+    "ConsequentialChange": {
+      "additionalProperties": false,
+      "properties": {
+        "component": {
+          "enum": [
+            "iban_account_component",
+            "iban_routing_component",
+            "iban_bank_component",
+            "separate_routing_identifier",
+            "country"
+          ],
+          "title": "Component",
+          "type": "string"
+        },
+        "trusted_value": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Trusted Value",
+          "type": "string"
+        },
+        "requested_value": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Requested Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "trusted_value",
+        "requested_value"
+      ],
+      "title": "ConsequentialChange",
+      "type": "object"
+    },
+    "EvidenceSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_id": {
+          "format": "uuid",
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "source_id": {
+          "format": "uuid",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "field": {
+          "enum": [
+            "vendor_name",
+            "sender_email",
+            "reply_to",
+            "invoice_number",
+            "amount",
+            "currency",
+            "bank_name",
+            "account_identifier",
+            "routing_identifier",
+            "destination_scheme",
+            "claims_details_changed",
+            "stated_reason_for_change"
+          ],
+          "title": "Field",
+          "type": "string"
+        },
+        "extracted_value": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Extracted Value",
+          "type": "string"
+        },
+        "exact_excerpt": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Exact Excerpt",
+          "type": "string"
+        },
+        "location": {
+          "$ref": "#/$defs/SourceLocation"
+        },
+        "extraction_status": {
+          "enum": [
+            "FOUND",
+            "AMBIGUOUS"
+          ],
+          "title": "Extraction Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "source_id",
+        "field",
+        "extracted_value",
+        "exact_excerpt",
+        "location",
+        "extraction_status"
+      ],
+      "title": "EvidenceSpan",
+      "type": "object"
+    },
+    "ExtractedCandidate_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__": {
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        },
+        "evidence": {
+          "$ref": "#/$defs/EvidenceSpan"
+        }
+      },
+      "required": [
+        "value",
+        "evidence"
+      ],
+      "title": "ExtractedCandidate[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=2000)]), AfterValidator]]",
+      "type": "object"
+    },
+    "ExtractedCandidate_bool_": {
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "title": "Value",
+          "type": "boolean"
+        },
+        "evidence": {
+          "$ref": "#/$defs/EvidenceSpan"
+        }
+      },
+      "required": [
+        "value",
+        "evidence"
+      ],
+      "title": "ExtractedCandidate[bool]",
+      "type": "object"
+    },
+    "ExtractedField_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "FOUND",
+            "MISSING",
+            "AMBIGUOUS",
+            "UNREADABLE",
+            "UNSUPPORTED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/ExtractedCandidate_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__"
+          },
+          "title": "Candidates",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "candidates"
+      ],
+      "title": "ExtractedField[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=2000)]), AfterValidator]]",
+      "type": "object"
+    },
+    "ExtractedField_bool_": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "FOUND",
+            "MISSING",
+            "AMBIGUOUS",
+            "UNREADABLE",
+            "UNSUPPORTED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/ExtractedCandidate_bool_"
+          },
+          "title": "Candidates",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "candidates"
+      ],
+      "title": "ExtractedField[bool]",
+      "type": "object"
+    },
+    "ExtractionMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_id": {
+          "format": "uuid",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "method": {
+          "enum": [
+            "AI",
+            "MANUAL",
+            "FIXTURE",
+            "NOT_ATTEMPTED"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "extracted_at": {
+          "format": "date-time",
+          "title": "Extracted At",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "prompt_version": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Prompt Version"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "operator_id": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operator Id"
+        },
+        "failure_code": {
+          "anyOf": [
+            {
+              "enum": [
+                "TIMEOUT",
+                "PROVIDER_UNAVAILABLE",
+                "INVALID_RESPONSE",
+                "EVIDENCE_INVALID",
+                "NOT_CONFIGURED"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure Code"
+        }
+      },
+      "required": [
+        "attempt_id",
+        "method",
+        "extracted_at",
+        "schema_version"
+      ],
+      "title": "ExtractionMetadata",
+      "type": "object"
+    },
+    "NonDestinationSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "source_id": {
+          "format": "uuid",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "HISTORICAL_DESTINATION",
+            "IRRELEVANT_NUMBER"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "raw_value": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Raw Value",
+          "type": "string"
+        },
+        "exact_excerpt": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Exact Excerpt",
+          "type": "string"
+        },
+        "location": {
+          "$ref": "#/$defs/SourceLocation"
+        }
+      },
+      "required": [
+        "source_id",
+        "role",
+        "raw_value",
+        "exact_excerpt",
+        "location"
+      ],
+      "title": "NonDestinationSpan",
+      "type": "object"
+    },
+    "NormalizedPaymentIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "normalization_version": {
+          "const": "iban-gb-de-v1",
+          "title": "Normalization Version",
+          "type": "string"
+        },
+        "scheme": {
+          "const": "IBAN",
+          "title": "Scheme",
+          "type": "string"
+        },
+        "raw_account_identifier": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Raw Account Identifier",
+          "type": "string"
+        },
+        "account_identifier": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Account Identifier",
+          "type": "string"
+        },
+        "routing_identifier": {
+          "default": null,
+          "title": "Routing Identifier",
+          "type": "null"
+        }
+      },
+      "required": [
+        "normalization_version",
+        "scheme",
+        "raw_account_identifier",
+        "account_identifier"
+      ],
+      "title": "NormalizedPaymentIdentity",
+      "type": "object"
+    },
+    "PaymentRequestEvidence": {
+      "additionalProperties": false,
+      "description": "Extraction plus server attribution; no decision, review, or trust fields.",
+      "properties": {
+        "vendor_name": {
+          "$ref": "#/$defs/ExtractedField_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__"
+        },
+        "sender_email": {
+          "$ref": "#/$defs/ExtractedField_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__"
+        },
+        "reply_to": {
+          "$ref": "#/$defs/ExtractedField_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__"
+        },
+        "invoice_number": {
+          "$ref": "#/$defs/ExtractedField_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__"
+        },
+        "amount": {
+          "$ref": "#/$defs/ExtractedField_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__"
+        },
+        "currency": {
+          "$ref": "#/$defs/ExtractedField_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__"
+        },
+        "bank_name": {
+          "$ref": "#/$defs/ExtractedField_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__"
+        },
+        "account_identifier": {
+          "$ref": "#/$defs/ExtractedField_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__"
+        },
+        "routing_identifier": {
+          "$ref": "#/$defs/ExtractedField_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__"
+        },
+        "destination_scheme": {
+          "$ref": "#/$defs/ExtractedField_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__"
+        },
+        "claims_details_changed": {
+          "$ref": "#/$defs/ExtractedField_bool_"
+        },
+        "stated_reason_for_change": {
+          "$ref": "#/$defs/ExtractedField_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__"
+        },
+        "request_id": {
+          "format": "uuid",
+          "title": "Request Id",
+          "type": "string"
+        },
+        "source_ids": {
+          "items": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Source Ids",
+          "type": "array"
+        },
+        "extraction": {
+          "$ref": "#/$defs/ExtractionMetadata"
+        }
+      },
+      "required": [
+        "vendor_name",
+        "sender_email",
+        "reply_to",
+        "invoice_number",
+        "amount",
+        "currency",
+        "bank_name",
+        "account_identifier",
+        "routing_identifier",
+        "destination_scheme",
+        "claims_details_changed",
+        "stated_reason_for_change",
+        "request_id",
+        "source_ids",
+        "extraction"
+      ],
+      "title": "PaymentRequestEvidence",
+      "type": "object"
+    },
+    "SourceDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "source_id": {
+          "format": "uuid",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "EMAIL",
+            "INVOICE",
+            "VENDOR_NOTICE",
+            "PLAIN_TEXT"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "captured_by": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Captured By",
+          "type": "string"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        },
+        "page_number": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page Number"
+        }
+      },
+      "required": [
+        "source_id",
+        "kind",
+        "text",
+        "sha256",
+        "captured_at",
+        "captured_by"
+      ],
+      "title": "SourceDocument",
+      "type": "object"
+    },
+    "SourceLocation": {
+      "additionalProperties": false,
+      "properties": {
+        "char_start": {
+          "minimum": 0,
+          "title": "Char Start",
+          "type": "integer"
+        },
+        "char_end": {
+          "exclusiveMinimum": 0,
+          "title": "Char End",
+          "type": "integer"
+        },
+        "page_number": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page Number"
+        }
+      },
+      "required": [
+        "char_start",
+        "char_end"
+      ],
+      "title": "SourceLocation",
+      "type": "object"
+    },
+    "TrustProvenance": {
+      "additionalProperties": false,
+      "properties": {
+        "source_kind": {
+          "enum": [
+            "PRIOR_VENDOR_RECORD",
+            "ONBOARDING_RECORD",
+            "INDEPENDENT_CALLBACK",
+            "SYNTHETIC_FIXTURE"
+          ],
+          "title": "Source Kind",
+          "type": "string"
+        },
+        "source_reference": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Source Reference",
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "recorded_by": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Recorded By",
+          "type": "string"
+        },
+        "recorded_at": {
+          "format": "date-time",
+          "title": "Recorded At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_kind",
+        "source_reference",
+        "description",
+        "recorded_by",
+        "recorded_at"
+      ],
+      "title": "TrustProvenance",
+      "type": "object"
+    },
+    "TrustedCallbackContact": {
+      "additionalProperties": false,
+      "properties": {
+        "contact_id": {
+          "format": "uuid",
+          "title": "Contact Id",
+          "type": "string"
+        },
+        "revision_id": {
+          "format": "uuid",
+          "title": "Revision Id",
+          "type": "string"
+        },
+        "method": {
+          "enum": [
+            "PHONE",
+            "KNOWN_PORTAL",
+            "IN_PERSON"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "value": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/TrustProvenance"
+        },
+        "last_verified_at": {
+          "format": "date-time",
+          "title": "Last Verified At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contact_id",
+        "revision_id",
+        "method",
+        "value",
+        "provenance",
+        "last_verified_at"
+      ],
+      "title": "TrustedCallbackContact",
+      "type": "object"
+    },
+    "TrustedVendorRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "vendor_id": {
+          "format": "uuid",
+          "title": "Vendor Id",
+          "type": "string"
+        },
+        "revision_id": {
+          "format": "uuid",
+          "title": "Revision Id",
+          "type": "string"
+        },
+        "canonical_vendor_name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Canonical Vendor Name",
+          "type": "string"
+        },
+        "trusted_email": {
+          "anyOf": [
+            {
+              "maxLength": 254,
+              "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trusted Email"
+        },
+        "trusted_domain": {
+          "anyOf": [
+            {
+              "maxLength": 253,
+              "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trusted Domain"
+        },
+        "callback_contact": {
+          "$ref": "#/$defs/TrustedCallbackContact"
+        },
+        "bank_name": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bank Name"
+        },
+        "payment_identity": {
+          "$ref": "#/$defs/NormalizedPaymentIdentity"
+        },
+        "routing_identifier": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Routing Identifier"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "maxLength": 3,
+              "minLength": 3,
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "provenance": {
+          "$ref": "#/$defs/TrustProvenance"
+        },
+        "last_verified_at": {
+          "format": "date-time",
+          "title": "Last Verified At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "vendor_id",
+        "revision_id",
+        "canonical_vendor_name",
+        "callback_contact",
+        "payment_identity",
+        "provenance",
+        "last_verified_at"
+      ],
+      "title": "TrustedVendorRecord",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "payproof-benchmark-design-v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "dataset_id": {
+      "const": "payproof-phase1-diagnostic-30-v1",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "evaluation_status": {
+      "const": "NOT_RUN",
+      "title": "Evaluation Status",
+      "type": "string"
+    },
+    "independent_label_review": {
+      "const": "PENDING",
+      "title": "Independent Label Review",
+      "type": "string"
+    },
+    "split": {
+      "const": "PUBLIC_DIAGNOSTIC_NOT_HELD_OUT",
+      "title": "Split",
+      "type": "string"
+    },
+    "rule_version": {
+      "const": "iban-gb-de-v1",
+      "title": "Rule Version",
+      "type": "string"
+    },
+    "gold_review_protocol": {
+      "const": "SIMULATED_GOLD_SOURCE_REVIEW",
+      "title": "Gold Review Protocol",
+      "type": "string"
+    },
+    "baselines": {
+      "items": {
+        "$ref": "#/$defs/BenchmarkBaseline"
+      },
+      "minItems": 1,
+      "title": "Baselines",
+      "type": "array"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/BenchmarkCase"
+      },
+      "maxItems": 30,
+      "minItems": 20,
+      "title": "Cases",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "dataset_id",
+    "evaluation_status",
+    "independent_label_review",
+    "split",
+    "rule_version",
+    "gold_review_protocol",
+    "baselines",
+    "cases"
+  ],
+  "title": "BenchmarkCorpus",
+  "type": "object"
+}

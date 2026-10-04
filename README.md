@@ -130,6 +130,8 @@ Fixtures cover exact match, formatted match, changed email, changed invoice, mis
 
 `make benchmark` reports comparison agreement, mismatches, false `UNCHANGED` count, and elapsed time on all ten development fixtures. Reviews are explicitly simulated and never persisted as human attestations. Live AI evaluation remains `NOT_IMPLEMENTED`; mocked extraction tests are separate. The architecture's independently reviewed 36-case release corpus and held-out evaluation remain incomplete. See [COMPARISON.md](docs/COMPARISON.md) for exact rules and benchmark limits.
 
+The [benchmark specification](docs/BENCHMARK_SPEC.md) adds 30 public diagnostic case definitions with exact gold evidence, destination truth, and frozen expected states. Its primary metric is consequential changes missed without requiring verification; extraction, comparison, uncertainty, and workflow errors are scored separately. This new evaluation is **NOT_RUN**, and independent label review is **PENDING**. `tests/test_benchmark_design.py` validates the definitions; `make benchmark` continues to run only the older ten fixtures.
+
 ## Next implementation target
 
 Add SQLite persistence, the gated web review workflow, and explicit independent human verification against the stored trusted contact/revision. Preserve snapshots across restarts and enforce stale-revision checks. Extend and independently label the release corpus. Separately smoke-test configured live extraction using synthetic data. The engine remains scoped to GB/DE IBAN; separate routing and other schemes require later explicit contracts.
