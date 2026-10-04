@@ -1,0 +1,39 @@
+{
+  "vendor_id": "9fd65164-9dfe-5226-a462-2ef5d7afc6f5",
+  "revision_id": "5f64bba7-2a0f-5297-8514-96d113a4ab27",
+  "canonical_vendor_name": "Synthetic PayProof Demo Supplies",
+  "trusted_email": "accounts@payproof-demo.example",
+  "trusted_domain": "payproof-demo.example",
+  "callback_contact": {
+    "contact_id": "74d37e6e-4f56-5839-bc11-33a44485fc67",
+    "revision_id": "ba3cabe1-d6ab-5d28-af20-6ebf15cf79e5",
+    "method": "PHONE",
+    "value": "+1-202-555-0182",
+    "provenance": {
+      "source_kind": "SYNTHETIC_FIXTURE",
+      "source_reference": "synthetic-onboarding/demo-account-3821",
+      "description": "Fictional prior onboarding record in demo-account-3821.json; trusted before the request for this demonstration. No real vendor or account ownership claim.",
+      "recorded_by": "synthetic-fixture-author",
+      "recorded_at": "2026-10-01T08:00:00Z"
+    },
+    "last_verified_at": "2026-10-02T08:00:00Z"
+  },
+  "bank_name": "Synthetic Demo Bank",
+  "payment_identity": {
+    "normalization_version": "iban-gb-de-v1",
+    "scheme": "IBAN",
+    "raw_account_identifier": "GB46TEST00000000003821",
+    "account_identifier": "GB46TEST00000000003821",
+    "routing_identifier": null
+  },
+  "routing_identifier": null,
+  "currency": "GBP",
+  "provenance": {
+    "source_kind": "SYNTHETIC_FIXTURE",
+    "source_reference": "synthetic-onboarding/demo-account-3821",
+    "description": "Fictional prior onboarding record in demo-account-3821.json; trusted before the request for this demonstration. No real vendor or account ownership claim.",
+    "recorded_by": "synthetic-fixture-author",
+    "recorded_at": "2026-10-01T08:00:00Z"
+  },
+  "last_verified_at": "2026-10-03T08:00:00Z"
+}

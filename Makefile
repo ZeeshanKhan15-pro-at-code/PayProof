@@ -2,7 +2,7 @@ PYTHON ?= python3
 VENV := .venv
 PY := $(VENV)/bin/python
 
-.PHONY: setup verify lint format typecheck test build debug benchmark serve production
+.PHONY: setup verify lint format typecheck test build debug benchmark serve production demo demo-smoke
 
 setup: $(VENV)/.ready
 
@@ -45,6 +45,14 @@ debug: setup
 
 benchmark: setup
 	$(PY) -m payproof benchmark
+
+# Interactive instruction review; no independent verification is recorded.
+demo: setup
+	$(PY) -m payproof demo
+
+# Explicitly simulated source review, confined to the seeded synthetic demo.
+demo-smoke: setup
+	$(PY) -m payproof demo --simulate-review
 
 # Local read-only debug server, without the interactive debugger or reloader.
 serve: setup

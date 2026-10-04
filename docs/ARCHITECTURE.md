@@ -109,6 +109,8 @@ The case view shows both the original comparison and, if present, “VERIFIED by
 
 The implemented engine and exact normalization/reason derivation are documented in [COMPARISON.md](COMPARISON.md).
 
+The local input-to-evidence CLI workflow is documented in [VERTICAL_SLICE.md](VERTICAL_SLICE.md). The persistent server/verification slice below remains the release target.
+
 Inputs are the reviewed candidate, immutable baseline revision, and their validity/evidence metadata. Outputs are a result and reason codes. The function performs no I/O.
 
 Phase 1 supports IBAN only. Validate both values using format, a pinned country-length table for the explicitly supported countries, and the MOD-97 checksum. Support GB and DE synthetic fixtures initially; other countries are `UNCERTAIN` until explicitly supported and tested. A valid checksum does not establish account ownership or bank authenticity.

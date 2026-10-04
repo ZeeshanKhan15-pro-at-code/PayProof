@@ -1,0 +1,269 @@
+{
+  "fixture_id": "demo-account-change",
+  "dataset": "SYNTHETIC_DEVELOPMENT",
+  "description": "Seeded vertical slice: trusted account ending 3821, requested account ending 9928.",
+  "vendor_id": "9fd65164-9dfe-5226-a462-2ef5d7afc6f5",
+  "baseline_revision_id": "5f64bba7-2a0f-5297-8514-96d113a4ab27",
+  "source": {
+    "source_id": "a24703f8-2c23-5688-9659-bda6a41b319c",
+    "kind": "EMAIL",
+    "text": "From: accounts@payproof-demo.example\nReply-To: accounts@payproof-demo.example\nVendor: Synthetic PayProof Demo Supplies\nInvoice: DEMO-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nPayment details have changed.\nReason: We moved our payment instructions to a new account.\nPlease pay this invoice to IBAN GB57TEST00000000009928.\n",
+    "sha256": "dab276aa4bb8b5528e1a6bda7a9fa53159c3a3f5414767b2fdb67bf1c9a4aec8",
+    "captured_at": "2026-10-04T08:00:00Z",
+    "captured_by": "synthetic-fixture-author",
+    "label": "Synthetic demo payment request (account ending 9928)",
+    "page_number": null
+  },
+  "evidence": {
+    "vendor_name": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "Synthetic PayProof Demo Supplies",
+          "evidence": {
+            "evidence_id": "15e5def5-80f1-5146-9666-3901460e51c0",
+            "source_id": "a24703f8-2c23-5688-9659-bda6a41b319c",
+            "field": "vendor_name",
+            "extracted_value": "Synthetic PayProof Demo Supplies",
+            "exact_excerpt": "Vendor: Synthetic PayProof Demo Supplies",
+            "location": {
+              "char_start": 78,
+              "char_end": 118,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "sender_email": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "accounts@payproof-demo.example",
+          "evidence": {
+            "evidence_id": "7c149646-6764-50c8-9778-2b2766db3709",
+            "source_id": "a24703f8-2c23-5688-9659-bda6a41b319c",
+            "field": "sender_email",
+            "extracted_value": "accounts@payproof-demo.example",
+            "exact_excerpt": "From: accounts@payproof-demo.example",
+            "location": {
+              "char_start": 0,
+              "char_end": 36,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "reply_to": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "accounts@payproof-demo.example",
+          "evidence": {
+            "evidence_id": "74ee70e3-d617-5d8a-ac04-3c84e09eb8aa",
+            "source_id": "a24703f8-2c23-5688-9659-bda6a41b319c",
+            "field": "reply_to",
+            "extracted_value": "accounts@payproof-demo.example",
+            "exact_excerpt": "Reply-To: accounts@payproof-demo.example",
+            "location": {
+              "char_start": 37,
+              "char_end": 77,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "invoice_number": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "DEMO-001",
+          "evidence": {
+            "evidence_id": "aba17b3e-11ff-5624-9f13-726d106b2117",
+            "source_id": "a24703f8-2c23-5688-9659-bda6a41b319c",
+            "field": "invoice_number",
+            "extracted_value": "DEMO-001",
+            "exact_excerpt": "Invoice: DEMO-001",
+            "location": {
+              "char_start": 119,
+              "char_end": 136,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "amount": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "1250.00",
+          "evidence": {
+            "evidence_id": "2dd8445c-4389-529e-90fc-d040c311dd42",
+            "source_id": "a24703f8-2c23-5688-9659-bda6a41b319c",
+            "field": "amount",
+            "extracted_value": "1250.00",
+            "exact_excerpt": "Amount: 1250.00 GBP",
+            "location": {
+              "char_start": 137,
+              "char_end": 156,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "currency": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "GBP",
+          "evidence": {
+            "evidence_id": "af7511f7-b68d-50db-9f47-556a36b64984",
+            "source_id": "a24703f8-2c23-5688-9659-bda6a41b319c",
+            "field": "currency",
+            "extracted_value": "GBP",
+            "exact_excerpt": "Amount: 1250.00 GBP",
+            "location": {
+              "char_start": 137,
+              "char_end": 156,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "bank_name": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "Synthetic Demo Bank",
+          "evidence": {
+            "evidence_id": "4ce0213b-c2f1-5652-b189-1720aacd085a",
+            "source_id": "a24703f8-2c23-5688-9659-bda6a41b319c",
+            "field": "bank_name",
+            "extracted_value": "Synthetic Demo Bank",
+            "exact_excerpt": "Bank: Synthetic Demo Bank",
+            "location": {
+              "char_start": 157,
+              "char_end": 182,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "account_identifier": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "GB57TEST00000000009928",
+          "evidence": {
+            "evidence_id": "d5361a5c-666e-5685-85ef-8926ee4afbce",
+            "source_id": "a24703f8-2c23-5688-9659-bda6a41b319c",
+            "field": "account_identifier",
+            "extracted_value": "GB57TEST00000000009928",
+            "exact_excerpt": "Please pay this invoice to IBAN GB57TEST00000000009928.",
+            "location": {
+              "char_start": 273,
+              "char_end": 328,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "routing_identifier": {
+      "status": "MISSING",
+      "candidates": []
+    },
+    "destination_scheme": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "IBAN",
+          "evidence": {
+            "evidence_id": "0726f742-592e-523e-9177-141d7b78f5df",
+            "source_id": "a24703f8-2c23-5688-9659-bda6a41b319c",
+            "field": "destination_scheme",
+            "extracted_value": "IBAN",
+            "exact_excerpt": "Please pay this invoice to IBAN GB57TEST00000000009928.",
+            "location": {
+              "char_start": 273,
+              "char_end": 328,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "claims_details_changed": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": true,
+          "evidence": {
+            "evidence_id": "14b60409-d4a4-5a8e-8141-f3c5e1ad8a29",
+            "source_id": "a24703f8-2c23-5688-9659-bda6a41b319c",
+            "field": "claims_details_changed",
+            "extracted_value": "Payment details have changed.",
+            "exact_excerpt": "Payment details have changed.",
+            "location": {
+              "char_start": 183,
+              "char_end": 212,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "stated_reason_for_change": {
+      "status": "FOUND",
+      "candidates": [
+        {
+          "value": "We moved our payment instructions to a new account.",
+          "evidence": {
+            "evidence_id": "36d953cc-aa99-5662-8e4d-1f816369d264",
+            "source_id": "a24703f8-2c23-5688-9659-bda6a41b319c",
+            "field": "stated_reason_for_change",
+            "extracted_value": "We moved our payment instructions to a new account.",
+            "exact_excerpt": "Reason: We moved our payment instructions to a new account.",
+            "location": {
+              "char_start": 213,
+              "char_end": 272,
+              "page_number": null
+            },
+            "extraction_status": "FOUND"
+          }
+        }
+      ]
+    },
+    "request_id": "8cd03332-5efa-5053-84c9-f9621f5f61ab",
+    "source_ids": [
+      "a24703f8-2c23-5688-9659-bda6a41b319c"
+    ],
+    "extraction": {
+      "attempt_id": "22ca0546-24eb-5bda-abf5-854ceb6d49d1",
+      "method": "FIXTURE",
+      "extracted_at": "2026-10-04T08:01:00Z",
+      "schema_version": "1",
+      "operator_id": "synthetic-fixture-author"
+    }
+  },
+  "expected_state_after_review": "VERIFY",
+  "expected_reason_codes": [
+    "DESTINATION_CHANGED"
+  ]
+}

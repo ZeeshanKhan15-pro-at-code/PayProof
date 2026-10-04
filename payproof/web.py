@@ -38,6 +38,7 @@ def create_app(settings: Settings | None = None) -> Flask:
                 "synthetic_fixture_validation",
                 "structured_extraction",
                 "deterministic_comparison",
+                "cli_review_workflow",
             ],
             pending=[
                 "persistence",

@@ -92,8 +92,8 @@ def test_document_capture_preserves_exact_unicode_text_and_server_metadata():
 
 def test_corpus_links_all_requests_to_synthetic_trusted_baselines():
     corpus = load_corpus()
-    assert len(corpus.vendors) == 3
-    assert len(corpus.requests) == 9
+    assert len(corpus.vendors) == 4
+    assert len(corpus.requests) == 10
     assert all(v.provenance.source_kind == "SYNTHETIC_FIXTURE" for v in corpus.vendors)
     assert all(r.evidence.extraction.method == "FIXTURE" for r in corpus.requests)
     assert {r.expected_state_after_review for r in corpus.requests} == {
@@ -117,15 +117,15 @@ def test_corpus_links_all_requests_to_synthetic_trusted_baselines():
 
 def test_benchmark_reports_gold_comparison_without_ai_accuracy_claims():
     report = validate_corpus()
-    assert report.requests_validated == 9
+    assert report.requests_validated == 10
     assert report.comparison_evaluation == "PASS"
-    assert report.comparisons_evaluated == 9
+    assert report.comparisons_evaluated == 10
     assert report.comparison_mismatches == ()
     assert report.false_unchanged == 0
     assert report.review_mode == "SIMULATED_FIXTURE_REVIEW"
     assert report.release_corpus_complete is False
     assert report.ai_evaluation == "NOT_IMPLEMENTED"
-    assert report.expected_outcomes == {"UNCHANGED": 2, "VERIFY": 3, "UNCERTAIN": 4}
+    assert report.expected_outcomes == {"UNCHANGED": 2, "VERIFY": 4, "UNCERTAIN": 4}
     assert report.elapsed_ms >= 0
 
 

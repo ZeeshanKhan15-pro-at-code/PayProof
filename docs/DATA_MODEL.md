@@ -1,6 +1,6 @@
 # PayProof canonical data contracts
 
-Status: v1 contracts implemented and tested. These contracts refine the frozen [architecture](ARCHITECTURE.md). The extraction service and deterministic comparator are documented in [EXTRACTION.md](EXTRACTION.md) and [COMPARISON.md](COMPARISON.md); storage and the operator UI remain later work.
+Status: v1 contracts implemented and tested. These contracts refine the frozen [architecture](ARCHITECTURE.md). The extraction service, comparator and connected CLI are documented in [EXTRACTION.md](EXTRACTION.md), [COMPARISON.md](COMPARISON.md) and [VERTICAL_SLICE.md](VERTICAL_SLICE.md). Storage and the web operator UI remain later work.
 
 The canonical implementation is [payproof/schemas.py](../payproof/schemas.py). Python uses Pydantic v2. Dependencies are pinned in [pyproject.toml](../pyproject.toml), with a complete development dependency snapshot in [requirements-dev.txt](../requirements-dev.txt). No ORM, database driver, AI SDK, or frontend dependency is introduced.
 
@@ -215,4 +215,4 @@ python3 -m venv .venv
 .venv/bin/python -m pytest -q
 ```
 
-Tests run offline with synthetic data once dependencies are installed. Normalization/comparison tests and nine-fixture gold comparison are implemented; see [COMPARISON.md](COMPARISON.md). Live model evaluation, the independently reviewed 36-case release benchmark, and lifecycle integration remain later gates.
+Tests run offline with synthetic data once dependencies are installed. Normalization/comparison tests and ten-fixture gold comparison and CLI integration are implemented; see [COMPARISON.md](COMPARISON.md). Live model evaluation, the independently reviewed 36-case release benchmark, and persistent verification lifecycle integration remain later gates.
