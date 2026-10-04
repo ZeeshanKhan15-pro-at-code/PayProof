@@ -1,6 +1,6 @@
 # PayProof canonical data contracts
 
-Status: v1 contracts implemented and tested. These contracts refine the frozen [architecture](ARCHITECTURE.md). The extraction service is now implemented separately as documented in [EXTRACTION.md](EXTRACTION.md); comparison, storage, and UI remain later work.
+Status: v1 contracts implemented and tested. These contracts refine the frozen [architecture](ARCHITECTURE.md). The extraction service and deterministic comparator are documented in [EXTRACTION.md](EXTRACTION.md) and [COMPARISON.md](COMPARISON.md); storage and the operator UI remain later work.
 
 The canonical implementation is [payproof/schemas.py](../payproof/schemas.py). Python uses Pydantic v2. Dependencies are pinned in [pyproject.toml](../pyproject.toml), with a complete development dependency snapshot in [requirements-dev.txt](../requirements-dev.txt). No ORM, database driver, AI SDK, or frontend dependency is introduced.
 
@@ -160,7 +160,7 @@ Reason vocabulary:
 
 Decisive results require a baseline revision, a review, both valid identities, and one account difference citing the reviewed account evidence. The state/reason must agree with exact canonical destination equality. They cannot contain unresolved missing/contradictory destination information. Contextual differences or contradictions do not establish a changed destination. The cross-record validator rejects separate routing and unresolved/non-IBAN scheme observations for decisive results.
 
-`UNCERTAIN` permits incomplete snapshots and multiple uncertainty reasons but no decisive reason. Missing baseline/review and provider failure require corresponding reasons in the source-bound case. Other reason selection remains the future deterministic engine's responsibility; these schemas do not implement its entire decision table.
+`UNCERTAIN` permits incomplete snapshots and multiple uncertainty reasons but no decisive reason. Missing baseline/review and provider failure require corresponding reasons in the source-bound case. The implemented deterministic engine selects reasons in the stable order documented in [COMPARISON.md](COMPARISON.md); schemas constrain rather than execute the entire decision table.
 
 `UNCHANGED` means destination match only. `VERIFY` means changed instructions requiring independent checking. Neither approves payment or labels fraud.
 
@@ -186,7 +186,7 @@ This validates an attestation's consistency, not whether a call occurred, who ow
 
 ## Cross-record boundary and remaining application obligations
 
-`SourceReview` binds request and attempt IDs, operator/time, explicit boolean acknowledgement that destination instructions were checked, reviewed evidence IDs, and an optional normalized identity. A reviewed identity requires an unambiguous `FOUND` account with exact raw-value and span binding. If extraction is corrected, create a new manually attributed attempt and review; do not edit prior evidence.
+`SourceReview` binds request and attempt IDs, operator/time, explicit boolean acknowledgement that destination instructions were checked, reviewed evidence IDs, and an optional normalized identity. A reviewed identity requires a `FOUND` account or multiple `AMBIGUOUS` observations that **all** normalize to the same valid supported IBAN. Every account span must be reviewed; the identity's raw representation must exactly equal one observed value. Distinct destinations cannot be resolved by selecting one candidate. Decisive results must cite every account span, and every explicit supported scheme span must also be reviewed. Repeated ASCII case/space variants of `IBAN` are supported. This refinement implements the architecture's requirement that repeated mentions of one canonical destination are not conflicting. If extraction is corrected, create a new manually attributed attempt and review; do not edit prior evidence.
 
 `CaseContract` contains sources, evidence, nullable baseline, and optional review/comparison/verification. It verifies source grounding, unique references, chronology, immutable snapshot bindings, required destination review, and trusted-contact use. A case can exist before review/comparison. This is a validation envelope, not a persistence layout or a new lifecycle state.
 
@@ -194,7 +194,7 @@ The future application must still:
 
 - Authenticate/attribute the operator, generate authoritative IDs/times, and accept verification only from an explicit human command.
 - Enforce prior independent trust during baseline entry; schema strings alone cannot establish it.
-- Execute the architecture's full deterministic comparison and reason-ordering rules; avoid treating successful normalization as a decision.
+- Invoke the implemented deterministic comparator on source-bound snapshots with authoritative IDs/times; avoid treating successful normalization as a decision.
 - Check the currently stored baseline/contact/review revisions atomically when committing verification. Internal snapshot consistency does not establish freshness against external storage.
 - Enforce append-only history, unique verification per comparison, idempotency, transaction success, retention, private storage, CSRF/access controls, and raw provider-response handling.
 - Require human review of instruction relevance and completeness. Evidence matching cannot establish that an AI found every payment instruction.
@@ -215,4 +215,4 @@ python3 -m venv .venv
 .venv/bin/python -m pytest -q
 ```
 
-Tests run offline with synthetic data once dependencies are installed. Live model evaluation and the architecture's 36-case comparison benchmark wait for the extraction/comparison implementation; schema tests do not claim to satisfy those later release gates.
+Tests run offline with synthetic data once dependencies are installed. Normalization/comparison tests and nine-fixture gold comparison are implemented; see [COMPARISON.md](COMPARISON.md). Live model evaluation, the independently reviewed 36-case release benchmark, and lifecycle integration remain later gates.

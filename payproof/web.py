@@ -37,9 +37,9 @@ def create_app(settings: Settings | None = None) -> Flask:
                 "normalization",
                 "synthetic_fixture_validation",
                 "structured_extraction",
+                "deterministic_comparison",
             ],
             pending=[
-                "comparison",
                 "persistence",
                 "human_verification",
                 "operator_gate",

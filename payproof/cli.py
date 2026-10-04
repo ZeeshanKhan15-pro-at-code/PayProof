@@ -68,8 +68,9 @@ def main(argv: list[str] | None = None) -> int:
             app.run(host="127.0.0.1", port=settings.port, debug=False, use_reloader=False)
             return 0
         if args.command == "benchmark":
-            print(json.dumps(asdict(validate_corpus()), indent=2))
-            return 0
+            report = validate_corpus()
+            print(json.dumps(asdict(report), indent=2))
+            return 0 if report.comparison_evaluation == "PASS" else 1
         corpus = load_corpus()
         if args.command == "debug":
             print(
@@ -79,7 +80,7 @@ def main(argv: list[str] | None = None) -> int:
                         "extraction_mode": settings.extraction_mode,
                         "synthetic_vendors": [v.canonical_vendor_name for v in corpus.vendors],
                         "synthetic_requests": [r.fixture_id for r in corpus.requests],
-                        "decision_engine": "NOT_IMPLEMENTED",
+                        "decision_engine": "iban-gb-de-v1",
                         "verification": "NOT_IMPLEMENTED",
                     },
                     indent=2,

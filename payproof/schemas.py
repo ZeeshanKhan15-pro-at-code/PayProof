@@ -13,7 +13,7 @@ from uuid import UUID
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from payproof.normalization import canonical_iban
+from payproof.normalization import canonical_iban, canonical_scheme
 
 
 def nonblank(value: str) -> str:
@@ -533,13 +533,16 @@ class CaseContract(Contract):
                 raise ValueError("review must reference unique existing evidence")
             if review.payment_identity:
                 accounts = self.evidence.account_identifier
-                if accounts.status != "FOUND":
+                if accounts.status not in ("FOUND", "AMBIGUOUS"):
                     raise ValueError("reviewed identity requires an unambiguous account")
-                candidate = accounts.candidates[0]
-                if (
-                    candidate.evidence.evidence_id not in review.reviewed_evidence_ids
-                    or candidate.value != review.payment_identity.raw_account_identifier
-                ):
+                canonical_accounts = {canonical_iban(c.value) for c in accounts.candidates}
+                if canonical_accounts != {review.payment_identity.account_identifier}:
+                    raise ValueError("reviewed identity requires an unambiguous canonical account")
+                if not {c.evidence.evidence_id for c in accounts.candidates}.issubset(
+                    review.reviewed_evidence_ids
+                ) or review.payment_identity.raw_account_identifier not in {
+                    c.value for c in accounts.candidates
+                }:
                     raise ValueError("reviewed identity must bind to the exact account evidence")
         result = self.comparison
         if result:
@@ -595,22 +598,31 @@ class CaseContract(Contract):
                 assert self.baseline is not None  # Checked against result state above.
                 if (
                     self.evidence.routing_identifier.status != "MISSING"
-                    or self.evidence.destination_scheme.status not in ("FOUND", "MISSING")
+                    or self.evidence.destination_scheme.status
+                    not in ("FOUND", "MISSING", "AMBIGUOUS")
                     or self.baseline.routing_identifier is not None
                 ):
                     raise ValueError(
                         "separate routing or unresolved scheme is unsupported in Phase 1"
                     )
-                if (
-                    self.evidence.destination_scheme.status == "FOUND"
-                    and self.evidence.destination_scheme.candidates[0].value.upper() != "IBAN"
+                if self.evidence.destination_scheme.candidates and any(
+                    canonical_scheme(c.value) != "IBAN"
+                    for c in self.evidence.destination_scheme.candidates
                 ):
                     raise ValueError("only IBAN is supported in Phase 1")
-                account_span = self.evidence.account_identifier.candidates[0].evidence.evidence_id
+                assert review is not None
+                scheme_spans = {
+                    c.evidence.evidence_id for c in self.evidence.destination_scheme.candidates
+                }
+                if not scheme_spans.issubset(review.reviewed_evidence_ids):
+                    raise ValueError("destination scheme evidence requires source review")
+                account_spans = {
+                    c.evidence.evidence_id for c in self.evidence.account_identifier.candidates
+                }
                 account_diff = next(
                     d for d in result.differences if d.field == "account_identifier"
                 )
-                if account_span not in account_diff.evidence_ids:
+                if not account_spans.issubset(account_diff.evidence_ids):
                     raise ValueError("account difference must cite the reviewed account span")
             else:
                 if self.baseline is None and not set(result.reason_codes).intersection(
