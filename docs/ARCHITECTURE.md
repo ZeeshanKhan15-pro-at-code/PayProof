@@ -77,6 +77,8 @@ These are small modules within one process, not independently deployed services.
 
 ## Data contracts and provenance
 
+Canonical v1 typed contracts are defined in [DATA_MODEL.md](DATA_MODEL.md) and `payproof/schemas.py`. The contracts use Pydantic for strict boundary validation; this is the one added schema dependency. Application components and scope below remain the frozen architecture.
+
 Use application-generated identifiers and server timestamps. Store UTC timestamps and show a clear timezone in the UI. Keep original text immutable; edits create a new case or revision.
 
 Minimum persistent records:
