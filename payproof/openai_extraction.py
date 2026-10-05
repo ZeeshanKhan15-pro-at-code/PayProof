@@ -11,7 +11,7 @@ from pydantic import BaseModel, ConfigDict, SecretStr
 
 from payproof.extraction_contract import EXTRACTION_INSTRUCTIONS, structured_output_schema
 from payproof.schemas import ShortText, SourceDocument
-from payproof.validation import parse_contract
+from payproof.validation import parse_contract, validate_json_syntax
 
 MAX_PROVIDER_BYTES = 262_144
 MAX_OUTPUT_TOKENS = 8_000
@@ -19,6 +19,35 @@ API_URL = "https://api.openai.com/v1/responses"
 FailureCode = Literal[
     "TIMEOUT", "PROVIDER_UNAVAILABLE", "INVALID_RESPONSE", "EVIDENCE_INVALID", "NOT_CONFIGURED"
 ]
+
+
+def _reject_credential_echo(raw: bytes, credential: str) -> None:
+    """Check response data before it can become metadata or private audit bytes.
+
+    Inspect decoded JSON strings, including JSON nested inside output_text and
+    duplicate/ignored envelope properties. Parsing here confers no validity:
+    the existing duplicate-key/schema/evidence boundaries still run afterward.
+    """
+    if credential.encode("utf-8") in raw:
+        raise ProviderFailure("INVALID_RESPONSE")
+    try:
+        values = [json.loads(raw, object_pairs_hook=list)]
+        while values:
+            value = values.pop()
+            if isinstance(value, (list, tuple)):
+                values.extend(value)
+            elif isinstance(value, str):
+                if credential in value:
+                    raise ProviderFailure("INVALID_RESPONSE")
+                if value.lstrip().startswith(("{", "[", '"')):
+                    try:
+                        values.append(json.loads(value, object_pairs_hook=list))
+                    except (ValueError, RecursionError):
+                        # Raw source phrases are data, even when they resemble
+                        # broken JSON. Output syntax is checked separately below.
+                        continue
+    except (ValueError, RecursionError):
+        raise ProviderFailure("INVALID_RESPONSE") from None
 
 
 class ProviderFailure(Exception):
@@ -137,6 +166,7 @@ class OpenAIExtractionProvider:
             raise ProviderFailure("PROVIDER_UNAVAILABLE") from None
         if len(raw) > MAX_PROVIDER_BYTES:
             raise ProviderFailure("INVALID_RESPONSE")
+        _reject_credential_echo(raw, self.api_key.get_secret_value())
         try:
             parsed = parse_contract(_Response, raw)
         except ValueError:
@@ -153,4 +183,9 @@ class OpenAIExtractionProvider:
                 texts.append(content.text)
         if len(texts) != 1:
             raise ProviderFailure("INVALID_RESPONSE", raw)
+        try:
+            validate_json_syntax(texts[0])
+        except ValueError:
+            # Do not audit undecodable model output that cannot be inspected.
+            raise ProviderFailure("INVALID_RESPONSE") from None
         return ProviderCompletion(text=texts[0], model=parsed.model, raw_response=raw)

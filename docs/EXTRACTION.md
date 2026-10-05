@@ -1,5 +1,7 @@
 # Phase-1 structured evidence extraction
 
+Current live configuration, credential protections and actual smoke evidence are documented in [LIVE_EXTRACTION.md](LIVE_EXTRACTION.md).
+
 Status: implemented. The canonical v1 contracts and comparison safety model remain unchanged. Extraction creates observations and provenance, never a comparison state, fraud score, trust assertion, payment approval, or human verification.
 
 ## Public contract
@@ -85,7 +87,7 @@ Requests and complete responses are capped at 262,144 bytes. Output is capped at
 | Fabricated raw value/quote, undeclared source, value rewriting, or non-unique excerpt | `EVIDENCE_INVALID` |
 | Disabled/unconfigured extraction or unknown explicit fixture | `NOT_CONFIGURED` |
 
-Any failed attempt returns a valid canonical record with failure metadata and **all fields `UNREADABLE`, empty candidates**. Partial success is not silently accepted when another field is invalid. Missing fields in an otherwise successful response remain `MISSING` and do not imply provider failure. No extraction record contains `UNCHANGED`, `VERIFY`, `UNCERTAIN`, or `VERIFIED` as a decision; the future deterministic engine maps extraction failures to uncertainty.
+Any failed attempt returns a valid canonical record with failure metadata and **all fields `UNREADABLE`, empty candidates**. Partial success is not silently accepted when another field is invalid. Missing fields in an otherwise successful response remain `MISSING` and do not imply provider failure. No extraction record contains `UNCHANGED`, `VERIFY`, `UNCERTAIN`, or `VERIFIED` as a decision; the deterministic engine maps extraction failures to uncertainty.
 
 Completed/incomplete/refused responses must be handled separately from schema data; refusals need not match the requested schema according to [official OpenAI documentation](https://developers.openai.com/api/docs/guides/structured-outputs). Only one completed assistant output containing structured JSON is accepted. Reasoning items may be ignored; tool calls and multiple output texts are rejected.
 
@@ -93,7 +95,7 @@ Completed/incomplete/refused responses must be handled separately from schema da
 
 Metadata includes server attempt/request IDs, attempt time, schema version, prompt version, provider, and provider-reported model when available. Failed calls retain the configured model as attempted attribution; this is not a claim that the provider completed generation. Source digests are available alongside the canonical record in `ExtractionAttempt`.
 
-The attempt retains a bounded complete provider response as private bytes when available, including invalid/refused output for later audit. It never contains locally added authorization headers. No HTTP error body, oversized/truncated body, or partial network read is retained as complete output. Raw bytes and canonical source-derived values are excluded from the attempt repr and never logged by this layer. They are still sensitive: do not serialize the whole dataclass with a generic `asdict` logger.
+The attempt retains a bounded complete provider response as private bytes when available, including invalid/refused output for later audit. It never contains locally added authorization headers. No HTTP error body, oversized/truncated body, partial network read, credential-bearing response or undecodable JSON-shaped response is retained as complete output. Credential echoes are rejected before audit retention or metadata construction. Raw bytes and canonical source-derived values are excluded from the attempt repr and never logged by this layer. They are still sensitive: do not serialize the whole dataclass with a generic `asdict` logger.
 
 Persistence is not implemented in this mission. The future SQLite workflow must explicitly store these audit bytes privately together with the immutable sources/digests and canonical attempt record. Convenience functions returning only evidence intentionally do not return raw audit bytes; use `extract_attempt` for eventual persistence. Runtime source or API response text never appears in exception messages or routine logs from this layer.
 

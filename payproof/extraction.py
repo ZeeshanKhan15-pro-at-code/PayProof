@@ -154,6 +154,10 @@ def extract_attempt(
     if request_id is not None and not isinstance(request_id, UUID):
         raise ExtractionInputError("Request ID must be a UUID")
     settings = settings if settings is not None else load_settings(os.environ)
+    if settings.extraction_mode == "live" and settings.provider_api_key is not None:
+        credential = settings.provider_api_key.get_secret_value()
+        if credential and any(credential in source.text for source in sources):
+            raise ExtractionInputError("Source contains the configured provider credential")
     request_id = request_id if request_id is not None else uuid4()
     metadata = ExtractionMetadata(
         attempt_id=uuid4(),

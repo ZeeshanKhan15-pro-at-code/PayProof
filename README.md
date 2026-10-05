@@ -27,7 +27,7 @@ email/invoice/plain text -> extraction -> schema + source validation |
 
 AI proposes source-backed field observations only. The model receives source text, not the trusted baseline, and cannot select the vendor, infer trust, set a comparison state or impersonate a human. Unexpected verdict/confirmation fields, duplicate JSON keys, invalid schema, fabricated quotes and partial account tokens fail closed. Missing observations remain missing.
 
-Extraction has explicit `disabled`, `fixture` and `live` modes. The seeded demo uses exact synthetic fixtures offline. The Responses API adapter has mocked integration coverage; live extraction accuracy is unmeasured. Arbitrary text and email/invoice pairs need a compatible configured live provider/model. No silent fixture fallback exists. See [EXTRACTION.md](docs/EXTRACTION.md).
+Extraction has explicit `disabled`, `fixture` and `live` modes. The seeded demo uses exact synthetic fixtures offline. The Responses API adapter has mocked integration coverage; live extraction accuracy is unmeasured. Arbitrary text and email/invoice pairs need a compatible configured live provider/model. No silent fixture fallback exists. See [EXTRACTION.md](docs/EXTRACTION.md) and [LIVE_EXTRACTION.md](docs/LIVE_EXTRACTION.md) for configuration, mocked integrations and actual smoke status.
 
 ### Deterministic safety layer
 

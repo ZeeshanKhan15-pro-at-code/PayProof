@@ -12,11 +12,23 @@ import secrets
 import socket
 import subprocess
 import sys
+import tarfile
 import tempfile
 import time
 from pathlib import Path
 from urllib.error import URLError
 from urllib.request import ProxyHandler, build_opener
+
+
+def check_source_archive(source: Path) -> None:
+    """Environment templates may be edited with secrets; never distribute them."""
+    with tarfile.open(source) as archive:
+        if any(
+            Path(member.name).name.startswith(".env")
+            or Path(member.name).suffix in (".pem", ".key")
+            for member in archive.getmembers()
+        ):
+            raise RuntimeError("Source distribution contains an environment or credential file")
 
 
 def check_http(environment: dict[str, str], directory: Path) -> dict[str, object]:
@@ -106,6 +118,9 @@ def main() -> None:
         help="Also check installed Gunicorn listener; exits 2 if platform-blocked, 1 if failed",
     )
     args = parser.parse_args()
+    source_archives = list(Path("dist").glob("payproof-*.tar.gz"))
+    if source_archives:
+        check_source_archive(max(source_archives, key=lambda path: path.stat().st_mtime))
     wheel = max(Path("dist").glob("payproof-*.whl"), key=lambda path: path.stat().st_mtime)
     program = """
 import json

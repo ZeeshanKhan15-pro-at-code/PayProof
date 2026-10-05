@@ -25,6 +25,13 @@ class Settings(Contract):
 
     @model_validator(mode="after")
     def production_secret(self) -> "Settings":
+        if (
+            self.provider_api_key is not None
+            and self.provider_api_key.get_secret_value()
+            and self.provider_model is not None
+            and self.provider_api_key.get_secret_value() in self.provider_model
+        ):
+            raise ValueError("provider model must not contain the provider credential")
         if self.extraction_mode == "live":
             if (
                 self.provider_api_key is None
