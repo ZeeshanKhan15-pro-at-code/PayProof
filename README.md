@@ -1,152 +1,119 @@
 # PayProof
 
-A Phase-1 CLI prototype for human-reviewed payment destination comparison. Follow the frozen [architecture](docs/ARCHITECTURE.md) and [data contracts](docs/DATA_MODEL.md).
+Phase 1 is frozen as a local, synthetic CLI comparison prototype. See the [handoff](docs/PHASE1_HANDOFF.md) for the verified checklist and outstanding release gates. The repository demonstrates the core mechanism; the complete persistent release described in the [architecture](docs/ARCHITECTURE.md) is unfinished.
 
-The project initializes offline after dependency installation. The [CLI vertical slice](docs/VERTICAL_SLICE.md) connects text capture, [structured extraction](docs/EXTRACTION.md), schema/evidence validation, normalization, explicit human source review, [deterministic comparison](docs/COMPARISON.md), and evidence display. Results are only `UNCHANGED`, `VERIFY`, or `UNCERTAIN`. Persistence, the web operator workflow, and independent human verification remain implementation targets.
+### Problem
 
-Run the seeded **3821 → 9928** changed-account demo:
+A business receives apparently legitimate payment instructions whose destination may differ from previously trusted vendor information. PayProof shows the change, its evidence and the previously trusted contact for independent human checking. It does not approve payment, classify fraud or establish bank-account ownership.
 
-```bash
-make demo
+### Phase-1 architecture
+
+One Python package contains bounded text capture, strict Pydantic contracts, structured extraction, exact source validation, conservative normalization, explicit human source review, deterministic comparison and CLI evidence display. Dependencies are pinned; Flask exposes read-only debug/liveness endpoints. There is no database or implemented verification command.
+
+```text
+selected trusted baseline -----------------------------------------+
+                                                                   |
+email/invoice/plain text -> extraction -> schema + source validation |
+                                       -> display all source spans |
+                                       -> human source review      |
+                                       -> normalization/comparison-+
+                                       -> state, reasons, differences,
+                                          evidence, trusted callback
 ```
 
-Read the displayed source/evidence and type `REVIEWED`. The result is `VERIFY / DESTINATION_CHANGED`, with both full accounts, old onboarding provenance, new exact instruction and the previously trusted callback. `make demo-smoke` runs the same synthetic pipeline with explicitly simulated source review; it uses no API key or network call. See [VERTICAL_SLICE.md](docs/VERTICAL_SLICE.md) for file analysis, optional email/invoice pairs, exit codes and limits.
+[DATA_MODEL.md](docs/DATA_MODEL.md) defines canonical contracts. [VERTICAL_SLICE.md](docs/VERTICAL_SLICE.md) describes the connected workflow. SQLite persistence, a writable operator interface and independent-verification events remain planned architecture components, not current capabilities. No architecture or comparison rule was changed for this freeze.
 
-## Initialize and prove it works
+### AI role
 
-Requires Python 3.11+ with `venv`, pip, and GNU Make. Run from the repository root:
+AI proposes source-backed field observations only. The model receives source text, not the trusted baseline, and cannot select the vendor, infer trust, set a comparison state or impersonate a human. Unexpected verdict/confirmation fields, duplicate JSON keys, invalid schema, fabricated quotes and partial account tokens fail closed. Missing observations remain missing.
+
+Extraction has explicit `disabled`, `fixture` and `live` modes. The seeded demo uses exact synthetic fixtures offline. The Responses API adapter has mocked integration coverage; live extraction accuracy is unmeasured. Arbitrary text and email/invoice pairs need a compatible configured live provider/model. No silent fixture fallback exists. See [EXTRACTION.md](docs/EXTRACTION.md).
+
+### Deterministic safety layer
+
+The pure comparator uses complete checksum-valid GB/DE IBANs. Only ASCII spaces and ASCII case are normalized. Leading zeros and full identifiers are preserved; punctuation, Unicode lookalikes, masked values and unsupported destinations are not repaired. Bank display names, amount, currency and sender context do not determine destination equality.
+
+| State | Meaning |
+| --- | --- |
+| `UNCHANGED` | Complete reviewed supported destination equals the selected trusted baseline; no payment authorization |
+| `VERIFY` | Complete reviewed supported destination differs; independent human verification required |
+| `UNCERTAIN` | Missing, failed, unsupported, conflicting or unreviewed evidence prevents a reliable comparison |
+
+Only explicit human independent verification could create a separate scoped `VERIFIED` record later. That command is not implemented. Typing `REVIEWED` acknowledges source review and does not verify the vendor or account. See [COMPARISON.md](docs/COMPARISON.md).
+
+### Current benchmark
+
+`make benchmark` runs the frozen [30-case diagnostic specification](docs/BENCHMARK_SPEC.md) and saves [JSON](benchmarks/phase1-v1/results/gold/report.json) and [readable results](benchmarks/phase1-v1/results/gold/summary.txt).
+
+| Gold comparison metric | Actual count |
+| --- | --- |
+| Correct states and exact result agreement | 30/30 |
+| Known consequential changes | 13 |
+| Correct `VERIFY` detections | 10; all 10 supported changes |
+| Changed cases not detected as `VERIFY` | 3; unsupported and returned `UNCERTAIN` |
+| Critical changed cases falsely `UNCHANGED` | 0 |
+| Unchanged cases incorrectly `VERIFY` | 0 |
+| Expected uncertainty handled correctly | 13/13 |
+| Deterministic-comparison failures | 0 |
+| Unreviewed gold gate correct | 30/30 |
+
+Gold reviews are explicitly simulated. [Recorded configured-extraction results](benchmarks/phase1-v1/results/extraction/summary.txt) contain 30 `NOT_CONFIGURED` failures, zero successful classifications and zero comparison failures. They do not measure live AI accuracy. Independent labels remain `PENDING`; this public diagnostic corpus does not satisfy the architecture's 36-case held-out release evaluation. See [run notes](benchmarks/phase1-v1/results/README.md).
+
+### Current limitations
+
+- Source quotes prove presence, not current-payment relevance or completeness. An extractor can omit a current account and quote a historical account; incorrect human review can then produce `UNCHANGED`. This is a retained red-team reproduction and blocks unattended/live reliability claims. Review every original instruction, not just the proposed account.
+- The CLI runs in memory. Durable case history, authenticated review identity, cross-request current-revision checks and independent verification are absent. The read-only web server does not serve the payment workflow.
+- GB/DE IBAN and UTF-8 plain text only. Separate routing, other schemes/countries, OCR, PDF ingestion and automatic vendor matching are unsupported. Conservative grounding can reject undelimited numeric columns or footnotes.
+- Fixture success and mocked provider tests are not real-world extraction accuracy. Socket timeouts do not establish a complete provider wall-clock deadline.
+- Tracked secret fields are empty and local `.env` files are ignored. A credential-like value existed in earlier Git history; owner revocation/rotation, if live, is still required. This freeze does not certify secret-free history or revoke credentials.
+- Clean installation could not be completed here because package-index DNS access was blocked and the download approval service was unavailable. Existing-environment checks and package smoke validation are recorded separately in the handoff.
+
+The [red-team report](docs/PHASE1_REDTEAM.md) records the fixes and residual risks. Phase 2 priorities and architecture discrepancies are listed in the [handoff](docs/PHASE1_HANDOFF.md).
+
+### How to run
+
+Requires Python 3.11+, `venv`, pip and GNU Make. First installation needs package-index access. From the repository root:
 
 ```bash
 make verify
+make demo
 ```
 
-This creates `.venv`, installs pinned dependencies and the editable package, runs lint/format checks, strict typechecking, tests, application initialization, synthetic gold comparison, and the production package build. It also smoke-tests the built wheel in an isolated Python process outside the repository. The first setup requires package-index access; later verification uses the prepared environment. Re-run `make setup` when dependency configuration changes.
-
-Checks stop on failure. Passing synthetic fixtures is a regression check, not proof of live AI accuracy or complete extraction of arbitrary requests.
-
-## Useful commands
+`make verify` installs pinned dependencies, runs lint/format checks, strict typecheck, all tests, initialization, gold benchmark and production package build with isolated wheel smoke validation. `make demo` displays original text and extracted evidence before prompting. Read them and type `REVIEWED`; the full account changes from `GB46TEST00000000003821` to `GB57TEST00000000009928`, producing `VERIFY / DESTINATION_CHANGED`. The fixture, contacts and accounts are fictional.
 
 | Command | Purpose |
 | --- | --- |
-| `make setup` | Install/update the development environment |
-| `make lint` | Ruff lint plus formatter check |
-| `make format` | Apply Ruff fixes and formatting |
-| `make typecheck` | Strict mypy across application source and packaging smoke script |
-| `make test` | Run schema, normalization, comparison, extraction, CLI integration and startup tests |
-| `make demo` | Seeded changed-account workflow with explicit source-review prompt |
-| `make demo-smoke` | Seeded offline workflow with clearly labeled simulated source review |
-| `make debug` | Print synthetic fixture names and implementation status |
-| `make benchmark` | Run the frozen 30-case gold comparison/review gate; write JSON and readable summary |
-| `make benchmark-extraction` | Attempt all 30 cases with configured extraction; fail on missing configuration or mismatches |
-| `make serve` | Local read-only Flask server, bound to `127.0.0.1:8000` by default |
-| `make build` | Build `dist/payproof-0.1.0.tar.gz` and `dist/payproof-0.1.0-py3-none-any.whl`; validate the wheel |
-| `make production` | Run one Gunicorn worker on loopback port 8000; requires production signing secret |
+| `make setup` | Create/update `.venv` with pinned dependencies |
+| `make lint typecheck test` | Run configured quality checks |
+| `make demo-smoke` | Offline seeded demo with explicitly simulated source review |
+| `.venv/bin/python -m payproof demo --no-review` | Leave the demo `UNCERTAIN / REVIEW_REQUIRED` (exit 2) |
+| `make benchmark` | Save the 30-case gold diagnostic run |
+| `make benchmark-extraction` | Evaluate configured extraction; missing configuration is a failure |
+| `make build` | Build wheel/source distribution and validate installed package contents |
+| `make serve` | Read-only local server at `http://127.0.0.1:8000`; `/healthz` is liveness only |
 
-The installed console command is `.venv/bin/payproof`; the equivalent module entry point is `.venv/bin/python -m payproof`. Both support `check`, `debug`, `benchmark`, `benchmark-fixtures`, `serve`, `extract`, `analyze`, and `demo`. `benchmark-fixtures` retains the older ten-fixture JSON regression runner. `payproof analyze --vendor trusted-vendor.json --email email.txt --invoice invoice.txt` displays the full review/comparison flow; arbitrary files require configured live extraction. `payproof extract --email email.txt --invoice invoice.txt` emits only evidence JSON. See [the workflow](docs/VERTICAL_SLICE.md) and [extraction contract](docs/EXTRACTION.md) for modes, failures, exit codes, and limits.
+The CLI also supports `check`, `debug`, `extract`, `analyze`, and `benchmark-fixtures`. The installed console command is `.venv/bin/payproof`. File analysis is described in [VERTICAL_SLICE.md](docs/VERTICAL_SLICE.md). Exit 0 means a completed supported comparison, exit 2 means uncertainty/invalid CLI usage, and exit 1 means an operation/configuration failure; none authorizes payment.
 
-`GET /healthz` reports process liveness only. `GET /` returns a small JSON capability summary. Neither serves source documents, bank identifiers, secrets, or write operations. The Flask interactive debugger and reloader are disabled.
-
-## Configuration
-
-Process environment is authoritative. No `.env` file is automatically loaded, and no signing secret is committed or generated as a default. Optional shell workflow for your own trusted local file:
+Process environment is authoritative; `.env` is **not automatically loaded**. Optional local configuration:
 
 ```bash
 cp .env.example .env
-# Edit .env locally; keep real secrets out of source control.
+# Edit the ignored local file; never commit credentials.
 set -a
 . ./.env
 set +a
 make debug
 ```
 
-| Variable | Default | Meaning |
+| Variable | Default | Purpose |
 | --- | --- | --- |
 | `PAYPROOF_ENV` | `development` | `development`, `test`, or `production` |
-| `PAYPROOF_PORT` | `8000` | Local `serve` port, 1024–65535; the Makefile's Gunicorn target binds port 8000 |
-| `PAYPROOF_DATA_DIR` | `./data` | Reserved SQLite/data directory; initialization does not create it |
-| `PAYPROOF_EXTRACTION_MODE` | `disabled` | `disabled`, `fixture`, or `live`; no silent fallback |
-| `PAYPROOF_SECRET_KEY` | Absent | Production requires an independently generated signing secret of at least 32 nonblank characters |
-| `PAYPROOF_PROVIDER_API_KEY` | Absent | Server-only key for the OpenAI adapter; excluded from dumps/reprs |
-| `PAYPROOF_PROVIDER_MODEL` | Absent | Explicit model supporting Responses API structured output; no guessed default |
+| `PAYPROOF_PORT` | `8000` | Local `serve` port, 1024–65535 |
+| `PAYPROOF_EXTRACTION_MODE` | `disabled` | `disabled`, `fixture`, or `live` |
+| `PAYPROOF_PROVIDER_API_KEY` | Absent | Server-only provider credential, redacted in settings |
+| `PAYPROOF_PROVIDER_MODEL` | Absent in process environment | Explicit model compatible with the fixed OpenAI Responses endpoint and structured output; example model text is not proof of compatibility |
 | `PAYPROOF_EXTRACTION_TIMEOUT_SECONDS` | `30` | Provider socket I/O timeout, 1–60 seconds |
+| `PAYPROOF_SECRET_KEY` | Absent | Production requires at least 32 nonblank characters, supplied independently |
+| `PAYPROOF_DATA_DIR` | `./data` | Reserved data path; no database is created |
 
-`fixture` extraction accepts only exact bundled synthetic source text/kind and labels the result `FIXTURE`. Debug and gold benchmark commands validate fixtures regardless of supported extraction mode. Generate production secrets on the host, for example using `.venv/bin/python -c 'import secrets; print(secrets.token_urlsafe(48))'`, and supply them through host secrets or the ignored local environment file. Settings dumps, reprs, and CLI validation errors omit secrets.
-
-Unknown `PAYPROOF_*` variables and invalid settings fail startup. Configuration reads do not create a database, call a provider, or import credentials from files. Live mode requires a nonblank provider key and model. Initialization, debug, default gold benchmark, and replay commands never call the provider. Only `benchmark --with-extraction` / `make benchmark-extraction` may call the provider when explicitly configured live.
-
-The current server has only nonsensitive read-only endpoints. A signing secret is preparation for the later operator session, not an implemented login gate. Add the operator gate and CSRF protection before creating document/verification routes. A production deployment of the eventual workflow also needs restricted HTTPS access and a persistent data volume, as required by the architecture.
-
-## Repository layout
-
-```text
-payproof/
-  config.py          validated environment settings; redacted secrets
-  documents.py       bounded pasted-text capture with server metadata
-  schemas.py         canonical Pydantic contracts and source/review bindings
-  validation.py      typed JSON validation boundary
-  normalization.py   conservative GB/DE IBAN and contextual normalization
-  provenance.py      exact UTF-8 source digests
-  extraction.py      source-grounded extraction and failure records
-  extraction_contract.py private transport schema and prompt
-  openai_extraction.py bounded standard-library HTTPS provider adapter
-  comparison.py      pure source-bound decision engine; no AI or I/O
-  cases.py           extraction, explicit review, comparison orchestration
-  presentation.py    trusted/current values, exact evidence, and result display
-  storage.py         reserved SQLite boundary
-  verification.py    reserved human command boundary
-  fixtures.py        synthetic loader and cross-record validation
-  fixtures/
-    trusted_vendors/ four synthetic trusted baseline/contact records
-    requests/        ten source-grounded request/observation records
-  benchmark.py       gold comparison with simulated synthetic source review
-  benchmark_harness.py frozen 30-case evaluation, per-case diagnostics and replay
-  benchmark_scoring.py label/evidence scoring and stage-specific metrics
-  evaluation_contracts.py validated diagnostic corpus definitions
-  web.py             read-only Flask factory
-  cli.py             file analysis, seeded demo, extraction and offline tooling
-  __main__.py        python -m payproof entry point
-  py.typed           installed package typing marker
-tests/
-  examples.py        existing synthetic schema examples
-  test_schemas.py    canonical-contract good/malformed cases
-  test_normalization.py conservative representation and formatting cases
-  test_comparison.py decisions, review gates, evidence, and collision checks
-  test_skeleton.py   configuration, capture, corpus, and startup checks
-  test_extraction.py ten requested scenarios and mocked provider/failure checks
-  test_vertical_slice.py capture-to-display and CLI/pair/failure integration
-scripts/
-  check_wheel.py     isolated distributable-package smoke test
-benchmarks/phase1-v1/ frozen diagnostic corpus, schema and measured run artifacts
-docs/                architecture, data model, extraction, comparison, CLI workflow, benchmark spec
-.env.example         variable names and empty secret placeholder
-Makefile             one-command setup and verification
-pyproject.toml       runtime/build/tool configuration
-requirements-dev.txt pinned complete development environment
-MANIFEST.in          source-distribution inclusions
-```
-
-Ruff also checks and formats tests. Strict mypy covers typed application/tooling source; deliberately malformed JSON test dictionaries remain dynamic test inputs. Existing schema/extraction tests remain regression gates for the comparator and narrowly refined duplicate-evidence review contract.
-
-## Synthetic corpus and benchmark limits
-
-All bundled vendors, contacts, labels, and account examples are fictional test data. They assert no real account ownership. Request records carry `FIXTURE` attribution and exact quotes/offsets; they do not contain source reviews, comparison results, or human verification records.
-
-Fixtures cover exact match, formatted match, changed email, changed invoice, missing destination, conflicting instructions, unsupported IBAN country, Unicode lookalike, prompt injection, and the seeded 3821 → 9928 demo. Expected labels are developer-authored benchmark metadata describing the intended result **after valid human source review**; they are never copied into runtime comparison state.
-
-`make benchmark` runs the [30-case specification](docs/BENCHMARK_SPEC.md) and writes [measured gold results](benchmarks/phase1-v1/results/gold/summary.txt). The recorded run classified 30/30 correctly, detected 10/10 supported changes, abstained on 3 unsupported changes, and produced zero false `UNCHANGED`. Source reviews are explicitly simulated; no independent verification is performed.
-
-[Configured-extraction results](benchmarks/phase1-v1/results/extraction/summary.txt) record 30 `NOT_CONFIGURED` failures with the current disabled provider configuration, separately from zero deterministic-comparison failures. This is a failed extraction run, not live AI accuracy. `make benchmark-extraction` uses the current environment and returns a failure until configuration and evaluated outputs meet the frozen expectations. No gold response is substituted for extraction.
-
-Replay stored observations without provider calls:
-
-```bash
-.venv/bin/python -m payproof benchmark --replay benchmarks/phase1-v1/results/extraction/report.json
-```
-
-Replaying the committed failed extraction observations also exits 1. JSON reports retain every case, expected and actual result, evidence, error category, corpus/code/prompt/schema hashes, and a reproducible scoring digest. See [run notes](benchmarks/phase1-v1/results/README.md) for limits. Independent label review remains **PENDING**; the public diagnostic corpus does not satisfy the architecture's 36-case release corpus or held-out evaluation.
-
-## Next implementation target
-
-The [Phase-1 red-team report](docs/PHASE1_REDTEAM.md) records 24 reproduced pre-fix failures, retained adversarial regressions, general fixes and unchanged benchmark counts. Historical-role omissions still require honest source review; AI cannot create an authoritative `VERIFIED` status. The configuration example's key placeholder is empty again; any previously live value needs owner rotation because Git history is unchanged.
-
-Add SQLite persistence, the gated web review workflow, and explicit independent human verification against the stored trusted contact/revision. Preserve snapshots across restarts and enforce stale-revision checks. Extend and independently label the release corpus. Separately smoke-test configured live extraction using synthetic data. The engine remains scoped to GB/DE IBAN; separate routing and other schemes require later explicit contracts.
+Unknown `PAYPROOF_*` variables and invalid settings fail startup. The demo ignores live configuration; initialization, gold benchmarks and replay never call the provider. Live `extract`, `analyze`, and extraction benchmarking send source text to the configured provider. Use synthetic data for demonstrations. `make production` runs Gunicorn on loopback port 8000 with a host-provided signing secret; it exposes the same read-only skeleton and is not a deployed verification workflow.
