@@ -7,7 +7,7 @@ The canonical implementation is [payproof/schemas.py](../payproof/schemas.py). P
 ## Validation and wire conventions
 
 - Every model rejects extra properties and is frozen. Nested collections are immutable tuples; JSON represents them as arrays. No arbitrary dictionaries or model-generated verdict fields are accepted.
-- For JSON, call `Model.model_validate_json(raw_json)`. For Python, call `Model.model_validate(typed_values)` with actual UUIDs, datetimes, tuples, and the documented primitive types. Strict Python validation intentionally rejects JSON-shaped dictionaries with string UUIDs or list collections. Do not use unchecked `model_construct()` or `model_copy(update=...)` at trust boundaries.
+- For untrusted JSON, call `parse_contract(Model, raw_json)` from `payproof.validation`: it rejects duplicate keys and invalid JSON before strict Pydantic validation. Direct `Model.model_validate_json()` is suitable for trusted application-generated JSON, not an ambiguous external payload. For Python, call `Model.model_validate(typed_values)` with actual UUIDs, datetimes, tuples, and the documented primitive types. Strict Python validation intentionally rejects JSON-shaped dictionaries with string UUIDs or list collections. Do not use unchecked `model_construct()` or `model_copy(update=...)` at trust boundaries.
 - IDs are UUIDs. The application must generate authoritative record IDs and timestamps. Evidence IDs from an untrusted extraction are local references only until validated and assigned/accepted by the server; they confer no trust.
 - Timestamps are timezone-aware UTC (`Z` or `+00:00`), never naive timestamps or nonzero offsets. The application must supply server time; schema validation does not authenticate a timestamp or reject all future times using a clock.
 - Required missing observations are explicit, never empty strings, zero amounts, false claims, invented accounts, or fabricated quotes. Optional contextual metadata uses `null`. Omission of any extraction field is invalid.
@@ -19,8 +19,9 @@ For example:
 
 ```python
 from payproof.schemas import CaseContract, ExtractionPayload
+from payproof.validation import parse_contract
 
-validated = CaseContract.model_validate_json(snapshot_json)
+validated = parse_contract(CaseContract, snapshot_json)
 canonical_observation_schema = ExtractionPayload.model_json_schema()
 stored_json = validated.model_dump_json()
 ```
@@ -57,6 +58,8 @@ Malformed/untrusted baseline input is rejected before creating a trusted record.
 Represents source observations from email, invoice text, vendor notices, or plain text. This is not a request to approve payment. Supported document kinds describe provenance, not new ingestion features: Phase 1 still accepts pasted text only.
 
 `PaymentRequestEvidence` contains a server-assigned `request_id`, unique `source_ids`, `ExtractionMetadata`, and these required `ExtractedField` properties:
+
+Source ID lists/cases allow at most 16 sources, each field at most 16 candidates, and an extraction at most 64 candidates overall. Manual/cached records receive the same bounds as live extraction.
 
 | Field | Candidate value type | Interpretation |
 | --- | --- | --- |
@@ -122,6 +125,8 @@ Offsets are zero-based Python Unicode character offsets, with an inclusive start
 `CaseContract` validates that `source.text[start:end] == exact_excerpt` and that the span page equals the source page metadata. Pasted text normally has no page number. Page metadata is an extension point for future ingestion, not permission for AI to invent page locations or for Phase 1 to implement PDFs.
 
 A standalone `EvidenceSpan` validates local shape only. It cannot prove its referenced source exists. Never accept a span as grounded without source-bound validation. Source quotes demonstrate presence, not truth or instruction relevance.
+
+Account quotes additionally require lexical completeness against original source characters, including outside clipped excerpts. A trusted IBAN quoted as part of a longer identifier is rejected, including attached identifier/marker characters, dotted continuations, Unicode connectors/dashes/math symbols and following numeric groups separated by horizontal whitespace. Complete malformed raw values remain representable for normalization to reject. This does not discover omitted accounts or decide instruction roles; see [PHASE1_REDTEAM.md](PHASE1_REDTEAM.md).
 
 ## D. NormalizedPaymentIdentity
 

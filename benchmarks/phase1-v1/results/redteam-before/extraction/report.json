@@ -1,19 +1,19 @@
 {
   "report_version": "payproof-benchmark-run-v1",
-  "run_at": "2026-10-05T12:52:48.888474+00:00",
+  "run_at": "2026-10-05T12:05:00.091673+00:00",
   "dataset_id": "payproof-phase1-diagnostic-30-v1",
   "corpus_sha256": "3bc6dcafaeb661b00cf22fd06fc86802c8db642c41d9228676faae3b546a0c7f",
   "independent_label_review": "PENDING",
   "split": "PUBLIC_DIAGNOSTIC_NOT_HELD_OUT",
   "rule_version": "iban-gb-de-v1",
-  "git_commit": "b20f37d5596ee44e8eb41c00465ee04d16c7b500",
+  "git_commit": "c5817dbdcfbde6ea084ce19a469ad79bf35d759c",
   "dirty_worktree": true,
-  "tracked_diff_sha256": "f0396ffaf771a3f017e185763702f459ecf4852e3d7414d7d8d21498f33d6030",
+  "tracked_diff_sha256": "09f8996bef577d11355ced3b6d7669f82b60b590391ad71f0996bc21cbcbdc4f",
   "code_sha256": {
     "payproof/__init__.py": "f0a460bb91726364d67b4b05ba846955fc666ff552658a4ac8d5b2d4b19a9ab2",
     "payproof/__main__.py": "fe3e64aa14606f712fb1228f8a8b9832ccdc7b07287a8105a35d81713aa20d97",
     "payproof/benchmark.py": "d2c6ef6b8752fd50b01c997ff6dbe9b8b1a4381c5cd550f5872be6452cc82d9b",
-    "payproof/benchmark_harness.py": "a31df4e28adeb7acf909e113d25ffa74bd8d243f5aab24af0a035c5a61f993e4",
+    "payproof/benchmark_harness.py": "194f990cd7730cfd9826998c73cf344e61eacab576572e0929cdfe43e3b1024a",
     "payproof/benchmark_scoring.py": "d2ce4c0b166f5af140a9a915b185ee51906f84bc8a30b08e85ba17d40e43654f",
     "payproof/cases.py": "992c3493fc5693d0354195fd90f85290fef223518878f817a0c1e878ae2dde86",
     "payproof/cli.py": "3354fb3763b9b08e9bee3e167ddc260686722eab75bafaed89d8387cc7c1ce3d",
@@ -21,16 +21,16 @@
     "payproof/config.py": "7b3ddd6b2b85cbb8e396c8e300c905314c8b49b982ab6a01543c38d2d5dfcb5b",
     "payproof/documents.py": "78684c0de8f02afd6ddb468295c4bf8a98b1212bf304f669ffad043b97a2f88c",
     "payproof/evaluation_contracts.py": "3f04a4bb596417b8911f65ed9376f8f68d49b95085071614e372b61b78677b84",
-    "payproof/extraction.py": "c7f26fb000b03cee7d019eab6f44179d6f46f04dbddae948f752e64d2f174d95",
+    "payproof/extraction.py": "ea68da4bf91db88e128f04993516ee5f9d01d15ea0ed6bc90828eebc818802cd",
     "payproof/extraction_contract.py": "dd71efee94eba5a425161784b17812571dd75de5bb2f08cb1c9786f86964f847",
     "payproof/fixtures.py": "eda15e1bd45f17fecdd87c59e61fd9f2bd55d4a0a2cd70e4c96a3522ad9f82dd",
     "payproof/normalization.py": "d33a2cff163ab29ed912c58bb8548619e14f3ca3e115c8549dc475aaa890dc59",
-    "payproof/openai_extraction.py": "9db0c9ae95f5c892035cd7e7ee21c5fb74fc6e07530c5ca10f752092d9ef0b12",
-    "payproof/presentation.py": "1922bfb2cdb902426f93a78af21131e12427ea92208ebf2cdb0814831deb907c",
-    "payproof/provenance.py": "07c37c33d101159be02107534c23381f5c5cc45df58941b8aa5dc898e4889e7a",
-    "payproof/schemas.py": "88aab27ccfa6c8b4ab7d5cd62789d1057f4a31f971b66e3d664bc0d122099546",
+    "payproof/openai_extraction.py": "ce2d1a7f613f4dd07c7a140757b440f73751219d8991ee98d7be936d823211dc",
+    "payproof/presentation.py": "82478904650b5d134616be0b32055f8fac58a8a676ccbd6d91255ae417b0bc6f",
+    "payproof/provenance.py": "26a8362badc0e0e09455d63fe2507ba2de8db90f2cd66bb36a6fd181760e018f",
+    "payproof/schemas.py": "94945bfe36153c8d9927d22b8d53ad245d2881c0523f7cb040e8aa6ca7c024bb",
     "payproof/storage.py": "299cf248f6f79f450285d8a4bc5f05d58e6bf552f418d5206e998b4e928ac0f4",
-    "payproof/validation.py": "87ae066e8ea3b9cb1d3b2137d48618f59a2fb4e65e33b54786ee55638e219923",
+    "payproof/validation.py": "af9db2df9ed63d68fb69ccb67f26369f45f59cb723fdb368431db7417675b994",
     "payproof/verification.py": "ce05de4e60aa9b43b29085de07e804e0a651127c60f78ff6e6cece7a221f56b0",
     "payproof/web.py": "1b880937da58750d0fd745b2d981d45c93dff1223b0137a8142e6eb24b956a22",
     "Makefile": "bdeef1b1b6586287a176d1ea38ab99d419a065600c69aa9b9f04e0af45814956",
@@ -50,8 +50,8 @@
   "provider_cost": null,
   "attempt_timing": {
     "attempts": 30,
-    "median_seconds": 0.0004222689999551221,
-    "max_seconds": 0.0007934169998407015
+    "median_seconds": 0.0002939674999424824,
+    "max_seconds": 0.0005736749999414315
   },
   "tracks": [
     {
@@ -8002,7 +8002,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.739680Z",
+            "compared_at": "2026-10-05T12:05:01.952476Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -8119,7 +8119,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.740347Z",
+            "compared_at": "2026-10-05T12:05:01.952932Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -8236,7 +8236,7 @@
             "baseline_revision_id": "a03e67c3-b6a2-53be-877f-87e0aed2e4fb",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.740857Z",
+            "compared_at": "2026-10-05T12:05:01.953327Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -8353,7 +8353,7 @@
             "baseline_revision_id": "a03e67c3-b6a2-53be-877f-87e0aed2e4fb",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.741299Z",
+            "compared_at": "2026-10-05T12:05:01.953712Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -8470,7 +8470,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.741755Z",
+            "compared_at": "2026-10-05T12:05:01.954006Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -8587,7 +8587,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.742228Z",
+            "compared_at": "2026-10-05T12:05:01.954290Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -8704,7 +8704,7 @@
             "baseline_revision_id": "617ce955-fc55-528b-875b-8bec71b80b14",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.742705Z",
+            "compared_at": "2026-10-05T12:05:01.954588Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -8822,7 +8822,7 @@
             "baseline_revision_id": "617ce955-fc55-528b-875b-8bec71b80b14",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.743145Z",
+            "compared_at": "2026-10-05T12:05:01.954874Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -8940,7 +8940,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.743641Z",
+            "compared_at": "2026-10-05T12:05:01.955162Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -9057,7 +9057,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.744156Z",
+            "compared_at": "2026-10-05T12:05:01.955560Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -9174,7 +9174,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.744645Z",
+            "compared_at": "2026-10-05T12:05:01.955884Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -9291,7 +9291,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.745092Z",
+            "compared_at": "2026-10-05T12:05:01.956166Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -9408,7 +9408,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.745540Z",
+            "compared_at": "2026-10-05T12:05:01.956477Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -9525,7 +9525,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.745969Z",
+            "compared_at": "2026-10-05T12:05:01.956754Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -9642,7 +9642,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.746425Z",
+            "compared_at": "2026-10-05T12:05:01.957050Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -9759,7 +9759,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.746853Z",
+            "compared_at": "2026-10-05T12:05:01.957327Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -9876,7 +9876,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.747287Z",
+            "compared_at": "2026-10-05T12:05:01.957610Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -9993,7 +9993,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.747736Z",
+            "compared_at": "2026-10-05T12:05:01.957880Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -10110,7 +10110,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.748175Z",
+            "compared_at": "2026-10-05T12:05:01.958225Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -10227,7 +10227,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.748630Z",
+            "compared_at": "2026-10-05T12:05:01.958576Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -10344,7 +10344,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.749053Z",
+            "compared_at": "2026-10-05T12:05:01.958849Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -10461,7 +10461,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.749508Z",
+            "compared_at": "2026-10-05T12:05:01.959127Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -10578,7 +10578,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.749938Z",
+            "compared_at": "2026-10-05T12:05:01.959477Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -10695,7 +10695,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.750408Z",
+            "compared_at": "2026-10-05T12:05:01.959840Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -10812,7 +10812,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.750841Z",
+            "compared_at": "2026-10-05T12:05:01.960155Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -10929,7 +10929,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.751327Z",
+            "compared_at": "2026-10-05T12:05:01.960541Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -11046,7 +11046,7 @@
             "baseline_revision_id": null,
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.751802Z",
+            "compared_at": "2026-10-05T12:05:01.960893Z",
             "state": "UNCERTAIN",
             "baseline_identity": null,
             "requested_identity": null,
@@ -11163,7 +11163,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.752232Z",
+            "compared_at": "2026-10-05T12:05:01.961426Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -11280,7 +11280,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.752676Z",
+            "compared_at": "2026-10-05T12:05:01.961804Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -11397,7 +11397,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.753134Z",
+            "compared_at": "2026-10-05T12:05:01.962109Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -11579,7 +11579,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.739680Z",
+            "compared_at": "2026-10-05T12:05:01.952476Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -11696,7 +11696,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.740347Z",
+            "compared_at": "2026-10-05T12:05:01.952932Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -11813,7 +11813,7 @@
             "baseline_revision_id": "a03e67c3-b6a2-53be-877f-87e0aed2e4fb",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.740857Z",
+            "compared_at": "2026-10-05T12:05:01.953327Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -11930,7 +11930,7 @@
             "baseline_revision_id": "a03e67c3-b6a2-53be-877f-87e0aed2e4fb",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.741299Z",
+            "compared_at": "2026-10-05T12:05:01.953712Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -12047,7 +12047,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.741755Z",
+            "compared_at": "2026-10-05T12:05:01.954006Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -12164,7 +12164,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.742228Z",
+            "compared_at": "2026-10-05T12:05:01.954290Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -12282,7 +12282,7 @@
             "baseline_revision_id": "617ce955-fc55-528b-875b-8bec71b80b14",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.742705Z",
+            "compared_at": "2026-10-05T12:05:01.954588Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -12401,7 +12401,7 @@
             "baseline_revision_id": "617ce955-fc55-528b-875b-8bec71b80b14",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.743145Z",
+            "compared_at": "2026-10-05T12:05:01.954874Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -12519,7 +12519,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.743641Z",
+            "compared_at": "2026-10-05T12:05:01.955162Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -12636,7 +12636,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.744156Z",
+            "compared_at": "2026-10-05T12:05:01.955560Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -12753,7 +12753,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.744645Z",
+            "compared_at": "2026-10-05T12:05:01.955884Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -12870,7 +12870,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.745092Z",
+            "compared_at": "2026-10-05T12:05:01.956166Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -12987,7 +12987,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.745540Z",
+            "compared_at": "2026-10-05T12:05:01.956477Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -13104,7 +13104,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.745969Z",
+            "compared_at": "2026-10-05T12:05:01.956754Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -13221,7 +13221,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.746425Z",
+            "compared_at": "2026-10-05T12:05:01.957050Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -13338,7 +13338,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.746853Z",
+            "compared_at": "2026-10-05T12:05:01.957327Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -13455,7 +13455,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.747287Z",
+            "compared_at": "2026-10-05T12:05:01.957610Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -13572,7 +13572,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.747736Z",
+            "compared_at": "2026-10-05T12:05:01.957880Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -13689,7 +13689,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.748175Z",
+            "compared_at": "2026-10-05T12:05:01.958225Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -13807,7 +13807,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.748630Z",
+            "compared_at": "2026-10-05T12:05:01.958576Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -13925,7 +13925,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.749053Z",
+            "compared_at": "2026-10-05T12:05:01.958849Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -14043,7 +14043,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.749508Z",
+            "compared_at": "2026-10-05T12:05:01.959127Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -14161,7 +14161,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.749938Z",
+            "compared_at": "2026-10-05T12:05:01.959477Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -14279,7 +14279,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.750408Z",
+            "compared_at": "2026-10-05T12:05:01.959840Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -14397,7 +14397,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.750841Z",
+            "compared_at": "2026-10-05T12:05:01.960155Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -14515,7 +14515,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.751327Z",
+            "compared_at": "2026-10-05T12:05:01.960541Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -14633,7 +14633,7 @@
             "baseline_revision_id": null,
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.751802Z",
+            "compared_at": "2026-10-05T12:05:01.960893Z",
             "state": "UNCERTAIN",
             "baseline_identity": null,
             "requested_identity": null,
@@ -14751,7 +14751,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.752232Z",
+            "compared_at": "2026-10-05T12:05:01.961426Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -14869,7 +14869,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.752676Z",
+            "compared_at": "2026-10-05T12:05:01.961804Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -14987,7 +14987,7 @@
             "baseline_revision_id": "22e1e38f-9dac-556b-b9e6-04090f5e56b6",
             "review_id": null,
             "rule_version": "iban-gb-de-v1",
-            "compared_at": "2026-10-05T12:52:50.753134Z",
+            "compared_at": "2026-10-05T12:05:01.962109Z",
             "state": "UNCERTAIN",
             "baseline_identity": {
               "normalization_version": "iban-gb-de-v1",
@@ -15149,9 +15149,9 @@
           "498bf995-dd49-5205-a332-a43ba953fe1c"
         ],
         "extraction": {
-          "attempt_id": "66bf424f-ac67-40d5-947d-c7717af2a38f",
+          "attempt_id": "8d4668ce-c983-4f55-95eb-16ba024d12c9",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.739680Z",
+          "extracted_at": "2026-10-05T12:04:59.952476Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -15162,7 +15162,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0007934169998407015
+      "elapsed_seconds": 0.0005736749999414315
     },
     {
       "case_id": "PP-02",
@@ -15220,9 +15220,9 @@
           "c6683619-e6b2-5bc0-ba0a-2f62d74bc3bd"
         ],
         "extraction": {
-          "attempt_id": "a3c07c54-4997-4081-8f4c-67dded55b3c1",
+          "attempt_id": "717d5a58-f944-4019-ac07-3f86fda3ebed",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.740347Z",
+          "extracted_at": "2026-10-05T12:04:59.952932Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -15233,7 +15233,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0005085049997433089
+      "elapsed_seconds": 0.00038852199986649794
     },
     {
       "case_id": "PP-03",
@@ -15291,9 +15291,9 @@
           "9bb7c426-63c5-5642-bf66-b6de77266ed9"
         ],
         "extraction": {
-          "attempt_id": "a2ff01a3-759a-40f1-b860-aa49f408e8b1",
+          "attempt_id": "38f97c32-dc57-41ac-bd2e-a57b3f3547ae",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.740857Z",
+          "extracted_at": "2026-10-05T12:04:59.953327Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -15304,7 +15304,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0004186079995633918
+      "elapsed_seconds": 0.0003732200000285957
     },
     {
       "case_id": "PP-04",
@@ -15362,9 +15362,9 @@
           "b845e1eb-f209-5285-8172-ba9da139370a"
         ],
         "extraction": {
-          "attempt_id": "d6ddcf5f-5067-4a8c-8726-af06196e65ae",
+          "attempt_id": "47b2a0f6-0afc-43ef-91fc-c3e10507bcb0",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.741299Z",
+          "extracted_at": "2026-10-05T12:04:59.953712Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -15375,7 +15375,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0004245889995218022
+      "elapsed_seconds": 0.0002838779998910468
     },
     {
       "case_id": "PP-05",
@@ -15433,9 +15433,9 @@
           "7a0aed0c-5602-5af7-a36b-7f670e1e7c96"
         ],
         "extraction": {
-          "attempt_id": "6b1ebb89-3e08-44b7-9ee3-d085c0e670ab",
+          "attempt_id": "dd671371-b91b-410c-93be-7b258c75e027",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.741755Z",
+          "extracted_at": "2026-10-05T12:04:59.954006Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -15446,7 +15446,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0004424230000950047
+      "elapsed_seconds": 0.000268654000137758
     },
     {
       "case_id": "PP-06",
@@ -15504,9 +15504,9 @@
           "505607e4-481a-5a78-a732-1e7111265bbc"
         ],
         "extraction": {
-          "attempt_id": "aca31aad-b03b-48f9-8c27-bfc2647ed7fb",
+          "attempt_id": "63b3f080-870f-4c1a-846f-6cae359113f2",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.742228Z",
+          "extracted_at": "2026-10-05T12:04:59.954290Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -15517,7 +15517,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0004513020003287238
+      "elapsed_seconds": 0.0002822090000336175
     },
     {
       "case_id": "PP-07",
@@ -15575,9 +15575,9 @@
           "64561a45-fc6f-5489-86bc-b11dc76da5e7"
         ],
         "extraction": {
-          "attempt_id": "2fa0d7e4-fdcd-4671-8c0c-62d8ddc27210",
+          "attempt_id": "139282b6-00ea-40da-b452-cb7f063fbbcc",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.742705Z",
+          "extracted_at": "2026-10-05T12:04:59.954588Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -15588,7 +15588,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0004217450004944112
+      "elapsed_seconds": 0.00027791600018645113
     },
     {
       "case_id": "PP-08",
@@ -15646,9 +15646,9 @@
           "6229f4f7-c661-5dce-931d-8e28e548f82b"
         ],
         "extraction": {
-          "attempt_id": "220be9ae-6906-4a9d-a520-865d1cd6c359",
+          "attempt_id": "9acbc9cf-a52b-45d8-aced-f83083834b1c",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.743145Z",
+          "extracted_at": "2026-10-05T12:04:59.954874Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -15659,7 +15659,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0004432030000316445
+      "elapsed_seconds": 0.0002566840000781667
     },
     {
       "case_id": "PP-09",
@@ -15717,9 +15717,9 @@
           "7959072a-bc54-5442-a431-dcea4ca82eec"
         ],
         "extraction": {
-          "attempt_id": "b4ff7fea-ef59-4b51-aa97-d989f7a4c076",
+          "attempt_id": "fa8f723a-1cd4-4b8d-b6f7-e122d927574b",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.743641Z",
+          "extracted_at": "2026-10-05T12:04:59.955162Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -15730,7 +15730,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0004960539999956382
+      "elapsed_seconds": 0.00036417599994820193
     },
     {
       "case_id": "PP-10",
@@ -15788,9 +15788,9 @@
           "7c5502d5-1188-5366-b4c0-778b4f54dc46"
         ],
         "extraction": {
-          "attempt_id": "af5c23ea-88ea-470d-a9f9-d4aa98ea02b3",
+          "attempt_id": "952f21cf-7309-40df-b178-56ed42426e02",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.744156Z",
+          "extracted_at": "2026-10-05T12:04:59.955560Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -15801,7 +15801,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.00047070700020412914
+      "elapsed_seconds": 0.00032649599984324595
     },
     {
       "case_id": "PP-11",
@@ -15859,9 +15859,9 @@
           "b8500f1f-3d6a-5745-aeae-ca37ecd4e384"
         ],
         "extraction": {
-          "attempt_id": "bb4c850b-c2e9-48ae-aa15-601db33b4f48",
+          "attempt_id": "489656bc-eea0-41c7-b045-6ddc5fe864b3",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.744645Z",
+          "extracted_at": "2026-10-05T12:04:59.955884Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -15872,7 +15872,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.00042279299941583304
+      "elapsed_seconds": 0.00026602699995237344
     },
     {
       "case_id": "PP-12",
@@ -15930,9 +15930,9 @@
           "3d726d79-3019-57c3-81fd-0c9340afba82"
         ],
         "extraction": {
-          "attempt_id": "8d2654d6-b90d-4f05-9fbb-143f7de904b4",
+          "attempt_id": "91a36161-4fee-4490-84be-0879bfdccc20",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.745092Z",
+          "extracted_at": "2026-10-05T12:04:59.956166Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -15943,7 +15943,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.00042748800024128286
+      "elapsed_seconds": 0.0002946360000350978
     },
     {
       "case_id": "PP-13",
@@ -16001,9 +16001,9 @@
           "6608b10f-9ea9-5747-a007-4146664e63d2"
         ],
         "extraction": {
-          "attempt_id": "6744d2c8-9540-40f5-a29b-a468b3dad8ef",
+          "attempt_id": "fd2c4eea-9fb2-4bb7-9476-0c803bc61e1c",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.745540Z",
+          "extracted_at": "2026-10-05T12:04:59.956477Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16014,7 +16014,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0004073449999850709
+      "elapsed_seconds": 0.0002614499999253894
     },
     {
       "case_id": "PP-14",
@@ -16072,9 +16072,9 @@
           "5ccb7548-cc47-5d37-ad46-be480ac55ab5"
         ],
         "extraction": {
-          "attempt_id": "79fd0934-967a-4c1c-ba24-ea167fb2569d",
+          "attempt_id": "4b8a21c0-6327-4132-a576-2869d648c096",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.745969Z",
+          "extracted_at": "2026-10-05T12:04:59.956754Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16085,7 +16085,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.00041747700015548617
+      "elapsed_seconds": 0.00028471200016610965
     },
     {
       "case_id": "PP-15",
@@ -16143,9 +16143,9 @@
           "93bcc8dd-faa3-547a-ba88-0fa032683716"
         ],
         "extraction": {
-          "attempt_id": "8b407278-18f0-483e-b7c7-49ca5f30fc11",
+          "attempt_id": "66b4d77b-6d8f-464a-9f9a-fe270aa7e875",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.746425Z",
+          "extracted_at": "2026-10-05T12:04:59.957050Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16156,7 +16156,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.00041253700055676745
+      "elapsed_seconds": 0.0002623339998990559
     },
     {
       "case_id": "PP-16",
@@ -16214,9 +16214,9 @@
           "f8ffaa6b-5988-5141-91e4-10eb8c1c400d"
         ],
         "extraction": {
-          "attempt_id": "944199bf-2eb1-47f0-98ab-ce98c2b5fdb1",
+          "attempt_id": "aff78cc4-17df-41d7-a2e5-34cdd48f203e",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.746853Z",
+          "extracted_at": "2026-10-05T12:04:59.957327Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16227,7 +16227,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.00040992499998537824
+      "elapsed_seconds": 0.00026856299996325106
     },
     {
       "case_id": "PP-17",
@@ -16285,9 +16285,9 @@
           "270bebc0-aa56-52d6-b034-94247954db50"
         ],
         "extraction": {
-          "attempt_id": "1bf241fe-3aad-4f95-9cba-d69a137bf8c1",
+          "attempt_id": "07126172-e055-4396-8a57-d51034869b65",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.747287Z",
+          "extracted_at": "2026-10-05T12:04:59.957610Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16298,7 +16298,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0004243339999447926
+      "elapsed_seconds": 0.0002544720000514644
     },
     {
       "case_id": "PP-18",
@@ -16356,9 +16356,9 @@
           "c3e885c5-68e9-5be7-bdda-d63861fc4fae"
         ],
         "extraction": {
-          "attempt_id": "26b9347f-1317-441f-ad91-fc42721ef450",
+          "attempt_id": "90cd2eb3-d3a8-4112-bb04-ebd6eb0c7340",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.747736Z",
+          "extracted_at": "2026-10-05T12:04:59.957880Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16369,7 +16369,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.00041491600040899357
+      "elapsed_seconds": 0.0003218660001493845
     },
     {
       "case_id": "PP-19",
@@ -16427,9 +16427,9 @@
           "ffa85bf5-47f3-50c9-88b2-7953eda3becc"
         ],
         "extraction": {
-          "attempt_id": "c51bcc09-55be-41f2-bb40-74f94b1c7dc8",
+          "attempt_id": "6f6c6747-1139-4bd7-b73e-41413db39dde",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.748175Z",
+          "extracted_at": "2026-10-05T12:04:59.958225Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16440,7 +16440,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.000424765999923693
+      "elapsed_seconds": 0.0003354189998390211
     },
     {
       "case_id": "PP-20",
@@ -16498,9 +16498,9 @@
           "07ccb7c6-b729-5c50-b78b-4f7daa07c778"
         ],
         "extraction": {
-          "attempt_id": "42e218e8-55f3-4e82-adef-32af463c076e",
+          "attempt_id": "720dae36-91fb-46be-941f-7be744ff92d1",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.748630Z",
+          "extracted_at": "2026-10-05T12:04:59.958576Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16511,7 +16511,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0004023100000267732
+      "elapsed_seconds": 0.00026474499986761657
     },
     {
       "case_id": "PP-21",
@@ -16569,9 +16569,9 @@
           "7cf6cb33-5aa7-537c-a2c5-297a967a0476"
         ],
         "extraction": {
-          "attempt_id": "b7e68b27-8bac-4451-b125-36187ec51447",
+          "attempt_id": "08f79a5d-20a5-4abe-a98c-be0eeeb2ee3b",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.749053Z",
+          "extracted_at": "2026-10-05T12:04:59.958849Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16582,7 +16582,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.00041696600055729505
+      "elapsed_seconds": 0.0002603079999516922
     },
     {
       "case_id": "PP-22",
@@ -16640,9 +16640,9 @@
           "0b2ccf90-260e-5671-8e5c-12b3ef9acd7a"
         ],
         "extraction": {
-          "attempt_id": "15b854e5-2c41-47e1-8b40-975c8e7001ed",
+          "attempt_id": "96a2aa31-f272-4ba8-b661-a317162d744f",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.749508Z",
+          "extracted_at": "2026-10-05T12:04:59.959127Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16653,7 +16653,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.00041437700019741897
+      "elapsed_seconds": 0.00031554299994240864
     },
     {
       "case_id": "PP-23",
@@ -16711,9 +16711,9 @@
           "e52e048e-1bc1-5482-af67-dc3f536ee49f"
         ],
         "extraction": {
-          "attempt_id": "073b0694-d48e-4163-ac81-85f25d6181bd",
+          "attempt_id": "71d02316-c0d9-468b-8f3b-43a8ca2bcb64",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.749938Z",
+          "extracted_at": "2026-10-05T12:04:59.959477Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16724,7 +16724,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.000411277999774029
+      "elapsed_seconds": 0.00032793399986985605
     },
     {
       "case_id": "PP-24",
@@ -16782,9 +16782,9 @@
           "88d6efff-c140-5fde-a3bd-c450fdf249e0"
         ],
         "extraction": {
-          "attempt_id": "112f0e35-628d-4606-86dd-8c598fd9d3f1",
+          "attempt_id": "968efdf7-ddef-45fa-976a-003cbb6d94a9",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.750408Z",
+          "extracted_at": "2026-10-05T12:04:59.959840Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16795,7 +16795,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0004413599999679718
+      "elapsed_seconds": 0.00030126100000416045
     },
     {
       "case_id": "PP-25",
@@ -16853,9 +16853,9 @@
           "a016f86a-7e9d-574e-9111-5373f35dcfbb"
         ],
         "extraction": {
-          "attempt_id": "a8b63151-da19-4d04-bdd3-1585a79cb1a1",
+          "attempt_id": "8d01d3b2-c288-48fb-bf6d-a3f2fefc4183",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.750841Z",
+          "extracted_at": "2026-10-05T12:04:59.960155Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16866,7 +16866,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.00039536599979328457
+      "elapsed_seconds": 0.00034724599981927895
     },
     {
       "case_id": "PP-26",
@@ -16925,9 +16925,9 @@
           "40a76e2d-899a-5aa6-bc5f-77c9b8816750"
         ],
         "extraction": {
-          "attempt_id": "fa7210bf-4bcc-490e-844f-e21b253ec097",
+          "attempt_id": "4747b733-47e3-4cad-accd-096531c0596a",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.751327Z",
+          "extracted_at": "2026-10-05T12:04:59.960541Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -16938,7 +16938,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0005079940001451178
+      "elapsed_seconds": 0.0003510239998831821
     },
     {
       "case_id": "PP-27",
@@ -16996,9 +16996,9 @@
           "983b3cac-f687-5600-8b41-9d9b24df924c"
         ],
         "extraction": {
-          "attempt_id": "03634495-405d-45e9-8769-78c6376af1b6",
+          "attempt_id": "8cb223b0-4901-4306-8cbe-3fbde2b320ec",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.751802Z",
+          "extracted_at": "2026-10-05T12:04:59.960893Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -17009,7 +17009,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0004066820001753513
+      "elapsed_seconds": 0.0004156310001235397
     },
     {
       "case_id": "PP-28",
@@ -17067,9 +17067,9 @@
           "2baea167-2024-5c5e-b35a-296a4dd68a82"
         ],
         "extraction": {
-          "attempt_id": "80939a4d-d978-4a78-a146-89e0c02715ee",
+          "attempt_id": "97038b80-ca8f-4617-a664-b2819f32d89d",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.752232Z",
+          "extracted_at": "2026-10-05T12:04:59.961426Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -17080,7 +17080,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.00041658499958430184
+      "elapsed_seconds": 0.00045913400003883
     },
     {
       "case_id": "PP-29",
@@ -17138,9 +17138,9 @@
           "54775244-6c35-5bce-801c-206e3b29bc9d"
         ],
         "extraction": {
-          "attempt_id": "7b679083-7160-457a-b0b4-dbb1d306b3a0",
+          "attempt_id": "dcdfc77c-c113-4b53-840d-2d944a7303e5",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.752676Z",
+          "extracted_at": "2026-10-05T12:04:59.961804Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -17151,7 +17151,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.00042552200011414243
+      "elapsed_seconds": 0.00029329899984986696
     },
     {
       "case_id": "PP-30",
@@ -17209,9 +17209,9 @@
           "1b206610-559d-521d-98e0-1fb2da092c44"
         ],
         "extraction": {
-          "attempt_id": "516b28ff-f4c3-4193-8992-a524232c160c",
+          "attempt_id": "4e8b6b57-2c00-4e5a-8a84-e9ead9f2b76d",
           "method": "NOT_ATTEMPTED",
-          "extracted_at": "2026-10-05T12:52:48.753134Z",
+          "extracted_at": "2026-10-05T12:04:59.962109Z",
           "schema_version": "1",
           "prompt_version": null,
           "provider": null,
@@ -17222,7 +17222,7 @@
       },
       "exception_type": null,
       "provider_response_sha256": null,
-      "elapsed_seconds": 0.0004199439999865717
+      "elapsed_seconds": 0.00027962999979536107
     }
   ],
   "scoring_sha256": "68d0d2d5d60b6e351d993779ed96fd6b019bf8d1d93530739ea0293be4a4034d",

@@ -1,0 +1,53 @@
+..........FFFFFFF                                                        [100%]
+=================================== FAILURES ===================================
+_ test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-.99] _
+tests/test_redteam.py:146: in test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence
+    assert evidence.extraction.failure_code == "EVIDENCE_INVALID"
+E   AssertionError: assert None == 'EVIDENCE_INVALID'
+E    +  where None = ExtractionMetadata(attempt_id=UUID('f3c7aad1-b2df-47c6-b36a-6545f0679fc1'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None).failure_code
+E    +    where ExtractionMetadata(attempt_id=UUID('f3c7aad1-b2df-47c6-b36a-6545f0679fc1'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None) = PaymentRequestEvidence(vendor_name=ExtractedField[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadat...rsion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None)).extraction
+_ test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-\u201399] _
+tests/test_redteam.py:146: in test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence
+    assert evidence.extraction.failure_code == "EVIDENCE_INVALID"
+E   AssertionError: assert None == 'EVIDENCE_INVALID'
+E    +  where None = ExtractionMetadata(attempt_id=UUID('207221a2-e336-42e7-bd1b-8ab21c6c1ed6'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None).failure_code
+E    +    where ExtractionMetadata(attempt_id=UUID('207221a2-e336-42e7-bd1b-8ab21c6c1ed6'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None) = PaymentRequestEvidence(vendor_name=ExtractedField[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadat...rsion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None)).extraction
+_ test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-\u221299] _
+tests/test_redteam.py:146: in test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence
+    assert evidence.extraction.failure_code == "EVIDENCE_INVALID"
+E   AssertionError: assert None == 'EVIDENCE_INVALID'
+E    +  where None = ExtractionMetadata(attempt_id=UUID('afc53a60-eba1-4269-ae38-f3d9716ecada'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None).failure_code
+E    +    where ExtractionMetadata(attempt_id=UUID('afc53a60-eba1-4269-ae38-f3d9716ecada'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None) = PaymentRequestEvidence(vendor_name=ExtractedField[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadat...rsion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None)).extraction
+_ test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-\uff3f99] _
+tests/test_redteam.py:146: in test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence
+    assert evidence.extraction.failure_code == "EVIDENCE_INVALID"
+E   AssertionError: assert None == 'EVIDENCE_INVALID'
+E    +  where None = ExtractionMetadata(attempt_id=UUID('e7f8d685-c718-4512-bb3b-6bdaa0ced1e9'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None).failure_code
+E    +    where ExtractionMetadata(attempt_id=UUID('e7f8d685-c718-4512-bb3b-6bdaa0ced1e9'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None) = PaymentRequestEvidence(vendor_name=ExtractedField[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadat...rsion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None)).extraction
+_ test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-\t99] _
+tests/test_redteam.py:146: in test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence
+    assert evidence.extraction.failure_code == "EVIDENCE_INVALID"
+E   AssertionError: assert None == 'EVIDENCE_INVALID'
+E    +  where None = ExtractionMetadata(attempt_id=UUID('fb0804d4-3a02-4735-bd4e-e881c3b9e97c'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None).failure_code
+E    +    where ExtractionMetadata(attempt_id=UUID('fb0804d4-3a02-4735-bd4e-e881c3b9e97c'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None) = PaymentRequestEvidence(vendor_name=ExtractedField[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadat...rsion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None)).extraction
+_ test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-\xa099] _
+tests/test_redteam.py:146: in test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence
+    assert evidence.extraction.failure_code == "EVIDENCE_INVALID"
+E   AssertionError: assert None == 'EVIDENCE_INVALID'
+E    +  where None = ExtractionMetadata(attempt_id=UUID('b64f7d13-adab-4ff9-b0ce-c5073ae5a090'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None).failure_code
+E    +    where ExtractionMetadata(attempt_id=UUID('b64f7d13-adab-4ff9-b0ce-c5073ae5a090'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None) = PaymentRequestEvidence(vendor_name=ExtractedField[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadat...rsion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None)).extraction
+_ test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-\u200999] _
+tests/test_redteam.py:146: in test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence
+    assert evidence.extraction.failure_code == "EVIDENCE_INVALID"
+E   AssertionError: assert None == 'EVIDENCE_INVALID'
+E    +  where None = ExtractionMetadata(attempt_id=UUID('77e172af-5807-4ead-bb52-57b317079d4d'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None).failure_code
+E    +    where ExtractionMetadata(attempt_id=UUID('77e172af-5807-4ead-bb52-57b317079d4d'), method='AI', extracted_at=datetime.datetim...ersion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None) = PaymentRequestEvidence(vendor_name=ExtractedField[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadat...rsion='extract-evidence-v1', provider='openai', model='synthetic-reported-model', operator_id=None, failure_code=None)).extraction
+=========================== short test summary info ============================
+FAILED tests/test_redteam.py::test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-.99]
+FAILED tests/test_redteam.py::test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-\u201399]
+FAILED tests/test_redteam.py::test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-\u221299]
+FAILED tests/test_redteam.py::test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-\uff3f99]
+FAILED tests/test_redteam.py::test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-\t99]
+FAILED tests/test_redteam.py::test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-\xa099]
+FAILED tests/test_redteam.py::test_complete_iban_substring_inside_another_identifier_is_not_payment_evidence[-\u200999]
+7 failed, 10 passed, 55 deselected in 0.73s

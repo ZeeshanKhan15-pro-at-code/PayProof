@@ -147,4 +147,6 @@ Replaying the committed failed extraction observations also exits 1. JSON report
 
 ## Next implementation target
 
+The [Phase-1 red-team report](docs/PHASE1_REDTEAM.md) records 24 reproduced pre-fix failures, retained adversarial regressions, general fixes and unchanged benchmark counts. Historical-role omissions still require honest source review; AI cannot create an authoritative `VERIFIED` status. The configuration example's key placeholder is empty again; any previously live value needs owner rotation because Git history is unchanged.
+
 Add SQLite persistence, the gated web review workflow, and explicit independent human verification against the stored trusted contact/revision. Preserve snapshots across restarts and enforce stale-revision checks. Extend and independently label the release corpus. Separately smoke-test configured live extraction using synthetic data. The engine remains scoped to GB/DE IBAN; separate routing and other schemes require later explicit contracts.

@@ -7,10 +7,11 @@ from typing import IO, Literal
 from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
-from pydantic import BaseModel, ConfigDict, SecretStr, ValidationError
+from pydantic import BaseModel, ConfigDict, SecretStr
 
 from payproof.extraction_contract import EXTRACTION_INSTRUCTIONS, structured_output_schema
 from payproof.schemas import ShortText, SourceDocument
+from payproof.validation import parse_contract
 
 MAX_PROVIDER_BYTES = 262_144
 MAX_OUTPUT_TOKENS = 8_000
@@ -137,8 +138,8 @@ class OpenAIExtractionProvider:
         if len(raw) > MAX_PROVIDER_BYTES:
             raise ProviderFailure("INVALID_RESPONSE")
         try:
-            parsed = _Response.model_validate_json(raw)
-        except ValidationError:
+            parsed = parse_contract(_Response, raw)
+        except ValueError:
             raise ProviderFailure("INVALID_RESPONSE", raw) from None
         texts: list[str] = []
         for item in parsed.output:

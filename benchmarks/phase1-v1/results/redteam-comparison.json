@@ -1,0 +1,278 @@
+{
+  "purpose": "Measured before/after scoring comparison; no label changes",
+  "initial_redteam_test_run": {
+    "failed": 24,
+    "passed": 36,
+    "total": 60
+  },
+  "final_redteam_test_run": {
+    "failed": 0,
+    "passed": 73,
+    "total": 73
+  },
+  "benchmark_metrics_changed": false,
+  "runs": {
+    "redteam-before/gold": {
+      "scoring_sha256": "b2b2e52c28855690e2a8a51f0fa8be847635cc2986adb82c825849d818cda67c",
+      "corpus_sha256": "3bc6dcafaeb661b00cf22fd06fc86802c8db642c41d9228676faae3b546a0c7f",
+      "status": true,
+      "metrics": {
+        "total_cases": 30,
+        "correct_state_classifications": 30,
+        "exact_correct_cases": 30,
+        "consequential_changes": 13,
+        "consequential_changes_detected": 10,
+        "consequential_changes_missed": 3,
+        "supported_consequential_changes": 10,
+        "supported_changes_detected": 10,
+        "critical_false_unchanged": 0,
+        "critical_miss_case_ids": [],
+        "changed_cases_abstained": 3,
+        "changed_cases_failed": 0,
+        "unchanged_cases_incorrectly_escalated": 0,
+        "supported_unchanged_cases": 7,
+        "supported_unchanged_resolved": 7,
+        "supported_unchanged_unnecessarily_escalated": 0,
+        "expected_uncertain_cases": 13,
+        "uncertain_cases_handled_correctly": 13,
+        "unsafe_definitive_on_uncertain": 0,
+        "unnecessary_abstentions": 0,
+        "uncertainty_recall": {
+          "numerator": 13,
+          "denominator": 13
+        },
+        "uncertainty_precision": {
+          "numerator": 13,
+          "denominator": 13
+        },
+        "extraction_failures": null,
+        "extraction_error_cases": null,
+        "deterministic_comparison_failures": 0,
+        "failed_operations": 0,
+        "confusion": {
+          "UNCHANGED": {
+            "UNCHANGED": 7,
+            "VERIFY": 0,
+            "UNCERTAIN": 0,
+            "FAILED": 0
+          },
+          "VERIFY": {
+            "UNCHANGED": 0,
+            "VERIFY": 10,
+            "UNCERTAIN": 0,
+            "FAILED": 0
+          },
+          "UNCERTAIN": {
+            "UNCHANGED": 0,
+            "VERIFY": 0,
+            "UNCERTAIN": 13,
+            "FAILED": 0
+          }
+        },
+        "error_categories": {},
+        "fields": {}
+      }
+    },
+    "redteam-before/extraction": {
+      "scoring_sha256": "68d0d2d5d60b6e351d993779ed96fd6b019bf8d1d93530739ea0293be4a4034d",
+      "corpus_sha256": "3bc6dcafaeb661b00cf22fd06fc86802c8db642c41d9228676faae3b546a0c7f",
+      "status": false,
+      "metrics": {
+        "total_cases": 30,
+        "correct_state_classifications": 0,
+        "exact_correct_cases": 0,
+        "consequential_changes": 13,
+        "consequential_changes_detected": 0,
+        "consequential_changes_missed": 13,
+        "supported_consequential_changes": 10,
+        "supported_changes_detected": 0,
+        "critical_false_unchanged": 0,
+        "critical_miss_case_ids": [],
+        "changed_cases_abstained": 0,
+        "changed_cases_failed": 13,
+        "unchanged_cases_incorrectly_escalated": 0,
+        "supported_unchanged_cases": 7,
+        "supported_unchanged_resolved": 0,
+        "supported_unchanged_unnecessarily_escalated": 7,
+        "expected_uncertain_cases": 13,
+        "uncertain_cases_handled_correctly": 0,
+        "unsafe_definitive_on_uncertain": 0,
+        "unnecessary_abstentions": 0,
+        "uncertainty_recall": {
+          "numerator": 0,
+          "denominator": 13
+        },
+        "uncertainty_precision": {
+          "numerator": 0,
+          "denominator": 0
+        },
+        "extraction_failures": 30,
+        "extraction_error_cases": 30,
+        "deterministic_comparison_failures": 0,
+        "failed_operations": 30,
+        "confusion": {
+          "UNCHANGED": {
+            "UNCHANGED": 0,
+            "VERIFY": 0,
+            "UNCERTAIN": 0,
+            "FAILED": 7
+          },
+          "VERIFY": {
+            "UNCHANGED": 0,
+            "VERIFY": 0,
+            "UNCERTAIN": 0,
+            "FAILED": 10
+          },
+          "UNCERTAIN": {
+            "UNCHANGED": 0,
+            "VERIFY": 0,
+            "UNCERTAIN": 0,
+            "FAILED": 13
+          }
+        },
+        "error_categories": {
+          "extraction:NOT_CONFIGURED": 30
+        },
+        "fields": {}
+      }
+    },
+    "after/gold": {
+      "scoring_sha256": "b2b2e52c28855690e2a8a51f0fa8be847635cc2986adb82c825849d818cda67c",
+      "corpus_sha256": "3bc6dcafaeb661b00cf22fd06fc86802c8db642c41d9228676faae3b546a0c7f",
+      "status": true,
+      "metrics": {
+        "total_cases": 30,
+        "correct_state_classifications": 30,
+        "exact_correct_cases": 30,
+        "consequential_changes": 13,
+        "consequential_changes_detected": 10,
+        "consequential_changes_missed": 3,
+        "supported_consequential_changes": 10,
+        "supported_changes_detected": 10,
+        "critical_false_unchanged": 0,
+        "critical_miss_case_ids": [],
+        "changed_cases_abstained": 3,
+        "changed_cases_failed": 0,
+        "unchanged_cases_incorrectly_escalated": 0,
+        "supported_unchanged_cases": 7,
+        "supported_unchanged_resolved": 7,
+        "supported_unchanged_unnecessarily_escalated": 0,
+        "expected_uncertain_cases": 13,
+        "uncertain_cases_handled_correctly": 13,
+        "unsafe_definitive_on_uncertain": 0,
+        "unnecessary_abstentions": 0,
+        "uncertainty_recall": {
+          "numerator": 13,
+          "denominator": 13
+        },
+        "uncertainty_precision": {
+          "numerator": 13,
+          "denominator": 13
+        },
+        "extraction_failures": null,
+        "extraction_error_cases": null,
+        "deterministic_comparison_failures": 0,
+        "failed_operations": 0,
+        "confusion": {
+          "UNCHANGED": {
+            "UNCHANGED": 7,
+            "VERIFY": 0,
+            "UNCERTAIN": 0,
+            "FAILED": 0
+          },
+          "VERIFY": {
+            "UNCHANGED": 0,
+            "VERIFY": 10,
+            "UNCERTAIN": 0,
+            "FAILED": 0
+          },
+          "UNCERTAIN": {
+            "UNCHANGED": 0,
+            "VERIFY": 0,
+            "UNCERTAIN": 13,
+            "FAILED": 0
+          }
+        },
+        "error_categories": {},
+        "fields": {}
+      }
+    },
+    "after/extraction": {
+      "scoring_sha256": "68d0d2d5d60b6e351d993779ed96fd6b019bf8d1d93530739ea0293be4a4034d",
+      "corpus_sha256": "3bc6dcafaeb661b00cf22fd06fc86802c8db642c41d9228676faae3b546a0c7f",
+      "status": false,
+      "metrics": {
+        "total_cases": 30,
+        "correct_state_classifications": 0,
+        "exact_correct_cases": 0,
+        "consequential_changes": 13,
+        "consequential_changes_detected": 0,
+        "consequential_changes_missed": 13,
+        "supported_consequential_changes": 10,
+        "supported_changes_detected": 0,
+        "critical_false_unchanged": 0,
+        "critical_miss_case_ids": [],
+        "changed_cases_abstained": 0,
+        "changed_cases_failed": 13,
+        "unchanged_cases_incorrectly_escalated": 0,
+        "supported_unchanged_cases": 7,
+        "supported_unchanged_resolved": 0,
+        "supported_unchanged_unnecessarily_escalated": 7,
+        "expected_uncertain_cases": 13,
+        "uncertain_cases_handled_correctly": 0,
+        "unsafe_definitive_on_uncertain": 0,
+        "unnecessary_abstentions": 0,
+        "uncertainty_recall": {
+          "numerator": 0,
+          "denominator": 13
+        },
+        "uncertainty_precision": {
+          "numerator": 0,
+          "denominator": 0
+        },
+        "extraction_failures": 30,
+        "extraction_error_cases": 30,
+        "deterministic_comparison_failures": 0,
+        "failed_operations": 30,
+        "confusion": {
+          "UNCHANGED": {
+            "UNCHANGED": 0,
+            "VERIFY": 0,
+            "UNCERTAIN": 0,
+            "FAILED": 7
+          },
+          "VERIFY": {
+            "UNCHANGED": 0,
+            "VERIFY": 0,
+            "UNCERTAIN": 0,
+            "FAILED": 10
+          },
+          "UNCERTAIN": {
+            "UNCHANGED": 0,
+            "VERIFY": 0,
+            "UNCERTAIN": 0,
+            "FAILED": 13
+          }
+        },
+        "error_categories": {
+          "extraction:NOT_CONFIGURED": 30
+        },
+        "fields": {}
+      }
+    }
+  },
+  "followup_redteam_test_run": {
+    "failed": 7,
+    "passed": 10,
+    "deselected": 55,
+    "selected": 17
+  },
+  "full_test_suite": {
+    "failed": 0,
+    "passed": 588
+  },
+  "configured_extraction_replay": {
+    "exit_code": 1,
+    "scoring_and_tracks_identical": true
+  }
+}

@@ -13,6 +13,7 @@ def _quoted(value: str | bool | None) -> str:
 
 def render_evidence(case: CaseContract) -> str:
     """Show the entire bounded source and every observation before acknowledgement."""
+    case = CaseContract.model_validate(case.model_dump())
     baseline = case.baseline
     lines = ["TRUSTED VENDOR BASELINE"]
     if baseline is None:
@@ -79,6 +80,7 @@ def render_evidence(case: CaseContract) -> str:
 
 
 def render_result(case: CaseContract) -> str:
+    case = CaseContract.model_validate(case.model_dump())
     result = case.comparison
     if result is None:
         raise ValueError("result display requires a comparison")

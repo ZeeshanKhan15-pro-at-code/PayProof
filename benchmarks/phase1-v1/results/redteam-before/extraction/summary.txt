@@ -1,0 +1,123 @@
+PayProof Phase-1 benchmark
+Dataset: payproof-phase1-diagnostic-30-v1
+Corpus SHA-256: 3bc6dcafaeb661b00cf22fd06fc86802c8db642c41d9228676faae3b546a0c7f
+Label review: PENDING; PUBLIC_DIAGNOSTIC_NOT_HELD_OUT
+Human-action enforcement and independent verification: NOT_EVALUATED
+
+Track: gold_comparison (PASS; SIMULATED_GOLD_SOURCE_REVIEW)
+Total cases: 30
+Correct states: 30/30
+Exact correct (state/reasons/values/evidence): 30/30
+Consequential changes: 13
+Detected: 10
+Missed (not detected as correct VERIFY): 3
+Supported changes detected: 10/10
+Changed cases abstained: 3
+Changed cases failed: 0
+Critical missed changes (false UNCHANGED): 0
+False escalations (incorrect VERIFY): 0
+Uncertain handled correctly: 13/13
+Extraction failures: NOT_RUN (gold inputs)
+Extraction error cases: NOT_RUN
+Deterministic-comparison failures: 0
+Failed operations: 0
+
+Track: gold_review_gate (PASS; NO_SOURCE_REVIEW)
+Total cases: 30
+Correct states: 30/30
+Exact correct (state/reasons/values/evidence): 30/30
+Extraction failures: NOT_RUN (gold inputs)
+Extraction error cases: NOT_RUN
+Deterministic-comparison failures: 0
+Failed operations: 0
+
+Track: conditional_pipeline (FAIL; SIMULATED_MODEL_OUTPUT_REVIEW)
+Total cases: 30
+Correct states: 0/30
+Exact correct (state/reasons/values/evidence): 0/30
+Consequential changes: 13
+Detected: 0
+Missed (not detected as correct VERIFY): 13
+Supported changes detected: 0/10
+Changed cases abstained: 0
+Changed cases failed: 13
+Critical missed changes (false UNCHANGED): 0
+False escalations (incorrect VERIFY): 0
+Uncertain handled correctly: 0/13
+Extraction failures: 30
+Extraction error cases: 30
+Deterministic-comparison failures: 0
+Failed operations: 30
+FAIL PP-01: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-02: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-03: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-04: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-05: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-06: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-07: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-08: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-09: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-10: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-11: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-12: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-13: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-14: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-15: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-16: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-17: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-18: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-19: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-20: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-21: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-22: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-23: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-24: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-25: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-26: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-27: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-28: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-29: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-30: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+
+Track: extraction_review_gate (FAIL; NO_SOURCE_REVIEW)
+Total cases: 30
+Correct states: 0/30
+Exact correct (state/reasons/values/evidence): 0/30
+Extraction failures: 30
+Extraction error cases: 30
+Deterministic-comparison failures: 0
+Failed operations: 30
+FAIL PP-01: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-02: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-03: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-04: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-05: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-06: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-07: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-08: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-09: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-10: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-11: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-12: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-13: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-14: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-15: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-16: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-17: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-18: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-19: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-20: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-21: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-22: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-23: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-24: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-25: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-26: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-27: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-28: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-29: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+FAIL PP-30: extraction:NOT_CONFIGURED: Extraction failed; uncertain output is not a successful classification.
+
+Extraction: FAIL; mode=disabled; source=CURRENT_CONFIGURATION
+Gold results are not live extraction accuracy. UNCERTAIN is not successful change detection.
+Scoring SHA-256: 68d0d2d5d60b6e351d993779ed96fd6b019bf8d1d93530739ea0293be4a4034d

@@ -43,6 +43,7 @@ from payproof.schemas import (
     SourceReview,
     TrustedVendorRecord,
 )
+from payproof.validation import parse_contract
 
 DEFAULT_CORPUS = Path("benchmarks/phase1-v1/cases.json")
 TrackName = Literal[
@@ -372,7 +373,7 @@ def run_benchmark(
     replay_path: Path | None = None,
 ) -> RunReport:
     raw = corpus_path.read_bytes()
-    corpus = BenchmarkCorpus.model_validate_json(raw)
+    corpus = parse_contract(BenchmarkCorpus, raw)
     corpus_hash = digest(raw)
     # Freeze provenance before predictions.
     provenance = code_hashes()
@@ -385,7 +386,7 @@ def run_benchmark(
     mode, model = "NOT_RUN", None
     if replay_path is not None:
         replay_raw = replay_path.read_bytes()
-        previous = RunReport.model_validate_json(replay_raw)
+        previous = parse_contract(RunReport, replay_raw)
         if previous.corpus_sha256 != corpus_hash or previous.rule_version != corpus.rule_version:
             raise ValueError("Replay corpus/rule hash mismatch")
         attempts = previous.extraction_attempts

@@ -402,6 +402,7 @@
           "items": {
             "$ref": "#/$defs/ExtractedCandidate_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1___MaxLen_max_length_2000_____AfterValidator__"
           },
+          "maxItems": 16,
           "title": "Candidates",
           "type": "array"
         }
@@ -431,6 +432,7 @@
           "items": {
             "$ref": "#/$defs/ExtractedCandidate_bool_"
           },
+          "maxItems": 16,
           "title": "Candidates",
           "type": "array"
         }
@@ -687,6 +689,7 @@
             "format": "uuid",
             "type": "string"
           },
+          "maxItems": 16,
           "minItems": 1,
           "title": "Source Ids",
           "type": "array"

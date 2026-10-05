@@ -12,6 +12,7 @@ from pydantic import ValidationError
 from payproof.config import Settings, load_settings
 from payproof.extraction_contract import PROMPT_VERSION, WireExtractionPayload
 from payproof.openai_extraction import FailureCode, OpenAIExtractionProvider, ProviderFailure
+from payproof.provenance import account_quote_is_complete
 from payproof.schemas import (
     EVIDENCE_FIELDS,
     CaseContract,
@@ -19,6 +20,7 @@ from payproof.schemas import (
     PaymentRequestEvidence,
     SourceDocument,
 )
+from payproof.validation import parse_contract
 
 
 class ExtractionInputError(ValueError):
@@ -91,6 +93,10 @@ def _ground_wire(
             if start < 0 or source.text.find(excerpt, start + 1) >= 0:
                 raise ProviderFailure("EVIDENCE_INVALID")
             if isinstance(candidate.value, str) and candidate.value != candidate.raw_text:
+                raise ProviderFailure("EVIDENCE_INVALID")
+            if name == "account_identifier" and not account_quote_is_complete(
+                source.text, candidate.raw_text, start, start + len(excerpt)
+            ):
                 raise ProviderFailure("EVIDENCE_INVALID")
             candidates.append(
                 {
@@ -190,7 +196,7 @@ def extract_attempt(
         try:
             completion = provider.complete(sources)
             raw = completion.raw_response
-            wire = WireExtractionPayload.model_validate_json(completion.text)
+            wire = parse_contract(WireExtractionPayload, completion.text)
             fields = _ground_wire(wire, sources)
             metadata = ExtractionMetadata(
                 attempt_id=metadata.attempt_id,
@@ -205,7 +211,7 @@ def extract_attempt(
         except ProviderFailure as error:
             failure = error.code
             raw = error.raw_response if error.raw_response is not None else raw
-        except ValidationError:
+        except ValueError:
             failure = "INVALID_RESPONSE"
     if failure is None and fields is not None:
         try:

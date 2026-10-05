@@ -14,6 +14,7 @@ from uuid import UUID
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from payproof.normalization import canonical_iban, canonical_scheme
+from payproof.provenance import account_quote_is_complete
 
 
 def nonblank(value: str) -> str:
@@ -142,7 +143,7 @@ class ExtractedCandidate(Contract, Generic[ValueT]):
 
 class ExtractedField(Contract, Generic[ValueT]):
     status: ExtractionStatus
-    candidates: tuple[ExtractedCandidate[ValueT], ...]
+    candidates: Annotated[tuple[ExtractedCandidate[ValueT], ...], Field(max_length=16)]
 
     @model_validator(mode="after")
     def cardinality_and_status(self) -> ExtractedField[ValueT]:
@@ -224,7 +225,7 @@ class PaymentRequestEvidence(ExtractionPayload):
     """Extraction plus server attribution; no decision, review, or trust fields."""
 
     request_id: UUID
-    source_ids: Annotated[tuple[UUID, ...], Field(min_length=1)]
+    source_ids: Annotated[tuple[UUID, ...], Field(min_length=1, max_length=16)]
     extraction: ExtractionMetadata
 
     @model_validator(mode="after")
@@ -242,6 +243,8 @@ class PaymentRequestEvidence(ExtractionPayload):
                 if span.evidence_id in seen:
                     raise ValueError("evidence IDs must be unique within a request")
                 seen.add(span.evidence_id)
+        if len(seen) > 64:
+            raise ValueError("an extraction may contain at most 64 evidence candidates")
         return self
 
     def spans(self) -> tuple[EvidenceSpan, ...]:
@@ -491,7 +494,7 @@ class CaseContract(Contract):
     authenticate the operator; a valid object alone confers no authority.
     """
 
-    sources: Annotated[tuple[SourceDocument, ...], Field(min_length=1)]
+    sources: Annotated[tuple[SourceDocument, ...], Field(min_length=1, max_length=16)]
     evidence: PaymentRequestEvidence
     baseline: TrustedVendorRecord | None
     review: SourceReview | None = None
@@ -510,6 +513,10 @@ class CaseContract(Contract):
             source = sources[span.source_id]
             if source.text[span.location.char_start : span.location.char_end] != span.exact_excerpt:
                 raise ValueError("evidence excerpt does not match immutable source offsets")
+            if span.field == "account_identifier" and not account_quote_is_complete(
+                source.text, span.extracted_value, span.location.char_start, span.location.char_end
+            ):
+                raise ValueError("account quote selects part of a larger identifier")
             if span.location.page_number != source.page_number:
                 raise ValueError("page location must come from source metadata")
         if any(s.captured_at > self.evidence.extraction.extracted_at for s in self.sources):
