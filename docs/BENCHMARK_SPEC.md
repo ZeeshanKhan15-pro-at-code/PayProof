@@ -2,8 +2,8 @@
 
 Version: `payproof-phase1-diagnostic-30-v1`. Rule version: `iban-gb-de-v1`.
 
-**Status: design only; evaluation NOT_RUN; independent label review PENDING.**
-There are no observed accuracy, false-negative, latency, or cost results in this specification. Contract tests validate the dataset, not the product's performance on it.
+**Status: harness implemented; measured diagnostic runs recorded; independent label review PENDING.**
+Observed results are stored in [run artifacts](../benchmarks/phase1-v1/results/README.md), separately from these frozen expectations. The design dataset retains its original `NOT_RUN` marker: it contains no predictions or performance measurements. Contract tests validate the dataset; the harness executes and scores the product.
 
 ## Claim and scope
 
@@ -201,6 +201,20 @@ Validate the new design contracts and reject malformed definitions:
 .venv/bin/python -m pytest -q tests/test_benchmark_design.py
 ```
 
-This does **not** run extraction or comparison predictions on the 30 cases. The strict model and exported schema are ready for a later runner to consume. The evaluation tracks, metric scorer, actual predictions, and independent label review are not yet implemented/performed.
+That command validates definitions only. Run the implemented harness:
 
-`make benchmark` still runs the existing ten gold development fixtures with simulated source review. Its observed results must be attributed to that older corpus; they are not results for this specification. `make test` includes dataset contract validation and existing product regression tests. No benchmark execution or live API call is needed to validate this design.
+```bash
+make benchmark
+make benchmark-extraction
+.venv/bin/python -m payproof benchmark --replay benchmarks/phase1-v1/results/extraction/report.json
+```
+
+`make benchmark` runs all 30 cases on gold observations and separately checks the unreviewed gate; it ignores provider configuration and cannot call a model. `make benchmark-extraction` additionally attempts all sources using explicit environment configuration. It never expands fixture lookup to the new gold labels. Disabled extraction produces 30 `NOT_CONFIGURED` failures, not passing uncertainty classifications. Live mode needs the existing provider key/model settings; keys never enter run artifacts. `--replay` consumes stored original extraction observations/failures without extraction/provider calls, checks corpus/rule binding and complete case coverage, and reruns comparison/scoring.
+
+The [harness](../payproof/benchmark_harness.py) produces `report.json` and `summary.txt` in `--output`, with per-case results, original observations, simulated review attribution, field scores, source evidence, stage-specific issues, integer count/fraction metrics, corpus/code/prompt/schema hashes, source Git revision and dirty-tree metadata. The report's `passed` flag applies only to requested tracks, not release readiness. Python version and pinned dependency/code hashes record execution context. Raw provider response bodies are not committed; their hashes are retained when available. Attempt latency is measured (including validation, not just provider time), while provider cost remains `null` because the adapter does not measure billed usage.
+
+Exit 0 means all requested tracks passed; 1 means at least one evaluated case/track failed; 2 means corpus/replay/configuration could not be loaded. Scoring errors identify exact case IDs, field and extraction/comparison stage. Exceptions are captured per case using sanitized type names, so one provider or engine failure cannot remove the remaining cases. Failed operations enter the confusion matrix as `FAILED`, even if a fail-safe `UNCERTAIN` result was produced. Identical golden predictions and replayed observation scores are reproducible; fresh live model outputs and measured latency are not claimed deterministic. Compare `scoring_sha256` across replay runs rather than run timestamps or latency.
+
+Detection counts require correct consequential values/evidence, independently of harmless contextual extraction errors; exact-case correctness additionally checks all extracted fields. Distinct competing instructions cannot be deduplicated; identical literal mentions and equivalent exact quote boundaries may be. Root-cause attribution keeps extraction-induced pipeline errors separate from errors on gold inputs. Human display guidance/action enforcement and independent verification remain `NOT_EVALUATED`; informative uncertainty metrics cover reasons and evidence only.
+
+`tests/test_benchmark_harness.py` covers reproducibility, label isolation, per-case exceptions, correct-state/wrong-content failures, wrong-role false matches, missing configuration, context-error attribution, ambiguity, permitted duplicate mentions, replay hash/coverage rejection and CLI exit codes. The older ten-fixture runner is `python -m payproof benchmark-fixtures`. Independent label review and actual human-workflow evaluation remain pending.

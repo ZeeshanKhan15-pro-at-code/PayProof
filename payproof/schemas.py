@@ -248,7 +248,7 @@ class PaymentRequestEvidence(ExtractionPayload):
         return tuple(c.evidence for name in EVIDENCE_FIELDS for c in getattr(self, name).candidates)
 
 
-EVIDENCE_FIELDS = (
+EVIDENCE_FIELDS: tuple[EvidenceField, ...] = (
     "vendor_name",
     "sender_email",
     "reply_to",

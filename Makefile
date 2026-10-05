@@ -2,7 +2,7 @@ PYTHON ?= python3
 VENV := .venv
 PY := $(VENV)/bin/python
 
-.PHONY: setup verify lint format typecheck test build debug benchmark serve production demo demo-smoke
+.PHONY: setup verify lint format typecheck test build debug benchmark benchmark-extraction serve production demo demo-smoke
 
 setup: $(VENV)/.ready
 
@@ -44,7 +44,10 @@ debug: setup
 	$(PY) -m payproof debug
 
 benchmark: setup
-	$(PY) -m payproof benchmark
+	$(PY) -m payproof benchmark --output benchmarks/phase1-v1/results/gold
+
+benchmark-extraction: setup
+	$(PY) -m payproof benchmark --with-extraction --output benchmarks/phase1-v1/results/extraction
 
 # Interactive instruction review; no independent verification is recorded.
 demo: setup

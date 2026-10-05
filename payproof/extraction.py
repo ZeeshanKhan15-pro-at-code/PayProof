@@ -123,7 +123,7 @@ def _fixture_fields(sources: tuple[SourceDocument, ...]) -> tuple[dict[str, Any]
     for fixture in load_corpus().requests:
         if (fixture.source.kind, fixture.source.text) != (source.kind, source.text):
             continue
-        fields = {
+        fields: dict[str, Any] = {
             name: getattr(fixture.evidence, name).model_dump(mode="json")
             for name in EVIDENCE_FIELDS
         }

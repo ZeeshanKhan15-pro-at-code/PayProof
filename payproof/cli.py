@@ -77,9 +77,24 @@ def _run_workflow(
 
 
 def main(argv: list[str] | None = None) -> int:
+    arguments = sys.argv[1:] if argv is None else argv
+    if arguments[:1] == ["benchmark"]:
+        from payproof.benchmark_harness import main as benchmark_main
+
+        return benchmark_main(arguments[1:])
     parser = argparse.ArgumentParser(description="PayProof source-bound payment destination review")
     parser.add_argument(
-        "command", choices=("check", "debug", "benchmark", "serve", "extract", "analyze", "demo")
+        "command",
+        choices=(
+            "check",
+            "debug",
+            "benchmark",
+            "benchmark-fixtures",
+            "serve",
+            "extract",
+            "analyze",
+            "demo",
+        ),
     )
     parser.add_argument(
         "--email", type=Path, action="append", default=[], help="UTF-8 plain-text email file"
@@ -177,7 +192,7 @@ def main(argv: list[str] | None = None) -> int:
             app = create_app(settings)
             app.run(host="127.0.0.1", port=settings.port, debug=False, use_reloader=False)
             return 0
-        if args.command == "benchmark":
+        if args.command == "benchmark-fixtures":
             report = validate_corpus()
             print(json.dumps(asdict(report), indent=2))
             return 0 if report.comparison_evaluation == "PASS" else 1

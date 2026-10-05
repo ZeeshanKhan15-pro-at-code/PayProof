@@ -145,7 +145,7 @@ def test_benchmark_labels_cannot_drive_engine_decisions_and_mismatch_fails_cli(m
     assert report.comparison_evaluation == "FAIL"
     assert report.comparison_mismatches == ("unchanged",)
     assert report.false_unchanged == 1
-    assert main(["benchmark"]) == 1
+    assert main(["benchmark-fixtures"]) == 1
     assert json.loads(capsys.readouterr().out)["comparison_evaluation"] == "FAIL"
 
 
@@ -180,7 +180,7 @@ def test_debug_routes_do_not_serve_document_or_bank_content():
             assert vendor.payment_identity.account_identifier not in body
 
 
-@pytest.mark.parametrize("command", ["check", "debug", "benchmark"])
+@pytest.mark.parametrize("command", ["check", "debug", "benchmark-fixtures"])
 def test_cli_is_offline_json_and_creates_no_database(command, tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("PAYPROOF_DATA_DIR", str(tmp_path / "data"))
     assert main([command]) == 0
