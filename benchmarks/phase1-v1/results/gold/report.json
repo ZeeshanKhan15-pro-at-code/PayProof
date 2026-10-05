@@ -1,14 +1,14 @@
 {
   "report_version": "payproof-benchmark-run-v1",
-  "run_at": "2026-10-05T13:07:40.157652+00:00",
+  "run_at": "2026-10-05T13:37:03.042497+00:00",
   "dataset_id": "payproof-phase1-diagnostic-30-v1",
   "corpus_sha256": "3bc6dcafaeb661b00cf22fd06fc86802c8db642c41d9228676faae3b546a0c7f",
   "independent_label_review": "PENDING",
   "split": "PUBLIC_DIAGNOSTIC_NOT_HELD_OUT",
   "rule_version": "iban-gb-de-v1",
-  "git_commit": "7bad0f7b71d5aa062967fb9a834ad24fbf09d01d",
+  "git_commit": "7268cd833c42832e9a735bc782beb362aabaf7bc",
   "dirty_worktree": true,
-  "tracked_diff_sha256": "b0a097e3808bbd66981a367fb31c8548fccaccf2b4998607553e29c913c1b966",
+  "tracked_diff_sha256": "93df5f84a5b42ed522b9c806d7f9138b2813c84a2cd473d0f128bdbad773f59c",
   "code_sha256": {
     "payproof/__init__.py": "f0a460bb91726364d67b4b05ba846955fc666ff552658a4ac8d5b2d4b19a9ab2",
     "payproof/__main__.py": "fe3e64aa14606f712fb1228f8a8b9832ccdc7b07287a8105a35d81713aa20d97",

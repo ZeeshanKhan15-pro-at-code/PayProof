@@ -1,6 +1,6 @@
 # PayProof
 
-Phase 1 is frozen as a local, synthetic CLI comparison prototype. See the [handoff](docs/PHASE1_HANDOFF.md) for the verified checklist and outstanding release gates. The repository demonstrates the core mechanism; the complete persistent release described in the [architecture](docs/ARCHITECTURE.md) is unfinished.
+Phase 1 is frozen as a local, synthetic CLI comparison prototype. See the [handoff](docs/PHASE1_HANDOFF.md) for the freeze checklist and [Phase-2 release gates](docs/PHASE2_RELEASE_GATES.md) for current installation, HTTP, credential and provider readiness evidence. The repository demonstrates the core mechanism; the complete persistent release described in the [architecture](docs/ARCHITECTURE.md) is unfinished.
 
 ### Problem
 
@@ -79,7 +79,7 @@ make verify
 make demo
 ```
 
-`make verify` installs pinned dependencies, runs lint/format checks, strict typecheck, all tests, initialization, gold benchmark and production package build with isolated wheel smoke validation. `make demo` displays original text and extracted evidence before prompting. Read them and type `REVIEWED`; the full account changes from `GB46TEST00000000003821` to `GB57TEST00000000009928`, producing `VERIFY / DESTINATION_CHANGED`. The fixture, contacts and accounts are fictional.
+`make verify` installs pinned dependencies, runs lint/format checks, strict typecheck, all tests, initialization, gold benchmark and production package build with an actual temporary-target wheel installation and smoke validation using the invoking interpreter’s dependencies. `make demo` displays original text and extracted evidence before prompting. Read them and type `REVIEWED`; the full account changes from `GB46TEST00000000003821` to `GB57TEST00000000009928`, producing `VERIFY / DESTINATION_CHANGED`. The fixture, contacts and accounts are fictional.
 
 | Command | Purpose |
 | --- | --- |
