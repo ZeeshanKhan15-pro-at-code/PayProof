@@ -19,6 +19,7 @@ class Settings(Contract):
     data_dir: Path = Path("data")
     extraction_mode: Literal["disabled", "fixture", "live"] = "disabled"
     secret_key: SecretStr | None = Field(default=None, repr=False, exclude=True)
+    operator_token: SecretStr | None = Field(default=None, repr=False, exclude=True)
     provider_api_key: SecretStr | None = Field(default=None, repr=False, exclude=True)
     provider_model: str | None = Field(default=None, min_length=1, max_length=256)
     extraction_timeout_seconds: int = Field(default=30, ge=1, le=60)
@@ -40,6 +41,19 @@ class Settings(Contract):
                 or not self.provider_model.strip()
             ):
                 raise ValueError("live extraction requires provider key and model")
+        if self.operator_token is not None:
+            if any(
+                secret is not None
+                and secret.get_secret_value() == self.operator_token.get_secret_value()
+                for secret in (self.secret_key, self.provider_api_key)
+            ):
+                raise ValueError("operator token must be distinct from other secrets")
+            if (
+                len(self.operator_token.get_secret_value().strip()) < 32
+                or self.secret_key is None
+                or len(self.secret_key.get_secret_value().strip()) < 32
+            ):
+                raise ValueError("web operator gate requires a long token and signing secret")
         if self.environment == "production":
             if self.secret_key is None or len(self.secret_key.get_secret_value().strip()) < 32:
                 raise ValueError("production requires a signing secret of at least 32 characters")
@@ -53,6 +67,7 @@ def load_settings(environ: Mapping[str, str]) -> Settings:
         "PAYPROOF_DATA_DIR",
         "PAYPROOF_EXTRACTION_MODE",
         "PAYPROOF_SECRET_KEY",
+        "PAYPROOF_OPERATOR_TOKEN",
         "PAYPROOF_PROVIDER_API_KEY",
         "PAYPROOF_PROVIDER_MODEL",
         "PAYPROOF_EXTRACTION_TIMEOUT_SECONDS",
@@ -79,6 +94,9 @@ def load_settings(environ: Mapping[str, str]) -> Settings:
                 "data_dir": Path(raw_dir),
                 "extraction_mode": environ.get("PAYPROOF_EXTRACTION_MODE", "disabled"),
                 "secret_key": SecretStr(raw_secret) if raw_secret else None,
+                "operator_token": SecretStr(environ["PAYPROOF_OPERATOR_TOKEN"])
+                if environ.get("PAYPROOF_OPERATOR_TOKEN")
+                else None,
                 "provider_api_key": SecretStr(raw_api_key) if raw_api_key else None,
                 "provider_model": raw_model or None,
                 "extraction_timeout_seconds": int(raw_timeout),

@@ -5,5 +5,7 @@ recursive-include tests *.py
 recursive-include scripts *.py
 recursive-include payproof/fixtures *.json
 recursive-include payproof/migrations *.sql
+recursive-include payproof/templates *.html
+recursive-include payproof/static *.css
 
 global-exclude .env .env.* *.pem *.key

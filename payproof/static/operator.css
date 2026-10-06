@@ -1,0 +1,6 @@
+body { font-family: system-ui, sans-serif; margin: 1.5rem auto; max-width: 72rem; padding: 0 1rem; color: #17202a; background: #fff; }
+section, aside, article, details { border: 1px solid #889; padding: 1rem; margin: 1rem 0; }
+.review { border-left: .6rem solid #365d91; } .comparison { border-left: .6rem solid #795b13; } .verification { border-left: .6rem solid #65528a; }
+.boundary, .blocked { background: #fff2d5; border: 2px solid #795b13; }
+label { display: block; margin: 1rem 0; } textarea { display: block; width: 95%; min-height: 7rem; } input:not([type=checkbox]):not([type=hidden]), select { display: block; max-width: 95%; min-width: 17rem; padding: .4rem; }
+button { padding: .6rem; margin: .4rem 0; cursor: pointer; } pre { white-space: pre-wrap; overflow-wrap: anywhere; } table { border-collapse: collapse; width: 100%; } td, th { border: 1px solid #889; padding: .5rem; overflow-wrap: anywhere; text-align: left; } .state { font-size: 1.4rem; }

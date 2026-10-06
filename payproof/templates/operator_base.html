@@ -1,0 +1,4 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PayProof — destination review</title><link rel="stylesheet" href="{{ url_for('static', filename='operator.css') }}"></head><body>
+<header><h1>PayProof</h1><p>Payment destination review · synthetic demonstration</p>{% if session.get('operator') %}<nav><a href="{{ url_for('operator_home') }}">Vendors and cases</a> · Operator: {{ session.operator }}</nav><form method="post" action="{{ url_for('operator_logout') }}"><input type="hidden" name="csrf" value="{{ session.csrf }}"><button>Log out</button></form>{% endif %}</header>
+<aside class="boundary"><strong>Payment authorization: not provided by PayProof.</strong> Source review, comparison and independent human attestation are distinct steps. No result authorizes a payment or establishes account ownership.</aside>
+<main>{% block content %}{% endblock %}</main></body></html>

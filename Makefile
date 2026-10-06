@@ -57,7 +57,7 @@ demo: setup
 demo-smoke: setup
 	$(PY) -m payproof demo --simulate-review
 
-# Local read-only debug server, without the interactive debugger or reloader.
+# Local operator server (writes require environment-configured gate), no debugger/reloader.
 serve: setup
 	$(PY) -m payproof serve
 

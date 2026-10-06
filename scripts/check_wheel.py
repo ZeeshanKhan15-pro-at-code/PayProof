@@ -152,6 +152,26 @@ app = create_app(settings)
 assert app.test_client().get('/healthz').status_code == 200
 assert app.test_client().get('/').json['writable'] is False
 assert app.debug is False and app.config['SESSION_COOKIE_SECURE'] is True
+# Gated pages and packaged templates/static assets must work outside checkout.
+operator_token = secrets.token_urlsafe(48)
+operator_settings = load_settings({'PAYPROOF_ENV': 'production', 'PAYPROOF_SECRET_KEY': secrets.token_urlsafe(48), 'PAYPROOF_OPERATOR_TOKEN': operator_token, 'PAYPROOF_EXTRACTION_MODE': 'fixture', 'PAYPROOF_DATA_DIR': 'private-web-data'})
+operator_app = create_app(operator_settings)
+client = operator_app.test_client()
+assert client.get('/operator/login', base_url='https://localhost').status_code == 200
+with client.session_transaction(base_url='https://localhost') as browser_session:
+    csrf = browser_session['csrf']
+assert client.post('/operator/login', base_url='https://localhost', data={'csrf': csrf, 'operator': 'installed-synthetic-operator', 'token': operator_token}).status_code == 302
+with client.session_transaction(base_url='https://localhost') as browser_session:
+    csrf = browser_session['csrf']
+assert client.post('/operator/demo-vendor', base_url='https://localhost', data={'csrf': csrf}).status_code == 302
+request_fixture = next(r for r in corpus.requests if r.fixture_id == 'demo-account-change')
+created = client.post('/operator/cases/new', base_url='https://localhost', data={'csrf': csrf, 'vendor_id': str(request_fixture.vendor_id), 'email': request_fixture.source.text})
+assert created.status_code == 302
+page = client.get(created.location, base_url='https://localhost')
+assert page.status_code == 200 and b'GB57TEST00000000009928' in page.data
+assert b'Acknowledge source review only' in page.data
+assert client.get('/static/operator.css', base_url='https://localhost').status_code == 200
+assert operator_token.encode() not in page.data
 from contextlib import redirect_stdout
 from io import StringIO
 from payproof.cli import main
@@ -162,7 +182,7 @@ assert 'STATE: VERIFY' in output.getvalue()
 assert 'Trusted account ending: 3821' in output.getvalue()
 assert 'Requested account ending: 9928' in output.getvalue()
 assert 'STATE: VERIFIED' not in output.getvalue()
-print(json.dumps({'wheel': 'installed_and_initialized', 'dependencies': 'existing_interpreter', 'vendors': len(corpus.vendors), 'requests': len(corpus.requests), 'production_wsgi_health': 200, 'http_binding': 'NOT_TESTED', 'sqlite_migration_restart': 'PASS'}))
+print(json.dumps({'wheel': 'installed_and_initialized', 'dependencies': 'existing_interpreter', 'vendors': len(corpus.vendors), 'requests': len(corpus.requests), 'production_wsgi_health': 200, 'http_binding': 'NOT_TESTED', 'sqlite_migration_restart': 'PASS', 'gated_operator_pages_assets': 'PASS'}))
 """
     with tempfile.TemporaryDirectory(prefix="payproof-installed-wheel-") as temporary:
         site = Path(temporary) / "site"

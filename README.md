@@ -21,7 +21,7 @@ email/invoice/plain text -> extraction -> schema + source validation |
                                           evidence, trusted callback
 ```
 
-[DATA_MODEL.md](docs/DATA_MODEL.md) defines canonical contracts. [VERTICAL_SLICE.md](docs/VERTICAL_SLICE.md) describes the connected workflow. SQLite persistence and explicit independent-verification events are available through the private local `workflow` CLI. The web interface remains read-only. No architecture or comparison rule was changed for this freeze.
+[DATA_MODEL.md](docs/DATA_MODEL.md) defines canonical contracts. [VERTICAL_SLICE.md](docs/VERTICAL_SLICE.md) describes the connected workflow. SQLite persistence and explicit independent-verification events are available through the private local `workflow` CLI. The web operator workflow is available at `/operator` when its environment-only gate is configured. No architecture or comparison rule was changed for this freeze.
 
 ### AI role
 
@@ -66,7 +66,7 @@ The separate [Phase-2 held-out specification](docs/PHASE2_BENCHMARK_SPEC.md) fre
 ### Current limitations
 
 - The [current-instruction source guard](docs/CURRENT_INSTRUCTION_SAFETY.md) blocks independently detected competing, omitted and reference-only destination regions even after a broad review acknowledgement. It is a lexical tripwire, not exhaustive discovery or proof of payment intent; undetected role/omission errors remain possible. Review every original source and independently verify vendor updates.
-- The CLI runs in memory. Durable case history, authenticated review identity, cross-request current-revision checks and independent verification are absent. The read-only web server does not serve the payment workflow.
+- The original CLI demo remains in memory; `workflow` CLI and the gated `/operator` web pages persist cases and explicit independent checks. The prototype uses one shared operator passphrase and operator labels, not individual authenticated identities or enterprise access controls.
 - GB/DE IBAN and UTF-8 plain text only. Separate routing, other schemes/countries, OCR, PDF ingestion and automatic vendor matching are unsupported. Conservative grounding can reject undelimited numeric columns or footnotes.
 - Fixture success and mocked provider tests are not real-world extraction accuracy. Socket timeouts do not establish a complete provider wall-clock deadline.
 - Tracked secret fields are empty and local `.env` files are ignored. A credential-like value existed in earlier Git history; owner revocation/rotation, if live, is still required. This freeze does not certify secret-free history or revoke credentials.
@@ -121,10 +121,16 @@ make debug
 | `PAYPROOF_SECRET_KEY` | Absent | Production requires at least 32 nonblank characters, supplied independently |
 | `PAYPROOF_DATA_DIR` | `./data` | Reserved data path; no database is created |
 
-Unknown `PAYPROOF_*` variables and invalid settings fail startup. The demo ignores live configuration; initialization, gold benchmarks and replay never call the provider. Live `extract`, `analyze`, and extraction benchmarking send source text to the configured provider. Use synthetic data for demonstrations. `make production` runs Gunicorn on loopback port 8000 with a host-provided signing secret; it exposes the same read-only skeleton and is not a deployed verification workflow.
+Unknown `PAYPROOF_*` variables and invalid settings fail startup. The demo ignores live configuration; initialization, gold benchmarks and replay never call the provider. Live `extract`, `analyze`, and extraction benchmarking send source text to the configured provider. Use synthetic data for demonstrations. `make production` runs Gunicorn on loopback port 8000 with a host-provided signing secret; it serves the gated operator workflow when both operator and signing secrets are configured. Restrict access and provide HTTPS for production cookies.
 
 ### Durable local workflow
 
-Use `PAYPROOF_DATA_DIR` for a private persistent local directory (default `data/`). Initialize with `.venv/bin/python -m payproof workflow init`. Commands and the new strict workflow contracts are documented in [DATA_MODEL.md](docs/DATA_MODEL.md#durable-local-workflow-phase-2). `workflow --help` lists commands. No database writes or verification endpoints are exposed through HTTP.
+Use `PAYPROOF_DATA_DIR` for a private persistent local directory (default `data/`). Initialize with `.venv/bin/python -m payproof workflow init`. Commands and the new strict workflow contracts are documented in [DATA_MODEL.md](docs/DATA_MODEL.md#durable-local-workflow-phase-2). `workflow --help` lists commands. The gated web forms use the same storage commands, expected revisions and verification contracts.
 
 The local OS user controls baseline entry and human actions. Operator labels are attribution, not authentication. A confirmation records an independent human attestation of exact instructions, not account ownership or permission to pay. Stale revisions require refresh, source review and comparison again. SQLite files, journals and backups contain source text and must remain private and outside Git.
+
+### Minimal operator web workflow
+
+See [WEB_WORKFLOW.md](docs/WEB_WORKFLOW.md) for setup and the seeded demonstration. Configure `PAYPROOF_SECRET_KEY` and `PAYPROOF_OPERATOR_TOKEN` as distinct random secrets (32+ characters each), `PAYPROOF_DATA_DIR` as private persistent storage, and explicitly choose an extraction mode. Run `make serve` and open `http://127.0.0.1:8000/operator`. Login uses the operator passphrase; API keys are never submitted through the UI. The browser root redirects to this page; JSON health/capability requests remain available.
+
+Create/select a prior trusted vendor, paste or upload UTF-8 synthetic text, run extraction, inspect all sources/spans, acknowledge source review, and run comparison. Only a separate, unchecked human form can record an independent-check outcome using the stored trusted contact. History and old comparisons remain visible; stale records cannot be confirmed. No payment-authorization action exists.

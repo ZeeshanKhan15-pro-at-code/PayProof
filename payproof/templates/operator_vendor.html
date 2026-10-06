@@ -1,0 +1,9 @@
+{% extends 'operator_base.html' %}{% block content %}<h2>Create a previously trusted vendor record</h2><p>Use information established before the current request. The suspect request cannot establish its own baseline or callback. This form records your trust assertion.</p><form method="post"><input type="hidden" name="csrf" value="{{ session.csrf }}">
+<label>Canonical vendor name <input name="name" required maxlength="256"></label>
+<label>Previously trusted full GB/DE IBAN <input name="account" required maxlength="256"></label>
+<label>Previously trusted contact method <select name="contact_method" required><option value="">Choose</option><option>PHONE</option><option>KNOWN_PORTAL</option><option>IN_PERSON</option></select></label>
+<label>Previously trusted contact value <input name="contact" required maxlength="256"></label>
+<label>Prior onboarding record reference <input name="source_reference" required maxlength="20000"></label>
+<label>Provenance: how this record and contact were independently established <textarea name="description" required maxlength="20000"></textarea></label>
+<label>Date last independently checked (UTC, e.g. 2026-10-01T08:00:00Z) <input name="verified_at" required></label>
+<label><input type="checkbox" name="trusted_before_request" value="yes" required> I established these vendor instructions and this contact before the current request, independently of it.</label><button>Create trusted baseline</button></form>{% endblock %}

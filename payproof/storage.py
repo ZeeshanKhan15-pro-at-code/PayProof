@@ -486,3 +486,26 @@ class SQLiteStore:
                 (str(case_id),),
             )
         )
+
+    def list_vendors(self) -> tuple[TrustedVendorRecord, ...]:
+        return tuple(
+            self.get_vendor(UUID(row[0]))
+            for row in self.db.execute("SELECT vendor_id FROM vendor_heads ORDER BY vendor_id")
+        )
+
+    def list_cases(self) -> tuple[StoredCase, ...]:
+        return tuple(
+            self.get_case(UUID(row[0]))
+            for row in self.db.execute(
+                "SELECT case_id FROM case_heads ORDER BY rowid DESC LIMIT 50"
+            )
+        )
+
+    def case_history(self, case_id: UUID) -> tuple[StoredCase, ...]:
+        return tuple(
+            self.get_case(case_id, UUID(row[0]))
+            for row in self.db.execute(
+                "SELECT revision_id FROM case_revisions WHERE case_id=? ORDER BY version",
+                (str(case_id),),
+            )
+        )

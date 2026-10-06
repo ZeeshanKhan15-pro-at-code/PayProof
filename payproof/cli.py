@@ -210,7 +210,7 @@ def main(argv: list[str] | None = None) -> int:
                         "synthetic_vendors": [v.canonical_vendor_name for v in corpus.vendors],
                         "synthetic_requests": [r.fixture_id for r in corpus.requests],
                         "decision_engine": "iban-gb-de-v1",
-                        "verification": "NOT_IMPLEMENTED",
+                        "verification": "EXPLICIT_HUMAN_COMMAND_ONLY",
                     },
                     indent=2,
                 )
