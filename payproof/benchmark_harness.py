@@ -29,11 +29,12 @@ from payproof.benchmark_scoring import (
 from payproof.cases import candidate_identity
 from payproof.comparison import compare
 from payproof.config import ConfigurationError, Settings, load_settings
-from payproof.evaluation_contracts import BenchmarkCase, BenchmarkCorpus
-from payproof.extraction import extract_attempt
+from payproof.evaluation_contracts import BenchmarkCase, BenchmarkCorpus, BenchmarkDataset
+from payproof.extraction import ExtractionAttempt, extract_attempt
 from payproof.extraction_contract import (
     EXTRACTION_INSTRUCTIONS,
     PROMPT_VERSION,
+    WireExtractionPayload,
     structured_output_schema,
 )
 from payproof.schemas import (
@@ -61,6 +62,7 @@ class AttemptRecord(Contract):
     exception_type: str | None = None
     provider_response_sha256: str | None = None
     elapsed_seconds: float
+    wire_schema_status: Literal["PASS", "FAIL", "UNAVAILABLE"] = "UNAVAILABLE"
 
 
 class TrackReport(Contract):
@@ -291,7 +293,7 @@ def evaluate_case(
 
 
 def evaluate_track(
-    corpus: BenchmarkCorpus, track: TrackName, attempts: tuple[AttemptRecord, ...] = ()
+    corpus: BenchmarkDataset, track: TrackName, attempts: tuple[AttemptRecord, ...] = ()
 ) -> TrackReport:
     by_baseline = {b.key: b.record for b in corpus.baselines}
     by_case = {a.case_id: a for a in attempts}
@@ -322,7 +324,40 @@ def evaluate_track(
     )
 
 
-def collect_attempts(corpus: BenchmarkCorpus, settings: Settings) -> tuple[AttemptRecord, ...]:
+def wire_schema_status(attempt: ExtractionAttempt) -> Literal["PASS", "FAIL", "UNAVAILABLE"]:
+    """Assess only observed output; provider/protocol failure is not a schema result.
+
+    Raw provider bodies never enter reports. Some safely discarded bodies cannot
+    be assessed, so missing diagnostic information remains UNAVAILABLE.
+    """
+    if attempt.evidence.extraction.method != "AI":
+        return "UNAVAILABLE"
+    failure = attempt.evidence.extraction.failure_code
+    if failure is None or failure == "EVIDENCE_INVALID":
+        return "PASS"
+    if failure != "INVALID_RESPONSE" or attempt.raw_provider_response is None:
+        return "UNAVAILABLE"
+    try:
+        body = json.loads(attempt.raw_provider_response)
+        texts = [
+            part["text"]
+            for item in body.get("output", [])
+            if item.get("type") == "message" and item.get("role") == "assistant"
+            for part in item.get("content", [])
+            if part.get("type") == "output_text" and isinstance(part.get("text"), str)
+        ]
+        if len(texts) != 1:
+            return "UNAVAILABLE"
+    except (ValueError, TypeError, AttributeError, KeyError, RecursionError):
+        return "UNAVAILABLE"
+    try:
+        parse_contract(WireExtractionPayload, texts[0])
+    except (ValueError, ValidationError):
+        return "FAIL"
+    return "PASS"
+
+
+def collect_attempts(corpus: BenchmarkDataset, settings: Settings) -> tuple[AttemptRecord, ...]:
     records = []
     for case in corpus.cases:
         started = perf_counter()
@@ -339,6 +374,7 @@ def collect_attempts(corpus: BenchmarkCorpus, settings: Settings) -> tuple[Attem
                     if attempt.raw_provider_response is not None
                     else None,
                     elapsed_seconds=perf_counter() - started,
+                    wire_schema_status=wire_schema_status(attempt),
                 )
             )
         except Exception as error:
@@ -371,9 +407,10 @@ def run_benchmark(
     *,
     settings: Settings | None = None,
     replay_path: Path | None = None,
+    corpus_model: type[BenchmarkDataset] = BenchmarkCorpus,
 ) -> RunReport:
     raw = corpus_path.read_bytes()
-    corpus = parse_contract(BenchmarkCorpus, raw)
+    corpus = parse_contract(corpus_model, raw)
     corpus_hash = digest(raw)
     # Freeze provenance before predictions.
     provenance = code_hashes()
@@ -465,7 +502,7 @@ def run_benchmark(
 
 def render_summary(report: RunReport) -> str:
     lines = [
-        "PayProof Phase-1 benchmark",
+        "PayProof benchmark",
         f"Dataset: {report.dataset_id}",
         f"Corpus SHA-256: {report.corpus_sha256}",
         f"Label review: {report.independent_label_review}; {report.split}",

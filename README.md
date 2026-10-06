@@ -59,6 +59,8 @@ Only explicit human independent verification could create a separate scoped `VER
 
 Gold reviews are explicitly simulated. [Recorded configured-extraction results](benchmarks/phase1-v1/results/extraction/summary.txt) contain 30 `NOT_CONFIGURED` failures, zero successful classifications and zero comparison failures. They do not measure live AI accuracy. Independent labels remain `PENDING`; this public diagnostic corpus does not satisfy the architecture's 36-case held-out release evaluation. See [run notes](benchmarks/phase1-v1/results/README.md).
 
+The separate [Phase-2 held-out specification](docs/PHASE2_BENCHMARK_SPEC.md) freezes 72 new synthetic cases before predictor execution. `make benchmark-heldout-validate` validates definitions only. No held-out performance is claimed; independent human label review remains pending. Keep this set out of tuning and use the documented explicit commands for future evaluation.
+
 ### Current limitations
 
 - Source quotes prove presence, not current-payment relevance or completeness. An extractor can omit a current account and quote a historical account; incorrect human review can then produce `UNCHANGED`. This is a retained red-team reproduction and blocks unattended/live reliability claims. Review every original instruction, not just the proposed account.
@@ -88,6 +90,7 @@ make demo
 | `make demo-smoke` | Offline seeded demo with explicitly simulated source review |
 | `.venv/bin/python -m payproof demo --no-review` | Leave the demo `UNCERTAIN / REVIEW_REQUIRED` (exit 2) |
 | `make benchmark` | Save the 30-case gold diagnostic run |
+| `make benchmark-heldout-validate` | Validate the frozen 72-case definitions without predicting |
 | `make benchmark-extraction` | Evaluate configured extraction; missing configuration is a failure |
 | `make build` | Build wheel/source distribution and validate installed package contents |
 | `make serve` | Read-only local server at `http://127.0.0.1:8000`; `/healthz` is liveness only |

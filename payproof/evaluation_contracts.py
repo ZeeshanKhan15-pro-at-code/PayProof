@@ -156,19 +156,19 @@ class BenchmarkCase(Contract):
         return self
 
 
-class BenchmarkCorpus(Contract):
+class BenchmarkDataset(Contract):
     schema_version: Literal["payproof-benchmark-design-v1"]
-    dataset_id: Literal["payproof-phase1-diagnostic-30-v1"]
+    dataset_id: ShortText
     evaluation_status: Literal["NOT_RUN"]
     independent_label_review: Literal["PENDING"]
-    split: Literal["PUBLIC_DIAGNOSTIC_NOT_HELD_OUT"]
+    split: ShortText
     rule_version: Literal["iban-gb-de-v1"]
     gold_review_protocol: Literal["SIMULATED_GOLD_SOURCE_REVIEW"]
     baselines: Annotated[tuple[BenchmarkBaseline, ...], Field(min_length=1)]
-    cases: Annotated[tuple[BenchmarkCase, ...], Field(min_length=20, max_length=30)]
+    cases: Annotated[tuple[BenchmarkCase, ...], Field(min_length=20, max_length=100)]
 
     @model_validator(mode="after")
-    def references_and_grounding(self) -> "BenchmarkCorpus":
+    def references_and_grounding(self) -> "BenchmarkDataset":
         by_key = {baseline.key: baseline.record for baseline in self.baselines}
         if len(by_key) != len(self.baselines):
             raise ValueError("baseline keys must be unique")
@@ -225,3 +225,17 @@ class BenchmarkCorpus(Contract):
                 if (state == "UNCHANGED") != equal:
                     raise ValueError("decisive label contradicts the frozen full identities")
         return self
+
+
+class BenchmarkCorpus(BenchmarkDataset):
+    dataset_id: Literal["payproof-phase1-diagnostic-30-v1"]
+    split: Literal["PUBLIC_DIAGNOSTIC_NOT_HELD_OUT"]
+    cases: Annotated[tuple[BenchmarkCase, ...], Field(min_length=20, max_length=30)]
+
+
+class HeldOutCorpus(BenchmarkDataset):
+    dataset_id: Literal["payproof-phase2-heldout-72-v1"]
+    split: Literal["HELD_OUT_FROM_MODEL_AND_TUNING"]
+    cases: Annotated[tuple[BenchmarkCase, ...], Field(min_length=72, max_length=72)]
+    label_origin: Literal["AUTHOR_SPECIFIED_BEFORE_EXECUTION_NO_MODEL"]
+    tuning_policy: Literal["NO_OPTIMIZATION_ON_V1"]

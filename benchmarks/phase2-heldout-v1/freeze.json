@@ -1,0 +1,20 @@
+{
+  "dataset_id": "payproof-phase2-heldout-72-v1",
+  "frozen_on": "2026-10-06",
+  "prediction_execution": "NOT_RUN_AT_FREEZE",
+  "label_origin": "AUTHOR_SPECIFIED_BEFORE_EXECUTION_NO_MODEL",
+  "independent_label_review": "PENDING",
+  "sha256": {
+    "authoring.json": "73f741d425198b2ef4a1d921a6f337b1dc750b61f62e18e4c30289bf27097e14",
+    "cases.json": "203a43619b2baaf516063e5f2add4ce86a828c8ac8dc6c1e29edb6e09363c2d0",
+    "schema.json": "922cf659f6bad85cecb192db15cc2e0d63716db60713ff0a27ad6d31b761a058"
+  },
+  "protocol_sha256": {
+    "docs/PHASE2_BENCHMARK_SPEC.md": "664351ee384bd230873dac6b7433ada1d3fb5f15de68953c2937c3dcb9070511",
+    "payproof/heldout_benchmark.py": "1a4f59298049a8b58a7ba9e7363d4ef905d37b60e3ff6f33ded79c12ae200756",
+    "payproof/benchmark_scoring.py": "d2ce4c0b166f5af140a9a915b185ee51906f84bc8a30b08e85ba17d40e43654f",
+    "payproof/benchmark_harness.py": "0bb8c36f6890afe8b94454bc18ff90ad3d4d91a6aa37b678be805761e51be320",
+    "payproof/evaluation_contracts.py": "1893da36471e7d16228ed4f16b04c7c13124360ec5533d958988242cdf32a9be",
+    "scripts/compile_heldout.py": "dd06aeb82abc919604027a2061cc3a9c5ef7111007e9224af30c7d0a3d43cda8"
+  }
+}

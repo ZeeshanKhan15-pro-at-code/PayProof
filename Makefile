@@ -64,3 +64,9 @@ serve: setup
 # A host/reverse proxy must restrict access and provide HTTPS.
 production: setup
 	PAYPROOF_ENV=production $(VENV)/bin/gunicorn --bind 127.0.0.1:8000 --workers 1 --threads 2 'payproof.web:create_app()'
+
+# Definitions only: does not execute the held-out model or comparison engine.
+.PHONY: benchmark-heldout-validate
+benchmark-heldout-validate: setup
+	$(PY) -m payproof.heldout_benchmark
+	$(PY) scripts/compile_heldout.py
