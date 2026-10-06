@@ -24,7 +24,7 @@ include = ["payproof*"]
 namespaces = false
 
 [tool.setuptools.package-data]
-payproof = ["py.typed", "fixtures/trusted_vendors/*.json", "fixtures/requests/*.json"]
+payproof = ["py.typed", "migrations/*.sql", "fixtures/trusted_vendors/*.json", "fixtures/requests/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

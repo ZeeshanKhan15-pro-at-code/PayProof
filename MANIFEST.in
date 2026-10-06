@@ -4,5 +4,6 @@ recursive-include benchmarks *.json *.txt *.md
 recursive-include tests *.py
 recursive-include scripts *.py
 recursive-include payproof/fixtures *.json
+recursive-include payproof/migrations *.sql
 
 global-exclude .env .env.* *.pem *.key

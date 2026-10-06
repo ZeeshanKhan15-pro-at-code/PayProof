@@ -21,7 +21,7 @@ email/invoice/plain text -> extraction -> schema + source validation |
                                           evidence, trusted callback
 ```
 
-[DATA_MODEL.md](docs/DATA_MODEL.md) defines canonical contracts. [VERTICAL_SLICE.md](docs/VERTICAL_SLICE.md) describes the connected workflow. SQLite persistence, a writable operator interface and independent-verification events remain planned architecture components, not current capabilities. No architecture or comparison rule was changed for this freeze.
+[DATA_MODEL.md](docs/DATA_MODEL.md) defines canonical contracts. [VERTICAL_SLICE.md](docs/VERTICAL_SLICE.md) describes the connected workflow. SQLite persistence and explicit independent-verification events are available through the private local `workflow` CLI. The web interface remains read-only. No architecture or comparison rule was changed for this freeze.
 
 ### AI role
 
@@ -39,7 +39,7 @@ The pure comparator uses complete checksum-valid GB/DE IBANs. Only ASCII spaces 
 | `VERIFY` | Complete reviewed supported destination differs; independent human verification required |
 | `UNCERTAIN` | Missing, failed, unsupported, conflicting or unreviewed evidence prevents a reliable comparison |
 
-Only explicit human independent verification could create a separate scoped `VERIFIED` record later. That command is not implemented. Typing `REVIEWED` acknowledges source review and does not verify the vendor or account. See [COMPARISON.md](docs/COMPARISON.md).
+Only the explicit human `workflow verify` command can create a separate scoped confirmation, from which the durable workflow derives `VERIFIED` when current. The underlying comparison stays `UNCHANGED` or `VERIFY`. Typing `REVIEWED` acknowledges source review and does not verify the vendor or account. See [COMPARISON.md](docs/COMPARISON.md).
 
 ### Current benchmark
 
@@ -122,3 +122,9 @@ make debug
 | `PAYPROOF_DATA_DIR` | `./data` | Reserved data path; no database is created |
 
 Unknown `PAYPROOF_*` variables and invalid settings fail startup. The demo ignores live configuration; initialization, gold benchmarks and replay never call the provider. Live `extract`, `analyze`, and extraction benchmarking send source text to the configured provider. Use synthetic data for demonstrations. `make production` runs Gunicorn on loopback port 8000 with a host-provided signing secret; it exposes the same read-only skeleton and is not a deployed verification workflow.
+
+### Durable local workflow
+
+Use `PAYPROOF_DATA_DIR` for a private persistent local directory (default `data/`). Initialize with `.venv/bin/python -m payproof workflow init`. Commands and the new strict workflow contracts are documented in [DATA_MODEL.md](docs/DATA_MODEL.md#durable-local-workflow-phase-2). `workflow --help` lists commands. No database writes or verification endpoints are exposed through HTTP.
+
+The local OS user controls baseline entry and human actions. Operator labels are attribution, not authentication. A confirmation records an independent human attestation of exact instructions, not account ownership or permission to pay. Stale revisions require refresh, source review and comparison again. SQLite files, journals and backups contain source text and must remain private and outside Git.

@@ -1,6 +1,6 @@
 # PayProof canonical data contracts
 
-Status: v1 contracts implemented and tested. These contracts refine the frozen [architecture](ARCHITECTURE.md). The extraction service, comparator and connected CLI are documented in [EXTRACTION.md](EXTRACTION.md), [COMPARISON.md](COMPARISON.md) and [VERTICAL_SLICE.md](VERTICAL_SLICE.md). Storage and the web operator UI remain later work.
+Status: v1 contracts implemented and tested. These contracts refine the frozen [architecture](ARCHITECTURE.md). The extraction service, comparator and connected CLI are documented in [EXTRACTION.md](EXTRACTION.md), [COMPARISON.md](COMPARISON.md) and [VERTICAL_SLICE.md](VERTICAL_SLICE.md). SQLite persistence and explicit human checks are available through the local workflow CLI; a writable web operator UI remains later work.
 
 The canonical implementation is [payproof/schemas.py](../payproof/schemas.py). Python uses Pydantic v2. Dependencies are pinned in [pyproject.toml](../pyproject.toml), with a complete development dependency snapshot in [requirements-dev.txt](../requirements-dev.txt). No ORM, database driver, AI SDK, or frontend dependency is introduced.
 
@@ -183,9 +183,9 @@ This is only a human attestation that exact destination instructions were indepe
 | `human_confirmed` | Explicit JSON boolean `true`; false, integer `1`, and strings are rejected |
 | `confirmed_at`, `notes` | UTC timestamp and optional bounded notes |
 
-Do not create this record when a callback was unanswered, confirmation conflicted, or the destination remained unresolved. Notes about failed contact belong in later case/audit events, not a successful verification record.
+Do not create this record when a callback was unanswered, confirmation conflicted, or the destination remained unresolved. Notes about failed contact belong in persisted `IndependentCheckEvent` attempt events, not a successful verification record.
 
-`CaseContract` requires a decisive comparison, exact checked identity, matching vendor/baseline/contact revisions and contact/provenance snapshots, and confirmation at or after comparison time. An unresolved `UNCERTAIN` cannot receive this record. The original comparison remains unchanged. An eventual UI may derive the separate label `VERIFIED` from a valid human record; there is no model-generated status field to set.
+`CaseContract` requires a decisive comparison, exact checked identity, matching vendor/baseline/contact revisions and contact/provenance snapshots, and confirmation at or after comparison time. An unresolved `UNCERTAIN` cannot receive this record. The original comparison remains unchanged. `StoredCase.independent_verification_status` derives the separate label `VERIFIED` only from a fresh positive human record; there is no model-generated status field to set.
 
 This validates an attestation's consistency, not whether a call occurred, who owns an account, or whether the contact told the truth. A valid schema object is not evidence that an authenticated human submitted it.
 
@@ -195,7 +195,7 @@ This validates an attestation's consistency, not whether a call occurred, who ow
 
 `CaseContract` contains sources, evidence, nullable baseline, and optional review/comparison/verification. It verifies source grounding, unique references, chronology, immutable snapshot bindings, required destination review, and trusted-contact use. A case can exist before review/comparison. This is a validation envelope, not a persistence layout or a new lifecycle state.
 
-The future application must still:
+Remaining application obligations (the local durable workflow below implements revision checks, authoritative audit times, and append-only transactions):
 
 - Authenticate/attribute the operator, generate authoritative IDs/times, and accept verification only from an explicit human command.
 - Enforce prior independent trust during baseline entry; schema strings alone cannot establish it.
@@ -220,4 +220,58 @@ python3 -m venv .venv
 .venv/bin/python -m pytest -q
 ```
 
-Tests run offline with synthetic data once dependencies are installed. Normalization/comparison tests and ten-fixture gold comparison and CLI integration are implemented; see [COMPARISON.md](COMPARISON.md). Live model evaluation, the independently reviewed 36-case release benchmark, and persistent verification lifecycle integration remain later gates.
+Tests run offline with synthetic data once dependencies are installed. Normalization/comparison tests and ten-fixture gold comparison and CLI integration are implemented; see [COMPARISON.md](COMPARISON.md). Live held-out model evaluation and independent review of the 72-case held-out corpus remain later gates; persistent local verification lifecycle tests now run in `tests/test_persistence.py`.
+
+## Durable local workflow (Phase 2)
+
+`payproof/storage.py` implements the previously reserved SQLite boundary using the standard library. `payproof/workflow_contracts.py` adds strict local command/envelope contracts without changing the extraction schema or comparison states. `payproof/verification.py` exports the human command contracts; the transaction lives in `SQLiteStore.record_independent_check`.
+
+### New contracts
+
+- `CaseInputs`: original frozen sources plus canonical extracted evidence. No baseline, review, comparison, verification, status, or callback override is accepted. Grounding and chronology are revalidated in `CaseContract` on every write/read. JSON import is a source-bound manual/developer ingestion path, not an attestation. Imports reject duplicate object keys/nonfinite JSON and are bounded to 4 MiB.
+- `IndependentCheckAction`: unique action UUID, operator, exact-instructions check, explicit boolean `independently_checked: true`, outcome (`CONFIRMED`, `NOT_CONFIRMED`, `INCONCLUSIVE`), human-reported person/role (required for confirmation), optional notes. No client timestamp, checked destination, trusted callback or verdict is accepted. The CLI requires a final explicit acknowledgement with no default confirmation.
+- `IndependentCheckEvent`: server UUID/time, source case revision, comparison/baseline IDs, frozen previously trusted contact/provenance, exact compared destination, action/outcome/person/operator/notes, optional positive `HumanVerificationRecord`. Only a confirmed event may contain a positive record. Every outcome is retained; an unanswered or inconclusive check never derives `VERIFIED`.
+- `StoredCase`: authoritative case/revision UUIDs, monotonic version, selected vendor ID, recorded time, validated `CaseContract`, engine fingerprint and current head identifiers. `stale` and `independent_verification_status` are derived properties, not writable fields. Historical records remain visible but report `STALE`; `VERIFIED` is never a comparison/extractor state.
+
+### Database and freshness rules
+
+The packaged `migrations/001_initial.sql` creates schema version 1 (`PRAGMA user_version` and migration ledger). Initialization is idempotent; unknown versions and nonempty unversioned databases fail closed. No migration framework or ORM is added. Back up before introducing any future migration.
+
+Immutable tables retain vendor/contact revisions, original source metadata/text and hash, extraction attempts with all observations/spans, complete case snapshots including reviews/comparisons, workflow audit events, independent-check attempts, and positive confirmations. Separate vendor/case head pointers identify current revisions. Snapshots/events reject SQL update/delete, and case versions cannot move backwards. These guards prevent accidental rewriting, not tampering by a privileged database administrator. SHA-256 snapshot checks detect accidental corruption; they are not signatures.
+
+Each mutation uses `BEGIN IMMEDIATE`, foreign keys, WAL and `synchronous=FULL`. Server-generated case revision/event/confirmation IDs and UTC times are committed atomically with the audit event and head update. A failed write claims no success and rolls back. Every case mutation requires its expected current revision. Vendor replacement requires the expected vendor revision; old vendor revisions cannot be restored as the head. Same source UUID, extraction-attempt UUID or contact revision with different facts is rejected. Corrections need new source/attempt/contact IDs or revisions as appropriate, and never edit old observations.
+
+Verification additionally requires a reviewed, current decisive comparison, the current vendor/contact snapshot and an unchanged safety-engine fingerprint. The contact and exact checked identity are obtained exclusively from stored trusted baseline and comparison data; suspect sender/reply-to/contact fields cannot substitute them. Engine fingerprint covers comparison, normalization, schemas and instruction-safety code. Source, extraction, review, comparison or trusted-record changes invalidate prior verification eligibility. Replacing/refreshing inputs clears current review/comparison/confirmation but retains history. Refresh against a newer baseline never backdates it: if trust no longer predates source capture, it is rejected, requiring properly established earlier history or a new genuine source capture.
+
+A repeated identical human action UUID against the original revision returns its existing event only while that resulting revision is still current and fresh. A changed payload or stale retry is rejected. Positive confirmation is unique per comparison. Negative outcomes are audit events, and a later new action can confirm using the new current revision. Confirmation never updates the trusted vendor record automatically.
+
+### Commands and authority
+
+All commands use `PAYPROOF_DATA_DIR` (default `data/`) and `payproof.sqlite3`. Database mode is `0600`; a newly created data directory uses `0700`. Existing directory permissions and volume placement remain the local operator's responsibility. No API key, configuration secret, raw rejected provider response or provider request headers are stored. Validated source text itself may be sensitive; use synthetic data for demonstrations.
+
+```bash
+.venv/bin/python -m payproof workflow init
+.venv/bin/python -m payproof workflow vendor-add --file payproof/fixtures/trusted_vendors/demo-account-3821.json --operator local-human
+.venv/bin/python -m payproof workflow case-create --vendor-id VENDOR_UUID --email synthetic-email.txt --invoice synthetic-invoice.txt --operator local-human
+# Alternatively import a JSON CaseInputs (sources + evidence only):
+.venv/bin/python -m payproof workflow case-import --vendor-id VENDOR_UUID --file case-inputs.json --operator local-human
+.venv/bin/python -m payproof workflow show --case-id CASE_UUID
+.venv/bin/python -m payproof workflow review --case-id CASE_UUID --revision-id CURRENT_REVISION_UUID --operator local-human
+.venv/bin/python -m payproof workflow compare --case-id CASE_UUID --revision-id CURRENT_REVISION_UUID --operator local-human
+.venv/bin/python -m payproof workflow verify --case-id CASE_UUID --revision-id CURRENT_REVISION_UUID --operator local-human
+.venv/bin/python -m payproof workflow events --case-id CASE_UUID
+# After a trusted-record change, refresh then repeat review and comparison:
+.venv/bin/python -m payproof workflow refresh --case-id CASE_UUID --revision-id CURRENT_REVISION_UUID --operator local-human
+```
+
+Use the new revision UUID printed by each command for the next action. `replace --file case-inputs.json` stores corrected observations; `vendor-add --expected-revision UUID` stores a newly identified trusted revision. `show` displays all original sources, competing source candidates, extracted spans, trusted provenance, comparison and separately labeled freshness/attestation. `events` displays every independent-check outcome. Historical snapshots are accessible through `get_case(case_id, revision_id)`; workflow events also retain every source-review/comparison transition.
+
+`case-create` uses the existing configured extraction mode and exact grounding checks, outside the database transaction; it atomically checks that the baseline did not change during extraction. Live mode has no fixture fallback. Failed extractions can be persisted and compared to `UNCERTAIN`; they cannot be successfully reviewed or confirmed. Settings remain environment-only, with existing validation; this command does not load `.env`.
+
+The CLI is intentionally local and human-operated. File/OS access is the authority boundary, and operator labels are attribution, not authenticated identity. Public HTTP writes, sessions, CSRF handling, multi-user identity and access-controlled deployment remain unimplemented. Do not expose the local Python command as an unauthenticated web action. No AI/provider/comparator path invokes the human command. PayProof records the person's attestation; it cannot prove a callback occurred, contact identity, bank ownership, fraud, legitimacy or payment safety.
+
+### Retention and validation
+
+Keep the database and backups on private persistent local storage; Git ignores database files and the default data directory. Use SQLite's online backup API for a consistent backup (or stop all writers and preserve the database plus any WAL). To delete a synthetic demonstration, stop every process and delete that dedicated store and its `-wal`/`-shm` files and backups. Per-case retention/deletion is not implemented; immutable history is retained until the dedicated store is removed. No indefinite-retention claim is made.
+
+`tests/test_persistence.py` exercises restart durability, positive/negative/inconclusive outcomes, callback binding, strict action fields, stale revisions across connections, trusted-contact immutability, engine changes, idempotency, duplicate confirmation, transaction rollback, snapshot corruption and interactive cancellation/confirmation. The installed-wheel smoke also initializes and reopens SQLite from packaged migration SQL. Run `make lint`, `make typecheck`, `make test` and `make build`; no provider or payment integration is required for these tests.

@@ -255,3 +255,7 @@ Wait until Phase 3, only after evidence from real workflows justifies the scope:
 - Larger independently labeled evaluations and operational monitoring using consented, appropriately handled data.
 
 Payment execution, autonomous approval, fraud/safety verdicts, and AI-created verification remain outside PayProof in every phase.
+
+### Phase-2 persistence implementation status
+
+The anticipated SQLite boundary and explicit independent-human-check event are now implemented by the private local `workflow` CLI, with immutable snapshots, revision compare-and-swap transactions, trusted-contact binding and separate human outcomes. No extraction/comparison state or destination semantics changed. The web surface remains read-only; a gated writable HTTP interface and its session/CSRF requirements remain deferred. See [durable contracts and commands](DATA_MODEL.md#durable-local-workflow-phase-2).

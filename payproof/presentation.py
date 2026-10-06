@@ -151,5 +151,12 @@ def render_result(case: CaseContract) -> str:
         lines.append(
             f"Independently check the exact new destination using the previously trusted callback: {contact.method} {_quoted(contact.value)}."
         )
-    lines.append("No independent-verification or account-ownership record was created.")
+    if case.verification is None:
+        lines.append("No independent-verification or account-ownership record was created.")
+    else:
+        lines.append(
+            "An explicit human independent-check confirmation is recorded for this snapshot. "
+            "It does not establish account ownership or approve payment. "
+            "Current revision freshness must be checked by the durable workflow."
+        )
     return "\n".join(lines)

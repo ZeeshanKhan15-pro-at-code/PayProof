@@ -135,6 +135,12 @@ import payproof
 assert Path(payproof.__file__).resolve().is_relative_to(site), 'Imported checkout instead of installed package'
 metadata = next(d for d in distributions(path=[str(site)]) if d.metadata['Name'] == 'payproof')
 assert metadata.version == '0.1.0'
+from payproof.storage import SQLiteStore
+store = SQLiteStore(Path('private-data/payproof.sqlite3'))
+assert store.db.execute('PRAGMA user_version').fetchone()[0] == 1
+store.close()
+store = SQLiteStore(Path('private-data/payproof.sqlite3'))
+store.close()
 from payproof.config import load_settings
 from payproof.fixtures import load_corpus
 from payproof.web import create_app
@@ -156,7 +162,7 @@ assert 'STATE: VERIFY' in output.getvalue()
 assert 'Trusted account ending: 3821' in output.getvalue()
 assert 'Requested account ending: 9928' in output.getvalue()
 assert 'STATE: VERIFIED' not in output.getvalue()
-print(json.dumps({'wheel': 'installed_and_initialized', 'dependencies': 'existing_interpreter', 'vendors': len(corpus.vendors), 'requests': len(corpus.requests), 'production_wsgi_health': 200, 'http_binding': 'NOT_TESTED'}))
+print(json.dumps({'wheel': 'installed_and_initialized', 'dependencies': 'existing_interpreter', 'vendors': len(corpus.vendors), 'requests': len(corpus.requests), 'production_wsgi_health': 200, 'http_binding': 'NOT_TESTED', 'sqlite_migration_restart': 'PASS'}))
 """
     with tempfile.TemporaryDirectory(prefix="payproof-installed-wheel-") as temporary:
         site = Path(temporary) / "site"

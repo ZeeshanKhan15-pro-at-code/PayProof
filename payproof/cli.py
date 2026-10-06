@@ -78,6 +78,10 @@ def _run_workflow(
 
 def main(argv: list[str] | None = None) -> int:
     arguments = sys.argv[1:] if argv is None else argv
+    if arguments[:1] == ["workflow"]:
+        from payproof.workflow_cli import main as workflow_main
+
+        return workflow_main(arguments[1:])
     if arguments[:1] == ["benchmark"]:
         from payproof.benchmark_harness import main as benchmark_main
 
