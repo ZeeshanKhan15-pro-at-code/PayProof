@@ -43,7 +43,7 @@ Only explicit human independent verification could create a separate scoped `VER
 
 ### Current benchmark
 
-`make benchmark` runs the frozen [30-case diagnostic specification](docs/BENCHMARK_SPEC.md) and saves [JSON](benchmarks/phase1-v1/results/gold/report.json) and [readable results](benchmarks/phase1-v1/results/gold/summary.txt).
+`make benchmark` runs the frozen [30-case diagnostic specification](docs/BENCHMARK_SPEC.md) and saves [JSON](benchmarks/phase1-v1/results/gold/report.json) and [readable results](benchmarks/phase1-v1/results/gold/summary.txt). The table below is the historical Phase-1 run; the current-instruction safety rerun and its two retained utility failures follow it.
 
 | Gold comparison metric | Actual count |
 | --- | --- |
@@ -59,11 +59,13 @@ Only explicit human independent verification could create a separate scoped `VER
 
 Gold reviews are explicitly simulated. [Recorded configured-extraction results](benchmarks/phase1-v1/results/extraction/summary.txt) contain 30 `NOT_CONFIGURED` failures, zero successful classifications and zero comparison failures. They do not measure live AI accuracy. Independent labels remain `PENDING`; this public diagnostic corpus does not satisfy the architecture's 36-case held-out release evaluation. See [run notes](benchmarks/phase1-v1/results/README.md).
 
+The 2026-10-06 [current-instruction safety rerun](docs/CURRENT_INSTRUCTION_SAFETY.md) preserves separate [BEFORE](benchmarks/instruction-safety/before/summary.txt) and [AFTER](benchmarks/instruction-safety/after/summary.txt) results. Against the unchanged diagnostic labels, the stronger guard yields **28/30 correct states**, eight source-correct change detections, zero critical false UNCHANGED and two additional abstentions. The benchmark exits 1 for those utility mismatches; the historical Phase-1 30/30 result above is not current performance. No live extraction score is claimed.
+
 The separate [Phase-2 held-out specification](docs/PHASE2_BENCHMARK_SPEC.md) freezes 72 new synthetic cases before predictor execution. `make benchmark-heldout-validate` validates definitions only. No held-out performance is claimed; independent human label review remains pending. Keep this set out of tuning and use the documented explicit commands for future evaluation.
 
 ### Current limitations
 
-- Source quotes prove presence, not current-payment relevance or completeness. An extractor can omit a current account and quote a historical account; incorrect human review can then produce `UNCHANGED`. This is a retained red-team reproduction and blocks unattended/live reliability claims. Review every original instruction, not just the proposed account.
+- The [current-instruction source guard](docs/CURRENT_INSTRUCTION_SAFETY.md) blocks independently detected competing, omitted and reference-only destination regions even after a broad review acknowledgement. It is a lexical tripwire, not exhaustive discovery or proof of payment intent; undetected role/omission errors remain possible. Review every original source and independently verify vendor updates.
 - The CLI runs in memory. Durable case history, authenticated review identity, cross-request current-revision checks and independent verification are absent. The read-only web server does not serve the payment workflow.
 - GB/DE IBAN and UTF-8 plain text only. Separate routing, other schemes/countries, OCR, PDF ingestion and automatic vendor matching are unsupported. Conservative grounding can reject undelimited numeric columns or footnotes.
 - Fixture success and mocked provider tests are not real-world extraction accuracy. Socket timeouts do not establish a complete provider wall-clock deadline.

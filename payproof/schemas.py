@@ -13,6 +13,7 @@ from uuid import UUID
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from payproof.instruction_safety import instruction_gate
 from payproof.normalization import canonical_iban, canonical_scheme
 from payproof.provenance import account_quote_is_complete
 
@@ -602,6 +603,9 @@ class CaseContract(Contract):
             ):
                 raise ValueError("missing review permits only UNCERTAIN without reviewed identity")
             if result.state != "UNCERTAIN":
+                source_gate = instruction_gate(self.sources, self.evidence)
+                if source_gate.ambiguous or source_gate.incomplete:
+                    raise ValueError("decisive result has unresolved source instructions")
                 assert self.baseline is not None  # Checked against result state above.
                 if (
                     self.evidence.routing_identifier.status != "MISSING"

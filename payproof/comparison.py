@@ -3,6 +3,7 @@
 from datetime import datetime
 from uuid import UUID
 
+from payproof.instruction_safety import instruction_gate
 from payproof.normalization import NormalizationError, canonical_iban, canonical_scheme
 from payproof.schemas import (
     CaseContract,
@@ -244,6 +245,17 @@ def compare(
             ),
         )
     )
+    source_gate = instruction_gate(case.sources, evidence)
+    if source_gate.ambiguous or source_gate.incomplete:
+        blockers.add("DESTINATION_AMBIGUOUS" if source_gate.ambiguous else "DESTINATION_INCOMPLETE")
+        missing.append(
+            MissingInformation(
+                field="account_identifier",
+                side="REQUEST",
+                explanation=source_gate.explanation,
+            )
+        )
+
     state: ComparisonState = "UNCERTAIN"
     reasons = tuple(reason for reason in UNCERTAINTY_ORDER if reason in blockers)
     if not reasons:

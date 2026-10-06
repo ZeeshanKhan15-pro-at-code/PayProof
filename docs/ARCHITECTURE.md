@@ -224,6 +224,10 @@ Suggested three-day sequence: day 1 establishes data contracts, baseline entry, 
 - Microservices, Kubernetes, queues, distributed workers, event buses, vector retrieval, fine-tuning, or multi-provider routing.
 - Legal/compliance certification, authenticated bank ownership, cryptographic document authenticity, or guarantees that unchanged details are safe.
 
+## Current-instruction gate extension (2026-10-06)
+
+Before a decisive comparison, a bounded deterministic lexical inventory independently checks all frozen source text for competing or unaccounted-for destination-like regions. It receives no baseline or model confidence, preserves exact context, and cannot prove intent or exclude a candidate as historical. Comparison and stored-result validation fail toward UNCERTAIN when this gate is unresolved; a blanket source-review acknowledgement cannot override it. AI extraction records retain their original provenance and are never populated from this inventory. No new state, provider or service is introduced. See [current-instruction safety](CURRENT_INSTRUCTION_SAFETY.md) for explicit detection limits, UI context and benchmark utility cost.
+
 ### PHASE-1 ARCHITECTURE DECISION
 
 Implement exactly these capabilities in Phase 1:

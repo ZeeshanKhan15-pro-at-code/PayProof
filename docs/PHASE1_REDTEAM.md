@@ -80,7 +80,7 @@ Independent human verification is still an unimplemented command boundary. A str
 
 ## Remaining weaknesses
 
-- **Historical-role/omission false matches remain reproducible.** Extraction can correctly quote a historical/trusted account while omitting a distinct current account. Unreviewed input produces `UNCERTAIN / REVIEW_REQUIRED`; a false human acknowledgement can still produce `UNCHANGED`. The retained regression explicitly demonstrates this residual risk. Schema, checksums and lexical grounding cannot prove relevance/completeness. No document-wide regex, fraud classifier or automatic role approval was added.
+- **Historical-role/omission false matches were reproducible at Phase-1 close.** Extraction can correctly quote a historical/trusted account while omitting a distinct current account. Unreviewed input produces `UNCERTAIN / REVIEW_REQUIRED`; a false human acknowledgement can still produce `UNCHANGED`. The retained regression explicitly demonstrates this residual risk. Schema, checksums and lexical grounding cannot prove relevance/completeness. No document-wide regex, fraud classifier or automatic role approval was added.
 - An omitted footer or contradictory instruction has the same limitation. Ambiguity protection works when candidates are retained; it cannot compare evidence it never received.
 - Contextual sender/reply-to/name/bank-display values do not authenticate the sender or select state. The previously trusted callback remains the independent-check channel.
 - Lexical checks are conservative: adjacent footnote markers or undelimited numeric columns may require a better-delimited source/excerpt. Distant or line-wrapped omissions are not universally detectable. This is not OCR or a complete payment-instruction parser.
@@ -122,3 +122,7 @@ make build
 ```
 
 The configured-extraction command and replay remain nonzero until a usable provider and passing observations are available; failures are recorded rather than substituted with fixtures. The attack regressions and residual-risk reproduction are in `tests/test_redteam.py`.
+
+## Follow-up: current-instruction safety (2026-10-06)
+
+The historical quoted-account/omitted-current-account reproduction above is now a fail-closed regression. An independent bounded lexical source inventory blocks detected competing destinations even after broad acknowledgement, with exact source context and an explicit omitted-observation warning. It does not prove roles or completeness. See [CURRENT_INSTRUCTION_SAFETY.md](CURRENT_INSTRUCTION_SAFETY.md) for scope, remaining undetectable omissions and the retained 30/30 BEFORE versus 28/30 AFTER diagnostic utility cost. Original benchmark labels were not changed. The original red-team results above remain historical measurements.

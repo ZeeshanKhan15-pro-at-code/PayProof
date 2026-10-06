@@ -301,7 +301,7 @@ def test_irrelevant_numbers_and_reply_to_do_not_override_a_changed_destination(
     assert evidence.reply_to.candidates[0].value == "attacker@untrusted.example"
 
 
-def test_wrong_role_and_omitted_current_instruction_remain_a_human_review_limit(
+def test_wrong_role_and_omitted_current_instruction_fail_source_completeness_gate(
     monkeypatch, live_settings
 ):
     source, payload = source_and_payload(
@@ -314,9 +314,10 @@ def test_wrong_role_and_omitted_current_instruction_remain_a_human_review_limit(
     unreviewed = CaseContract(sources=(source,), evidence=evidence, baseline=baseline)
     result = compare(unreviewed, comparison_id=uuid4(), compared_at=datetime.now(UTC))
     assert result.state == "UNCERTAIN" and "REVIEW_REQUIRED" in result.reason_codes
-    # Explicit threat reproduction, NOT an assertion of automatic role accuracy.
+    # Broad acknowledgement cannot clear independently detected competition.
     falsely_acknowledged = reviewed_result(source, evidence)
-    assert falsely_acknowledged.comparison.state == "UNCHANGED"
+    assert falsely_acknowledged.comparison.state == "UNCERTAIN"
+    assert "DESTINATION_AMBIGUOUS" in falsely_acknowledged.comparison.reason_codes
     assert falsely_acknowledged.verification is None
 
 

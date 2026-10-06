@@ -3,6 +3,12 @@
 import json
 
 from payproof.cases import candidate_identity
+from payproof.instruction_safety import (
+    extracted_keys,
+    instruction_gate,
+    observation_key,
+    source_inventory,
+)
 from payproof.schemas import EVIDENCE_FIELDS, CaseContract
 
 
@@ -47,6 +53,32 @@ def render_evidence(case: CaseContract) -> str:
                 f"Captured at {source.captured_at.isoformat()}; SHA-256 {source.sha256}",
                 _quoted(source.text),
             )
+        )
+    inventory = source_inventory(case.sources)
+    observed = extracted_keys(case.evidence)
+    lines.append("\nINDEPENDENT SOURCE DESTINATION INVENTORY (lexical tripwire, not intent proof)")
+    for item in inventory.observations:
+        lines.extend(
+            (
+                f"Source {item.source_id}; {item.field}; chars [{item.char_start}, {item.char_end})",
+                f"  Destination-like text: {_quoted(item.raw_value)}",
+                f"  Context hint: {item.hint}; relevance remains UNKNOWN without human resolution",
+                "  Observed value retained by extraction"
+                if observation_key(item) in observed
+                else "  NOT OBSERVED BY EXTRACTION",
+                f"  Exact context [{item.context_start}, {item.context_end}): {_quoted(item.exact_context)}",
+            )
+        )
+    if inventory.truncated:
+        lines.append(
+            "Inventory limit reached; completeness unresolved, comparison remains UNCERTAIN."
+        )
+    source_gate = instruction_gate(case.sources, case.evidence)
+    if source_gate.ambiguous or source_gate.incomplete:
+        lines.append(source_gate.explanation)
+    if not inventory.observations:
+        lines.append(
+            "No lexical candidate found; this does not prove complete or unchanged instructions."
         )
     metadata = case.evidence.extraction
     lines.append(f"\nEXTRACTION: {metadata.method}; failure: {metadata.failure_code or 'none'}")
