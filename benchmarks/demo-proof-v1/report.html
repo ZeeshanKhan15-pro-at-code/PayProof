@@ -1,0 +1,586 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>PayProof evidence proof</title>
+<style>body{max-width:1000px;margin:2rem auto;padding:1rem;font:16px system-ui}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f4f4f4;padding:1rem}td,th{border:1px solid #888;padding:.5rem;text-align:left}table{border-collapse:collapse}aside{border:2px solid #975600;padding:1rem}</style>
+<h1>PayProof: evidence and mechanism proof</h1><aside>Payment authorization: not provided. Source review, deterministic comparison and independent human verification are separate actions. All demonstration contacts and accounts are fictional.</aside>
+<p>Curated synthetic observations, not live extraction accuracy. Report source review is explicitly simulated; no independent-verification record is created. Operator seed cases start unreviewed and uncompared.</p>
+<p>Demonstration checks: PASS. These selected examples are not held-out benchmark performance.</p>
+<h2>changed — Plausible Acme treasury update with a different destination</h2>
+<p>Declared expectation: VERIFY / DESTINATION_CHANGED. <a href="http://127.0.0.1:8000/operator/cases/8f1a9c63-e4af-5c19-b665-0b56b3585019">Operator case (same seeded IDs on your local server)</a></p>
+<h3>Deterministic gate and separate human status</h3>
+<pre>STATE: VERIFY
+Reason codes: DESTINATION_CHANGED
+Comparison: 64c2feb0-0c89-4ff5-add7-0d2fb105c97d; rule: iban-gb-de-v1; at 2026-10-07T12:42:17.185084+00:00
+The payment destination changed and requires independent human verification.
+
+FIELD DIFFERENCES (contextual changes do not select the state)
+vendor_name: MATCH | trusted &quot;Acme Supplies (synthetic)&quot; -&gt; requested &quot;Acme Supplies (synthetic)&quot;
+  Evidence: 60988e5d-f79c-5b6a-8350-5294240ac835
+sender_email: MATCH | trusted &quot;accounts@acme.example&quot; -&gt; requested &quot;accounts@acme.example&quot;
+  Evidence: 96f4fc6f-604c-5735-afcd-ce848e03696a
+bank_name: MATCH | trusted &quot;Synthetic Demo Bank&quot; -&gt; requested &quot;Synthetic Demo Bank&quot;
+  Evidence: 7478c7ee-84f1-5cb2-ae11-739679f8b89c
+currency: MATCH | trusted &quot;GBP&quot; -&gt; requested &quot;GBP&quot;
+  Evidence: 981f409b-c8c2-513d-ad7f-f65fe0a60329
+account_identifier: CHANGED | trusted &quot;GB46TEST00000000003821&quot; -&gt; requested &quot;GB57TEST00000000009928&quot;
+  Evidence: 6a1d1af0-9068-5b58-a331-02393d3bc786
+routing_identifier: UNKNOWN | trusted null -&gt; requested null
+destination_scheme: MATCH | trusted &quot;IBAN&quot; -&gt; requested &quot;IBAN&quot;
+  Evidence: 5bd5f189-b1f0-5481-938a-7a0cfb85dc9e
+
+Source review by &quot;SIMULATED_DEMO_SOURCE_REVIEW&quot; at 2026-10-07T12:42:17.184287+00:00 (instruction review, not independent verification).
+Independently check the exact new destination using the previously trusted callback: PHONE &quot;+1-202-555-0182&quot;.
+No independent-verification or account-ownership record was created.</pre>
+<p>Independent human verification: NOT_VERIFIED. No autonomous confirmation; no account ownership assertion.</p>
+<details><summary>Original sources, old/new origins, exact spans and competing context</summary>
+<pre>TRUSTED VENDOR BASELINE
+Vendor: &quot;Acme Supplies (synthetic)&quot;
+Vendor ID: 2bc7bba4-fa1b-5f04-ae80-fedb7599b43c; baseline revision: 3818f1d9-a4f6-5066-9f07-db35645ff027
+Trusted account (raw): &quot;GB46TEST00000000003821&quot;
+Trusted account (canonical): &quot;GB46TEST00000000003821&quot;
+Trusted account ending: 3821
+Trusted bank: &quot;Synthetic Demo Bank&quot;
+Trusted routing: null
+Trusted currency: &quot;GBP&quot;
+Trusted email: &quot;accounts@acme.example&quot;
+Trusted domain: &quot;acme.example&quot;
+Old value source: SYNTHETIC_FIXTURE / &quot;synthetic-onboarding/acme-proof-3821&quot;
+Old value provenance: &quot;Fictional Acme onboarding record, established before all demo sources. Fictional callback; no real contact or bank ownership assertion.&quot;
+Recorded by &quot;synthetic-fixture-author&quot; at 2026-10-01T08:00:00+00:00
+Last verified: 2026-10-03T08:00:00+00:00
+Trusted callback: PHONE &quot;+1-202-555-0182&quot;
+Callback source: &quot;synthetic-onboarding/acme-proof-3821&quot;
+
+CURRENT REQUEST SOURCES (exact text, JSON-escaped)
+Source c0d51ad0-dcd5-584f-b251-839392966053: EMAIL &quot;Plausible Acme treasury update with a different destination&quot;
+Captured at 2026-10-04T08:00:00+00:00; SHA-256 b29489fae6028a3bfb6655da8045e269e83e23d4dbfe505dc16ca96880840d64
+&quot;From: accounts@acme.example\nReply-To: accounts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nPayment details have changed.\nReason: We completed an internal treasury update for invoice ACME-001.\nPlease pay this invoice to IBAN GB57TEST00000000009928.\n&quot;
+
+INDEPENDENT SOURCE DESTINATION INVENTORY (lexical tripwire, not intent proof)
+Source c0d51ad0-dcd5-584f-b251-839392966053; account_identifier; chars [291, 313)
+  Destination-like text: &quot;GB57TEST00000000009928&quot;
+  Context hint: CURRENT_WORDING; relevance remains UNKNOWN without human resolution
+  Observed value retained by extraction
+  Exact context [131, 315): &quot;\nBank: Synthetic Demo Bank\nPayment details have changed.\nReason: We completed an internal treasury update for invoice ACME-001.\nPlease pay this invoice to IBAN GB57TEST00000000009928.\n&quot;
+
+EXTRACTION: FIXTURE; failure: none
+Synthetic fixture extraction; no live AI call or extraction-accuracy claim.
+vendor_name: FOUND
+  Requested value: &quot;Acme Supplies (synthetic)&quot;
+  New value source: EMAIL &quot;Plausible Acme treasury update with a different destination&quot; / c0d51ad0-dcd5-584f-b251-839392966053
+  Evidence 60988e5d-f79c-5b6a-8350-5294240ac835; chars [60, 93); page unspecified
+  Exact excerpt: &quot;Vendor: Acme Supplies (synthetic)&quot;
+sender_email: FOUND
+  Requested value: &quot;accounts@acme.example&quot;
+  New value source: EMAIL &quot;Plausible Acme treasury update with a different destination&quot; / c0d51ad0-dcd5-584f-b251-839392966053
+  Evidence 96f4fc6f-604c-5735-afcd-ce848e03696a; chars [0, 27); page unspecified
+  Exact excerpt: &quot;From: accounts@acme.example&quot;
+reply_to: FOUND
+  Requested value: &quot;accounts@acme.example&quot;
+  New value source: EMAIL &quot;Plausible Acme treasury update with a different destination&quot; / c0d51ad0-dcd5-584f-b251-839392966053
+  Evidence 66d1252b-d522-58dd-ac2c-2d03fb1d9fcf; chars [28, 59); page unspecified
+  Exact excerpt: &quot;Reply-To: accounts@acme.example&quot;
+invoice_number: FOUND
+  Requested value: &quot;ACME-001&quot;
+  New value source: EMAIL &quot;Plausible Acme treasury update with a different destination&quot; / c0d51ad0-dcd5-584f-b251-839392966053
+  Evidence 546389e9-e00b-5af8-a18c-a175a994b055; chars [94, 111); page unspecified
+  Exact excerpt: &quot;Invoice: ACME-001&quot;
+amount: FOUND
+  Requested value: &quot;1250.00&quot;
+  New value source: EMAIL &quot;Plausible Acme treasury update with a different destination&quot; / c0d51ad0-dcd5-584f-b251-839392966053
+  Evidence eac1d44c-07ba-510e-9457-cc3891fc7e1a; chars [112, 131); page unspecified
+  Exact excerpt: &quot;Amount: 1250.00 GBP&quot;
+currency: FOUND
+  Requested value: &quot;GBP&quot;
+  New value source: EMAIL &quot;Plausible Acme treasury update with a different destination&quot; / c0d51ad0-dcd5-584f-b251-839392966053
+  Evidence 981f409b-c8c2-513d-ad7f-f65fe0a60329; chars [112, 131); page unspecified
+  Exact excerpt: &quot;Amount: 1250.00 GBP&quot;
+bank_name: FOUND
+  Requested value: &quot;Synthetic Demo Bank&quot;
+  New value source: EMAIL &quot;Plausible Acme treasury update with a different destination&quot; / c0d51ad0-dcd5-584f-b251-839392966053
+  Evidence 7478c7ee-84f1-5cb2-ae11-739679f8b89c; chars [132, 157); page unspecified
+  Exact excerpt: &quot;Bank: Synthetic Demo Bank&quot;
+account_identifier: FOUND
+  Requested value: &quot;GB57TEST00000000009928&quot;
+  New value source: EMAIL &quot;Plausible Acme treasury update with a different destination&quot; / c0d51ad0-dcd5-584f-b251-839392966053
+  Evidence 6a1d1af0-9068-5b58-a331-02393d3bc786; chars [259, 314); page unspecified
+  Exact excerpt: &quot;Please pay this invoice to IBAN GB57TEST00000000009928.&quot;
+routing_identifier: MISSING
+destination_scheme: FOUND
+  Requested value: &quot;IBAN&quot;
+  New value source: EMAIL &quot;Plausible Acme treasury update with a different destination&quot; / c0d51ad0-dcd5-584f-b251-839392966053
+  Evidence 5bd5f189-b1f0-5481-938a-7a0cfb85dc9e; chars [259, 314); page unspecified
+  Exact excerpt: &quot;Please pay this invoice to IBAN GB57TEST00000000009928.&quot;
+claims_details_changed: FOUND
+  Requested value: true
+  New value source: EMAIL &quot;Plausible Acme treasury update with a different destination&quot; / c0d51ad0-dcd5-584f-b251-839392966053
+  Evidence 1f824cb5-89bb-5e0c-9920-636d74b0f044; chars [158, 187); page unspecified
+  Exact excerpt: &quot;Payment details have changed.&quot;
+stated_reason_for_change: FOUND
+  Requested value: &quot;We completed an internal treasury update for invoice ACME-001.&quot;
+  New value source: EMAIL &quot;Plausible Acme treasury update with a different destination&quot; / c0d51ad0-dcd5-584f-b251-839392966053
+  Evidence 3a9abec2-f822-575d-be79-6baf8644633c; chars [188, 258); page unspecified
+  Exact excerpt: &quot;Reason: We completed an internal treasury update for invoice ACME-001.&quot;
+
+Normalized observed account: &quot;GB57TEST00000000009928&quot;
+Requested account ending: 9928</pre></details>
+<h2>unchanged — Same business context with the supported trusted destination</h2>
+<p>Declared expectation: UNCHANGED / DESTINATION_MATCH. <a href="http://127.0.0.1:8000/operator/cases/e1c2efde-8433-5d83-8b43-8d8fe3a7bbca">Operator case (same seeded IDs on your local server)</a></p>
+<h3>Deterministic gate and separate human status</h3>
+<pre>STATE: UNCHANGED
+Reason codes: DESTINATION_MATCH
+Comparison: ae307ede-9cc8-42c6-b287-d514fe27cc02; rule: iban-gb-de-v1; at 2026-10-07T12:42:17.196460+00:00
+The complete supported payment destination matches the trusted baseline. This is not payment approval.
+
+FIELD DIFFERENCES (contextual changes do not select the state)
+vendor_name: MATCH | trusted &quot;Acme Supplies (synthetic)&quot; -&gt; requested &quot;Acme Supplies (synthetic)&quot;
+  Evidence: 16c58539-eb28-5411-8bbd-125a7f22b1b3
+sender_email: MATCH | trusted &quot;accounts@acme.example&quot; -&gt; requested &quot;accounts@acme.example&quot;
+  Evidence: aa59f398-5860-586d-b0ef-2268a1ef3c66
+bank_name: MATCH | trusted &quot;Synthetic Demo Bank&quot; -&gt; requested &quot;Synthetic Demo Bank&quot;
+  Evidence: bb0cf046-2f91-576f-b799-58838bf06688
+currency: MATCH | trusted &quot;GBP&quot; -&gt; requested &quot;GBP&quot;
+  Evidence: fb03947f-b879-5ab6-b291-7feefa3fafe5
+account_identifier: MATCH | trusted &quot;GB46TEST00000000003821&quot; -&gt; requested &quot;GB46TEST00000000003821&quot;
+  Evidence: 5012fb84-2a63-5a14-9111-3694773efaac
+routing_identifier: UNKNOWN | trusted null -&gt; requested null
+destination_scheme: MATCH | trusted &quot;IBAN&quot; -&gt; requested &quot;IBAN&quot;
+  Evidence: 2005cba4-cf6d-589d-b3a4-62290ac176d4
+
+Source review by &quot;SIMULATED_DEMO_SOURCE_REVIEW&quot; at 2026-10-07T12:42:17.195174+00:00 (instruction review, not independent verification).
+No independent-verification or account-ownership record was created.</pre>
+<p>Independent human verification: NOT_VERIFIED. No autonomous confirmation; no account ownership assertion.</p>
+<details><summary>Original sources, old/new origins, exact spans and competing context</summary>
+<pre>TRUSTED VENDOR BASELINE
+Vendor: &quot;Acme Supplies (synthetic)&quot;
+Vendor ID: 2bc7bba4-fa1b-5f04-ae80-fedb7599b43c; baseline revision: 3818f1d9-a4f6-5066-9f07-db35645ff027
+Trusted account (raw): &quot;GB46TEST00000000003821&quot;
+Trusted account (canonical): &quot;GB46TEST00000000003821&quot;
+Trusted account ending: 3821
+Trusted bank: &quot;Synthetic Demo Bank&quot;
+Trusted routing: null
+Trusted currency: &quot;GBP&quot;
+Trusted email: &quot;accounts@acme.example&quot;
+Trusted domain: &quot;acme.example&quot;
+Old value source: SYNTHETIC_FIXTURE / &quot;synthetic-onboarding/acme-proof-3821&quot;
+Old value provenance: &quot;Fictional Acme onboarding record, established before all demo sources. Fictional callback; no real contact or bank ownership assertion.&quot;
+Recorded by &quot;synthetic-fixture-author&quot; at 2026-10-01T08:00:00+00:00
+Last verified: 2026-10-03T08:00:00+00:00
+Trusted callback: PHONE &quot;+1-202-555-0182&quot;
+Callback source: &quot;synthetic-onboarding/acme-proof-3821&quot;
+
+CURRENT REQUEST SOURCES (exact text, JSON-escaped)
+Source 0ab7a0df-0c87-5c07-bb65-bf49d9ad2930: EMAIL &quot;Same business context with the supported trusted destination&quot;
+Captured at 2026-10-04T08:00:00+00:00; SHA-256 5ca7e08a900d135516d9aaf6483897f62889773685c454d6d63c890fbcafa1d5
+&quot;From: accounts@acme.example\nReply-To: accounts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nPlease pay this invoice to IBAN GB46TEST00000000003821.\n&quot;
+
+INDEPENDENT SOURCE DESTINATION INVENTORY (lexical tripwire, not intent proof)
+Source 0ab7a0df-0c87-5c07-bb65-bf49d9ad2930; account_identifier; chars [190, 212)
+  Destination-like text: &quot;GB46TEST00000000003821&quot;
+  Context hint: CURRENT_WORDING; relevance remains UNKNOWN without human resolution
+  Observed value retained by extraction
+  Exact context [30, 214): &quot;ply-To: accounts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nPlease pay this invoice to IBAN GB46TEST00000000003821.\n&quot;
+
+EXTRACTION: FIXTURE; failure: none
+Synthetic fixture extraction; no live AI call or extraction-accuracy claim.
+vendor_name: FOUND
+  Requested value: &quot;Acme Supplies (synthetic)&quot;
+  New value source: EMAIL &quot;Same business context with the supported trusted destination&quot; / 0ab7a0df-0c87-5c07-bb65-bf49d9ad2930
+  Evidence 16c58539-eb28-5411-8bbd-125a7f22b1b3; chars [60, 93); page unspecified
+  Exact excerpt: &quot;Vendor: Acme Supplies (synthetic)&quot;
+sender_email: FOUND
+  Requested value: &quot;accounts@acme.example&quot;
+  New value source: EMAIL &quot;Same business context with the supported trusted destination&quot; / 0ab7a0df-0c87-5c07-bb65-bf49d9ad2930
+  Evidence aa59f398-5860-586d-b0ef-2268a1ef3c66; chars [0, 27); page unspecified
+  Exact excerpt: &quot;From: accounts@acme.example&quot;
+reply_to: FOUND
+  Requested value: &quot;accounts@acme.example&quot;
+  New value source: EMAIL &quot;Same business context with the supported trusted destination&quot; / 0ab7a0df-0c87-5c07-bb65-bf49d9ad2930
+  Evidence 7dcafe66-2098-5ccc-89be-76146353c941; chars [28, 59); page unspecified
+  Exact excerpt: &quot;Reply-To: accounts@acme.example&quot;
+invoice_number: FOUND
+  Requested value: &quot;ACME-001&quot;
+  New value source: EMAIL &quot;Same business context with the supported trusted destination&quot; / 0ab7a0df-0c87-5c07-bb65-bf49d9ad2930
+  Evidence 054b9d29-a692-5c08-8189-ec7dcba25392; chars [94, 111); page unspecified
+  Exact excerpt: &quot;Invoice: ACME-001&quot;
+amount: FOUND
+  Requested value: &quot;1250.00&quot;
+  New value source: EMAIL &quot;Same business context with the supported trusted destination&quot; / 0ab7a0df-0c87-5c07-bb65-bf49d9ad2930
+  Evidence 7b967347-a63c-5ba6-a09b-5cb52565510c; chars [112, 131); page unspecified
+  Exact excerpt: &quot;Amount: 1250.00 GBP&quot;
+currency: FOUND
+  Requested value: &quot;GBP&quot;
+  New value source: EMAIL &quot;Same business context with the supported trusted destination&quot; / 0ab7a0df-0c87-5c07-bb65-bf49d9ad2930
+  Evidence fb03947f-b879-5ab6-b291-7feefa3fafe5; chars [112, 131); page unspecified
+  Exact excerpt: &quot;Amount: 1250.00 GBP&quot;
+bank_name: FOUND
+  Requested value: &quot;Synthetic Demo Bank&quot;
+  New value source: EMAIL &quot;Same business context with the supported trusted destination&quot; / 0ab7a0df-0c87-5c07-bb65-bf49d9ad2930
+  Evidence bb0cf046-2f91-576f-b799-58838bf06688; chars [132, 157); page unspecified
+  Exact excerpt: &quot;Bank: Synthetic Demo Bank&quot;
+account_identifier: FOUND
+  Requested value: &quot;GB46TEST00000000003821&quot;
+  New value source: EMAIL &quot;Same business context with the supported trusted destination&quot; / 0ab7a0df-0c87-5c07-bb65-bf49d9ad2930
+  Evidence 5012fb84-2a63-5a14-9111-3694773efaac; chars [158, 213); page unspecified
+  Exact excerpt: &quot;Please pay this invoice to IBAN GB46TEST00000000003821.&quot;
+routing_identifier: MISSING
+destination_scheme: FOUND
+  Requested value: &quot;IBAN&quot;
+  New value source: EMAIL &quot;Same business context with the supported trusted destination&quot; / 0ab7a0df-0c87-5c07-bb65-bf49d9ad2930
+  Evidence 2005cba4-cf6d-589d-b3a4-62290ac176d4; chars [158, 213); page unspecified
+  Exact excerpt: &quot;Please pay this invoice to IBAN GB46TEST00000000003821.&quot;
+claims_details_changed: MISSING
+stated_reason_for_change: MISSING
+
+Normalized observed account: &quot;GB46TEST00000000003821&quot;
+Requested account ending: 3821</pre></details>
+<h2>conflicting — Two competing invoice instructions retained as observations</h2>
+<p>Declared expectation: UNCERTAIN / DESTINATION_AMBIGUOUS. <a href="http://127.0.0.1:8000/operator/cases/527f8c6b-5e8d-5cd9-9aed-4942b3e1d8c5">Operator case (same seeded IDs on your local server)</a></p>
+<h3>Deterministic gate and separate human status</h3>
+<pre>STATE: UNCERTAIN
+Reason codes: DESTINATION_AMBIGUOUS
+Comparison: 1489413d-94dc-45cf-a401-22d24de88c55; rule: iban-gb-de-v1; at 2026-10-07T12:42:17.207582+00:00
+The payment destination cannot be compared safely. Resolve the listed issues and review the sources before a new comparison.
+
+FIELD DIFFERENCES (contextual changes do not select the state)
+vendor_name: MATCH | trusted &quot;Acme Supplies (synthetic)&quot; -&gt; requested &quot;Acme Supplies (synthetic)&quot;
+  Evidence: 62f1032c-5330-560a-a92c-0efa1ba3f620
+sender_email: MATCH | trusted &quot;accounts@acme.example&quot; -&gt; requested &quot;accounts@acme.example&quot;
+  Evidence: 7e1ba05c-5799-5f0e-9f19-39b53b1307c4
+bank_name: MATCH | trusted &quot;Synthetic Demo Bank&quot; -&gt; requested &quot;Synthetic Demo Bank&quot;
+  Evidence: a6e7f36c-6d51-5ce4-9e01-2fc3a4970998
+currency: MATCH | trusted &quot;GBP&quot; -&gt; requested &quot;GBP&quot;
+  Evidence: 66dfe622-8cac-57c1-8e8b-ba4820b95cb0
+account_identifier: UNKNOWN | trusted &quot;GB46TEST00000000003821&quot; -&gt; requested null
+  Evidence: f7c471e8-e39a-5e34-9cb9-bd2cb65bb0df, c3503cb2-fba9-5485-99e9-ae6fcdc7313f
+routing_identifier: UNKNOWN | trusted null -&gt; requested null
+destination_scheme: MATCH | trusted &quot;IBAN&quot; -&gt; requested &quot;IBAN&quot;
+  Evidence: ab8fe0a9-25f8-5274-9567-3bd945419872
+Contradiction account_identifier: &quot;Account observations cannot resolve to one complete supported IBAN.&quot;; evidence f7c471e8-e39a-5e34-9cb9-bd2cb65bb0df, c3503cb2-fba9-5485-99e9-ae6fcdc7313f
+
+Source review by &quot;SIMULATED_DEMO_SOURCE_REVIEW&quot; at 2026-10-07T12:42:17.206720+00:00 (instruction review, not independent verification).
+No independent-verification or account-ownership record was created.</pre>
+<p>Independent human verification: NOT_VERIFIED. No autonomous confirmation; no account ownership assertion.</p>
+<details><summary>Original sources, old/new origins, exact spans and competing context</summary>
+<pre>TRUSTED VENDOR BASELINE
+Vendor: &quot;Acme Supplies (synthetic)&quot;
+Vendor ID: 2bc7bba4-fa1b-5f04-ae80-fedb7599b43c; baseline revision: 3818f1d9-a4f6-5066-9f07-db35645ff027
+Trusted account (raw): &quot;GB46TEST00000000003821&quot;
+Trusted account (canonical): &quot;GB46TEST00000000003821&quot;
+Trusted account ending: 3821
+Trusted bank: &quot;Synthetic Demo Bank&quot;
+Trusted routing: null
+Trusted currency: &quot;GBP&quot;
+Trusted email: &quot;accounts@acme.example&quot;
+Trusted domain: &quot;acme.example&quot;
+Old value source: SYNTHETIC_FIXTURE / &quot;synthetic-onboarding/acme-proof-3821&quot;
+Old value provenance: &quot;Fictional Acme onboarding record, established before all demo sources. Fictional callback; no real contact or bank ownership assertion.&quot;
+Recorded by &quot;synthetic-fixture-author&quot; at 2026-10-01T08:00:00+00:00
+Last verified: 2026-10-03T08:00:00+00:00
+Trusted callback: PHONE &quot;+1-202-555-0182&quot;
+Callback source: &quot;synthetic-onboarding/acme-proof-3821&quot;
+
+CURRENT REQUEST SOURCES (exact text, JSON-escaped)
+Source 89c3950c-f526-5ad1-a6c5-656adaa70d44: EMAIL &quot;Two competing invoice instructions retained as observations&quot;
+Captured at 2026-10-04T08:00:00+00:00; SHA-256 579c65181f9f5347c9207179442f4055064aa1888fea8cbee8700ef329373f3c
+&quot;From: accounts@acme.example\nReply-To: accounts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nEmail instruction: pay this invoice to IBAN GB57TEST00000000009928.\nInvoice instruction: pay this invoice to IBAN GB46TEST00000000003821.\n&quot;
+
+INDEPENDENT SOURCE DESTINATION INVENTORY (lexical tripwire, not intent proof)
+Source 89c3950c-f526-5ad1-a6c5-656adaa70d44; account_identifier; chars [202, 224)
+  Destination-like text: &quot;GB57TEST00000000009928&quot;
+  Context hint: CURRENT_WORDING; relevance remains UNKNOWN without human resolution
+  Observed value retained by extraction
+  Exact context [42, 296): &quot;unts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nEmail instruction: pay this invoice to IBAN GB57TEST00000000009928.\nInvoice instruction: pay this invoice to IBAN GB46TEST00000000003821.\n&quot;
+Source 89c3950c-f526-5ad1-a6c5-656adaa70d44; account_identifier; chars [272, 294)
+  Destination-like text: &quot;GB46TEST00000000003821&quot;
+  Context hint: CURRENT_WORDING; relevance remains UNKNOWN without human resolution
+  Observed value retained by extraction
+  Exact context [112, 296): &quot;Amount: 1250.00 GBP\nBank: Synthetic Demo Bank\nEmail instruction: pay this invoice to IBAN GB57TEST00000000009928.\nInvoice instruction: pay this invoice to IBAN GB46TEST00000000003821.\n&quot;
+
+EXTRACTION: FIXTURE; failure: none
+Synthetic fixture extraction; no live AI call or extraction-accuracy claim.
+vendor_name: FOUND
+  Requested value: &quot;Acme Supplies (synthetic)&quot;
+  New value source: EMAIL &quot;Two competing invoice instructions retained as observations&quot; / 89c3950c-f526-5ad1-a6c5-656adaa70d44
+  Evidence 62f1032c-5330-560a-a92c-0efa1ba3f620; chars [60, 93); page unspecified
+  Exact excerpt: &quot;Vendor: Acme Supplies (synthetic)&quot;
+sender_email: FOUND
+  Requested value: &quot;accounts@acme.example&quot;
+  New value source: EMAIL &quot;Two competing invoice instructions retained as observations&quot; / 89c3950c-f526-5ad1-a6c5-656adaa70d44
+  Evidence 7e1ba05c-5799-5f0e-9f19-39b53b1307c4; chars [0, 27); page unspecified
+  Exact excerpt: &quot;From: accounts@acme.example&quot;
+reply_to: FOUND
+  Requested value: &quot;accounts@acme.example&quot;
+  New value source: EMAIL &quot;Two competing invoice instructions retained as observations&quot; / 89c3950c-f526-5ad1-a6c5-656adaa70d44
+  Evidence 5b9056df-feb7-5a12-84ef-09b3e89cefe4; chars [28, 59); page unspecified
+  Exact excerpt: &quot;Reply-To: accounts@acme.example&quot;
+invoice_number: FOUND
+  Requested value: &quot;ACME-001&quot;
+  New value source: EMAIL &quot;Two competing invoice instructions retained as observations&quot; / 89c3950c-f526-5ad1-a6c5-656adaa70d44
+  Evidence ca035457-df01-5603-8963-6f2cff135855; chars [94, 111); page unspecified
+  Exact excerpt: &quot;Invoice: ACME-001&quot;
+amount: FOUND
+  Requested value: &quot;1250.00&quot;
+  New value source: EMAIL &quot;Two competing invoice instructions retained as observations&quot; / 89c3950c-f526-5ad1-a6c5-656adaa70d44
+  Evidence 2d3b9e5e-2cc4-5e6f-883d-7c65e91f9a0b; chars [112, 131); page unspecified
+  Exact excerpt: &quot;Amount: 1250.00 GBP&quot;
+currency: FOUND
+  Requested value: &quot;GBP&quot;
+  New value source: EMAIL &quot;Two competing invoice instructions retained as observations&quot; / 89c3950c-f526-5ad1-a6c5-656adaa70d44
+  Evidence 66dfe622-8cac-57c1-8e8b-ba4820b95cb0; chars [112, 131); page unspecified
+  Exact excerpt: &quot;Amount: 1250.00 GBP&quot;
+bank_name: FOUND
+  Requested value: &quot;Synthetic Demo Bank&quot;
+  New value source: EMAIL &quot;Two competing invoice instructions retained as observations&quot; / 89c3950c-f526-5ad1-a6c5-656adaa70d44
+  Evidence a6e7f36c-6d51-5ce4-9e01-2fc3a4970998; chars [132, 157); page unspecified
+  Exact excerpt: &quot;Bank: Synthetic Demo Bank&quot;
+account_identifier: AMBIGUOUS
+  Requested value: &quot;GB57TEST00000000009928&quot;
+  New value source: EMAIL &quot;Two competing invoice instructions retained as observations&quot; / 89c3950c-f526-5ad1-a6c5-656adaa70d44
+  Evidence f7c471e8-e39a-5e34-9cb9-bd2cb65bb0df; chars [158, 225); page unspecified
+  Exact excerpt: &quot;Email instruction: pay this invoice to IBAN GB57TEST00000000009928.&quot;
+  Requested value: &quot;GB46TEST00000000003821&quot;
+  New value source: EMAIL &quot;Two competing invoice instructions retained as observations&quot; / 89c3950c-f526-5ad1-a6c5-656adaa70d44
+  Evidence c3503cb2-fba9-5485-99e9-ae6fcdc7313f; chars [226, 295); page unspecified
+  Exact excerpt: &quot;Invoice instruction: pay this invoice to IBAN GB46TEST00000000003821.&quot;
+routing_identifier: MISSING
+destination_scheme: FOUND
+  Requested value: &quot;IBAN&quot;
+  New value source: EMAIL &quot;Two competing invoice instructions retained as observations&quot; / 89c3950c-f526-5ad1-a6c5-656adaa70d44
+  Evidence ab8fe0a9-25f8-5274-9567-3bd945419872; chars [158, 225); page unspecified
+  Exact excerpt: &quot;Email instruction: pay this invoice to IBAN GB57TEST00000000009928.&quot;
+claims_details_changed: MISSING
+stated_reason_for_change: MISSING
+
+Normalized observed account: unavailable; no candidate was guessed.</pre></details>
+<h2>extraction-failure — Actual disabled-provider extraction, not a model-success claim</h2>
+<p>Declared expectation: UNCERTAIN / EXTRACTION_FAILED. <a href="http://127.0.0.1:8000/operator/cases/acf010cd-1620-589a-b729-ca2c2c1ded65">Operator case (same seeded IDs on your local server)</a></p>
+<h3>Deterministic gate and separate human status</h3>
+<pre>STATE: UNCERTAIN
+Reason codes: EXTRACTION_FAILED, DESTINATION_INCOMPLETE
+Comparison: 835bc899-1829-4b74-9bf2-592cccf3933c; rule: iban-gb-de-v1; at 2026-10-07T12:42:17.215695+00:00
+The payment destination cannot be compared safely. Resolve the listed issues and review the sources before a new comparison.
+
+FIELD DIFFERENCES (contextual changes do not select the state)
+vendor_name: UNKNOWN | trusted &quot;Acme Supplies (synthetic)&quot; -&gt; requested null
+sender_email: UNKNOWN | trusted &quot;accounts@acme.example&quot; -&gt; requested null
+bank_name: UNKNOWN | trusted &quot;Synthetic Demo Bank&quot; -&gt; requested null
+currency: UNKNOWN | trusted &quot;GBP&quot; -&gt; requested null
+account_identifier: UNKNOWN | trusted &quot;GB46TEST00000000003821&quot; -&gt; requested null
+routing_identifier: UNKNOWN | trusted null -&gt; requested null
+destination_scheme: UNKNOWN | trusted &quot;IBAN&quot; -&gt; requested null
+Missing REQUEST.account_identifier: &quot;Requested account is absent or unreadable; no value was inferred.&quot;
+Missing REQUEST.destination_scheme: &quot;Explicit destination scheme could not be read.&quot;
+Missing REQUEST.routing_identifier: &quot;Separate routing instructions are unreadable and unsupported.&quot;
+
+Source review: not recorded.
+No independent-verification or account-ownership record was created.</pre>
+<p>Independent human verification: NOT_VERIFIED. No autonomous confirmation; no account ownership assertion.</p>
+<details><summary>Original sources, old/new origins, exact spans and competing context</summary>
+<pre>TRUSTED VENDOR BASELINE
+Vendor: &quot;Acme Supplies (synthetic)&quot;
+Vendor ID: 2bc7bba4-fa1b-5f04-ae80-fedb7599b43c; baseline revision: 3818f1d9-a4f6-5066-9f07-db35645ff027
+Trusted account (raw): &quot;GB46TEST00000000003821&quot;
+Trusted account (canonical): &quot;GB46TEST00000000003821&quot;
+Trusted account ending: 3821
+Trusted bank: &quot;Synthetic Demo Bank&quot;
+Trusted routing: null
+Trusted currency: &quot;GBP&quot;
+Trusted email: &quot;accounts@acme.example&quot;
+Trusted domain: &quot;acme.example&quot;
+Old value source: SYNTHETIC_FIXTURE / &quot;synthetic-onboarding/acme-proof-3821&quot;
+Old value provenance: &quot;Fictional Acme onboarding record, established before all demo sources. Fictional callback; no real contact or bank ownership assertion.&quot;
+Recorded by &quot;synthetic-fixture-author&quot; at 2026-10-01T08:00:00+00:00
+Last verified: 2026-10-03T08:00:00+00:00
+Trusted callback: PHONE &quot;+1-202-555-0182&quot;
+Callback source: &quot;synthetic-onboarding/acme-proof-3821&quot;
+
+CURRENT REQUEST SOURCES (exact text, JSON-escaped)
+Source 127868ef-0bce-5e2b-a6b5-6ed4ffb086a0: EMAIL &quot;Actual disabled-provider extraction, not a model-success claim&quot;
+Captured at 2026-10-04T08:00:00+00:00; SHA-256 e5a3e1be7296b1dfa21c9852f8f00df3e62df6021a98f8a16370c38cbcd1d21b
+&quot;From: accounts@acme.example\nReply-To: accounts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nPlease pay this invoice to IBAN GB57TEST00000000009928.\n&quot;
+
+INDEPENDENT SOURCE DESTINATION INVENTORY (lexical tripwire, not intent proof)
+Source 127868ef-0bce-5e2b-a6b5-6ed4ffb086a0; account_identifier; chars [190, 212)
+  Destination-like text: &quot;GB57TEST00000000009928&quot;
+  Context hint: CURRENT_WORDING; relevance remains UNKNOWN without human resolution
+  NOT OBSERVED BY EXTRACTION
+  Exact context [30, 214): &quot;ply-To: accounts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nPlease pay this invoice to IBAN GB57TEST00000000009928.\n&quot;
+
+EXTRACTION: NOT_ATTEMPTED; failure: NOT_CONFIGURED
+vendor_name: UNREADABLE
+sender_email: UNREADABLE
+reply_to: UNREADABLE
+invoice_number: UNREADABLE
+amount: UNREADABLE
+currency: UNREADABLE
+bank_name: UNREADABLE
+account_identifier: UNREADABLE
+routing_identifier: UNREADABLE
+destination_scheme: UNREADABLE
+claims_details_changed: UNREADABLE
+stated_reason_for_change: UNREADABLE
+
+Normalized observed account: unavailable; no candidate was guessed.</pre></details>
+<h2>historical-omission — Deliberately omit current account from fixture observations</h2>
+<p>Declared expectation: UNCERTAIN / DESTINATION_AMBIGUOUS. <a href="http://127.0.0.1:8000/operator/cases/23830236-ba7d-56a5-ba4f-17d9fa7ea723">Operator case (same seeded IDs on your local server)</a></p>
+<h3>Deterministic gate and separate human status</h3>
+<pre>STATE: UNCERTAIN
+Reason codes: DESTINATION_AMBIGUOUS
+Comparison: cc1f21f6-33ca-4c46-8c4a-deb034a41409; rule: iban-gb-de-v1; at 2026-10-07T12:42:17.222708+00:00
+The payment destination cannot be compared safely. Resolve the listed issues and review the sources before a new comparison.
+
+FIELD DIFFERENCES (contextual changes do not select the state)
+vendor_name: MATCH | trusted &quot;Acme Supplies (synthetic)&quot; -&gt; requested &quot;Acme Supplies (synthetic)&quot;
+  Evidence: 8650bb0e-4ea0-5d6b-bf46-25a1c29693ea
+sender_email: MATCH | trusted &quot;accounts@acme.example&quot; -&gt; requested &quot;accounts@acme.example&quot;
+  Evidence: d4168cc2-b415-5685-81ae-e37b3bb39a7d
+bank_name: MATCH | trusted &quot;Synthetic Demo Bank&quot; -&gt; requested &quot;Synthetic Demo Bank&quot;
+  Evidence: 16602dba-4369-5718-891c-e9ff9402fa97
+currency: MATCH | trusted &quot;GBP&quot; -&gt; requested &quot;GBP&quot;
+  Evidence: 5698da90-b262-5347-84af-2eb4faa5b307
+account_identifier: MATCH | trusted &quot;GB46TEST00000000003821&quot; -&gt; requested &quot;GB46TEST00000000003821&quot;
+  Evidence: 0502a0aa-8d15-5cbb-9434-7e861594ea22
+routing_identifier: UNKNOWN | trusted null -&gt; requested null
+destination_scheme: MATCH | trusted &quot;IBAN&quot; -&gt; requested &quot;IBAN&quot;
+  Evidence: 9e9eb3d6-95cb-5ad5-9f94-98fb701298a1
+Missing REQUEST.account_identifier: &quot;Independent source inventory cannot establish complete current instructions. Competing, unobserved, reference-only or excess destination-like regions require resolution from the original sources; a broad review acknowledgement cannot clear this gate.&quot;
+
+Source review by &quot;SIMULATED_DEMO_SOURCE_REVIEW&quot; at 2026-10-07T12:42:17.221642+00:00 (instruction review, not independent verification).
+No independent-verification or account-ownership record was created.</pre>
+<p>Independent human verification: NOT_VERIFIED. No autonomous confirmation; no account ownership assertion.</p>
+<details><summary>Original sources, old/new origins, exact spans and competing context</summary>
+<pre>TRUSTED VENDOR BASELINE
+Vendor: &quot;Acme Supplies (synthetic)&quot;
+Vendor ID: 2bc7bba4-fa1b-5f04-ae80-fedb7599b43c; baseline revision: 3818f1d9-a4f6-5066-9f07-db35645ff027
+Trusted account (raw): &quot;GB46TEST00000000003821&quot;
+Trusted account (canonical): &quot;GB46TEST00000000003821&quot;
+Trusted account ending: 3821
+Trusted bank: &quot;Synthetic Demo Bank&quot;
+Trusted routing: null
+Trusted currency: &quot;GBP&quot;
+Trusted email: &quot;accounts@acme.example&quot;
+Trusted domain: &quot;acme.example&quot;
+Old value source: SYNTHETIC_FIXTURE / &quot;synthetic-onboarding/acme-proof-3821&quot;
+Old value provenance: &quot;Fictional Acme onboarding record, established before all demo sources. Fictional callback; no real contact or bank ownership assertion.&quot;
+Recorded by &quot;synthetic-fixture-author&quot; at 2026-10-01T08:00:00+00:00
+Last verified: 2026-10-03T08:00:00+00:00
+Trusted callback: PHONE &quot;+1-202-555-0182&quot;
+Callback source: &quot;synthetic-onboarding/acme-proof-3821&quot;
+
+CURRENT REQUEST SOURCES (exact text, JSON-escaped)
+Source 58c1f794-2d54-524c-8e0b-ff19be4e7574: EMAIL &quot;Deliberately omit current account from fixture observations&quot;
+Captured at 2026-10-04T08:00:00+00:00; SHA-256 d5bd2231ea92bcedbad17af9275fcb75ff93e2761ef4b7187f68dfd877ec4f54
+&quot;From: accounts@acme.example\nReply-To: accounts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nOur old account was IBAN GB46TEST00000000003821.\n----- Forwarded current invoice -----\nCurrent invoice: please pay to IBAN GB57TEST00000000009928.\n&quot;
+
+INDEPENDENT SOURCE DESTINATION INVENTORY (lexical tripwire, not intent proof)
+Source 58c1f794-2d54-524c-8e0b-ff19be4e7574; account_identifier; chars [183, 205)
+  Destination-like text: &quot;GB46TEST00000000003821&quot;
+  Context hint: HISTORICAL_WORDING; relevance remains UNKNOWN without human resolution
+  Observed value retained by extraction
+  Exact context [23, 305): &quot;mple\nReply-To: accounts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nOur old account was IBAN GB46TEST00000000003821.\n----- Forwarded current invoice -----\nCurrent invoice: please pay to IBAN GB57TEST00000000009928.\n&quot;
+Source 58c1f794-2d54-524c-8e0b-ff19be4e7574; account_identifier; chars [281, 303)
+  Destination-like text: &quot;GB57TEST00000000009928&quot;
+  Context hint: CURRENT_WORDING; relevance remains UNKNOWN without human resolution
+  NOT OBSERVED BY EXTRACTION
+  Exact context [121, 305): &quot;250.00 GBP\nBank: Synthetic Demo Bank\nOur old account was IBAN GB46TEST00000000003821.\n----- Forwarded current invoice -----\nCurrent invoice: please pay to IBAN GB57TEST00000000009928.\n&quot;
+Independent source inventory cannot establish complete current instructions. Competing, unobserved, reference-only or excess destination-like regions require resolution from the original sources; a broad review acknowledgement cannot clear this gate.
+
+EXTRACTION: FIXTURE; failure: none
+Synthetic fixture extraction; no live AI call or extraction-accuracy claim.
+vendor_name: FOUND
+  Requested value: &quot;Acme Supplies (synthetic)&quot;
+  New value source: EMAIL &quot;Deliberately omit current account from fixture observations&quot; / 58c1f794-2d54-524c-8e0b-ff19be4e7574
+  Evidence 8650bb0e-4ea0-5d6b-bf46-25a1c29693ea; chars [60, 93); page unspecified
+  Exact excerpt: &quot;Vendor: Acme Supplies (synthetic)&quot;
+sender_email: FOUND
+  Requested value: &quot;accounts@acme.example&quot;
+  New value source: EMAIL &quot;Deliberately omit current account from fixture observations&quot; / 58c1f794-2d54-524c-8e0b-ff19be4e7574
+  Evidence d4168cc2-b415-5685-81ae-e37b3bb39a7d; chars [0, 27); page unspecified
+  Exact excerpt: &quot;From: accounts@acme.example&quot;
+reply_to: FOUND
+  Requested value: &quot;accounts@acme.example&quot;
+  New value source: EMAIL &quot;Deliberately omit current account from fixture observations&quot; / 58c1f794-2d54-524c-8e0b-ff19be4e7574
+  Evidence b157362b-bc01-5285-8957-4075ab01d059; chars [28, 59); page unspecified
+  Exact excerpt: &quot;Reply-To: accounts@acme.example&quot;
+invoice_number: FOUND
+  Requested value: &quot;ACME-001&quot;
+  New value source: EMAIL &quot;Deliberately omit current account from fixture observations&quot; / 58c1f794-2d54-524c-8e0b-ff19be4e7574
+  Evidence c9b34a0c-6fa6-5ea4-88cf-10129d560610; chars [94, 111); page unspecified
+  Exact excerpt: &quot;Invoice: ACME-001&quot;
+amount: FOUND
+  Requested value: &quot;1250.00&quot;
+  New value source: EMAIL &quot;Deliberately omit current account from fixture observations&quot; / 58c1f794-2d54-524c-8e0b-ff19be4e7574
+  Evidence 297e1c94-bb25-5b90-a907-1b0cbbfd48dd; chars [112, 131); page unspecified
+  Exact excerpt: &quot;Amount: 1250.00 GBP&quot;
+currency: FOUND
+  Requested value: &quot;GBP&quot;
+  New value source: EMAIL &quot;Deliberately omit current account from fixture observations&quot; / 58c1f794-2d54-524c-8e0b-ff19be4e7574
+  Evidence 5698da90-b262-5347-84af-2eb4faa5b307; chars [112, 131); page unspecified
+  Exact excerpt: &quot;Amount: 1250.00 GBP&quot;
+bank_name: FOUND
+  Requested value: &quot;Synthetic Demo Bank&quot;
+  New value source: EMAIL &quot;Deliberately omit current account from fixture observations&quot; / 58c1f794-2d54-524c-8e0b-ff19be4e7574
+  Evidence 16602dba-4369-5718-891c-e9ff9402fa97; chars [132, 157); page unspecified
+  Exact excerpt: &quot;Bank: Synthetic Demo Bank&quot;
+account_identifier: FOUND
+  Requested value: &quot;GB46TEST00000000003821&quot;
+  New value source: EMAIL &quot;Deliberately omit current account from fixture observations&quot; / 58c1f794-2d54-524c-8e0b-ff19be4e7574
+  Evidence 0502a0aa-8d15-5cbb-9434-7e861594ea22; chars [158, 206); page unspecified
+  Exact excerpt: &quot;Our old account was IBAN GB46TEST00000000003821.&quot;
+routing_identifier: MISSING
+destination_scheme: FOUND
+  Requested value: &quot;IBAN&quot;
+  New value source: EMAIL &quot;Deliberately omit current account from fixture observations&quot; / 58c1f794-2d54-524c-8e0b-ff19be4e7574
+  Evidence 9e9eb3d6-95cb-5ad5-9f94-98fb701298a1; chars [158, 206); page unspecified
+  Exact excerpt: &quot;Our old account was IBAN GB46TEST00000000003821.&quot;
+claims_details_changed: MISSING
+stated_reason_for_change: MISSING
+
+Normalized observed account: &quot;GB46TEST00000000003821&quot;
+Requested account ending: 3821</pre></details>
+<h2>Gold deterministic comparison — supplied gold observations, simulated source review</h2>
+<p>Saved track status: <strong>FAIL</strong>. Dataset: payproof-phase2-heldout-72-v1; label review: PENDING. Run: 2026-10-07T12:05:23.047772+00:00. Independent human verification and real source-review quality: NOT_EVALUATED.</p>
+<p>Input artifact: benchmarks/phase2-redteam/after-gold/report.json<br>Artifact SHA-256: 306a6998545bff04b1a4f3f8039a0a5a1bb018c78c7e0d122c6b1ec17d4a9ed1<br>Corpus SHA-256: 203a43619b2baaf516063e5f2add4ce86a828c8ac8dc6c1e29edb6e09363c2d0</p>
+<table><tr><th>Gold metric only</th><th>Saved result</th></tr>
+<tr><td>State classifications</td><td>56/72</td></tr>
+<tr><td>Exact state/reasons/values/evidence</td><td>53/72</td></tr>
+<tr><td>Consequential changes detected as correct VERIFY</td><td>12/24</td></tr>
+<tr><td>Changed cases not detected as correct VERIFY</td><td>12</td></tr>
+<tr><td>Changed cases abstained UNCERTAIN</td><td>12</td></tr>
+<tr><td>Critical false UNCHANGED</td><td>0</td></tr>
+<tr><td>False VERIFY on unchanged cases</td><td>0</td></tr>
+<tr><td>Correct UNCERTAIN, including required reasons</td><td>30/33</td></tr>
+<tr><td>Uncertain-state recall (state only)</td><td>33/33</td></tr>
+<tr><td>Unsafe definitive states on uncertain cases</td><td>0</td></tr>
+<tr><td>Deterministic comparison scoring failures</td><td>19</td></tr>
+<tr><td>Failed gold operations</td><td>0</td></tr>
+<tr><td>Extraction accuracy / grounding / schema failure rate</td><td>NOT_RUN — gold observations supplied</td></tr>
+</table><p>UNCERTAIN on a changed destination is an abstention, not successful change detection. Zero observed critical misses is limited to this corpus/track; it does not prove omission immunity.</p>
+<p>Critical miss IDs: none recorded.</p>
+<details><summary>Every failing gold case and scoring category</summary><ul>
+<li>PP-17: comparison:STATE_MISMATCH — Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_CHANGED&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-18: comparison:STATE_MISMATCH — Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_CHANGED&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-19: comparison:STATE_MISMATCH — Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_CHANGED&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-20: comparison:STATE_MISMATCH — Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_CHANGED&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-41: comparison:STATE_MISMATCH — Expected UNCHANGED; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_MATCH&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-42: comparison:STATE_MISMATCH — Expected UNCHANGED; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_MATCH&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-43: comparison:STATE_MISMATCH — Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_CHANGED&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-44: comparison:STATE_MISMATCH — Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_CHANGED&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-45: comparison:STATE_MISMATCH — Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_CHANGED&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-46: comparison:STATE_MISMATCH — Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_CHANGED&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-47: comparison:STATE_MISMATCH — Expected UNCHANGED; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_MATCH&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-48: comparison:STATE_MISMATCH — Expected UNCHANGED; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_MATCH&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-57: comparison:REASON_MISMATCH — Expected (&#x27;UNSUPPORTED_DESTINATION&#x27;,); observed (&#x27;UNSUPPORTED_DESTINATION&#x27;, &#x27;DESTINATION_INVALID&#x27;).</li>
+<li>PP-58: comparison:REASON_MISMATCH — Expected (&#x27;UNSUPPORTED_DESTINATION&#x27;,); observed (&#x27;UNSUPPORTED_DESTINATION&#x27;, &#x27;DESTINATION_INVALID&#x27;).</li>
+<li>PP-60: comparison:REASON_MISMATCH — Expected (&#x27;UNSUPPORTED_DESTINATION&#x27;,); observed (&#x27;UNSUPPORTED_DESTINATION&#x27;, &#x27;DESTINATION_INVALID&#x27;).</li>
+<li>PP-65: comparison:STATE_MISMATCH — Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_CHANGED&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-66: comparison:STATE_MISMATCH — Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_CHANGED&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-67: comparison:STATE_MISMATCH — Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_CHANGED&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+<li>PP-68: comparison:STATE_MISMATCH — Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH — Expected (&#x27;DESTINATION_CHANGED&#x27;,); observed (&#x27;DESTINATION_AMBIGUOUS&#x27;,).</li>
+</ul></details><h2>Unreviewed gold source-review gate — separate diagnostic track</h2>
+<p>Status: FAIL. State matches 72/72; exact matches 53/72. The expected result without review is abstention. These are not extraction or end-to-end successes.</p>
+<h2>Live extraction: BLOCKED / NOT_CONFIGURED</h2>
+<p>Saved attempt: benchmarks/phase2-redteam/live-attempt.json; SHA-256: e0b6758936e3857ed242e3c07d32d6a82c6f8da42cf5b6c8716545bdf9f81a9c; date: 2026-10-07. Provider calls: 0; completed cases: 0; planned: 72.</p>
+<p>Field extraction accuracy, evidence grounding validity and schema failure rate: NOT_MEASURED. No live fixture substitution.</p>
+<h2>Live end-to-end: NOT_MEASURED</h2><p>No completed live predictions. End-to-end state accuracy, change recall, critical misses and uncertainty handling cannot be reported for live extraction. Gold, local examples and live metrics are never pooled.</p>
+<h2>Limitations</h2><p>Synthetic data; independent label review pending. Conservative multiple-destination abstention reduces supported-change recall. Supported comparison is full checksum-valid GB/DE IBAN only; no OCR, payments or banking integrations. Lexical discovery cannot prove payment intent or exhaustive coverage. Human callback actions are self-reported and scoped to a current revision. The fictional callback must not be called.</p>
+<p>Full retained inputs, outputs and benchmark records: <a href="proof.json">proof.json</a>. This report is static evidence, not an operator action.</p></html>

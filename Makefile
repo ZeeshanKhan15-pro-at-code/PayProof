@@ -57,6 +57,11 @@ demo: setup
 demo-smoke: setup
 	$(PY) -m payproof demo --simulate-review
 
+# New proof directory each time; saved gold metrics stay separate from live status.
+.PHONY: demo-proof
+demo-proof: setup
+	$(PY) -m payproof.demo_proof --output $(or $(OUTPUT),/tmp/payproof-demo-proof)
+
 # Local operator server (writes require environment-configured gate), no debugger/reloader.
 serve: setup
 	$(PY) -m payproof serve

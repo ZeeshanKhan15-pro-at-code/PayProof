@@ -1,0 +1,1121 @@
+{
+  "dataset": "SYNTHETIC_DEMO_PROOF_V1",
+  "vendor": {
+    "vendor_id": "2bc7bba4-fa1b-5f04-ae80-fedb7599b43c",
+    "revision_id": "3818f1d9-a4f6-5066-9f07-db35645ff027",
+    "canonical_vendor_name": "Acme Supplies (synthetic)",
+    "trusted_email": "accounts@acme.example",
+    "trusted_domain": "acme.example",
+    "callback_contact": {
+      "contact_id": "cadf877a-4af3-510e-8389-eb0805d191a0",
+      "revision_id": "9c1437ed-15c2-5824-8aa2-e254832a9850",
+      "method": "PHONE",
+      "value": "+1-202-555-0182",
+      "provenance": {
+        "source_kind": "SYNTHETIC_FIXTURE",
+        "source_reference": "synthetic-onboarding/acme-proof-3821",
+        "description": "Fictional Acme onboarding record, established before all demo sources. Fictional callback; no real contact or bank ownership assertion.",
+        "recorded_by": "synthetic-fixture-author",
+        "recorded_at": "2026-10-01T08:00:00Z"
+      },
+      "last_verified_at": "2026-10-02T08:00:00Z"
+    },
+    "bank_name": "Synthetic Demo Bank",
+    "payment_identity": {
+      "normalization_version": "iban-gb-de-v1",
+      "scheme": "IBAN",
+      "raw_account_identifier": "GB46TEST00000000003821",
+      "account_identifier": "GB46TEST00000000003821",
+      "routing_identifier": null
+    },
+    "routing_identifier": null,
+    "currency": "GBP",
+    "provenance": {
+      "source_kind": "SYNTHETIC_FIXTURE",
+      "source_reference": "synthetic-onboarding/acme-proof-3821",
+      "description": "Fictional Acme onboarding record, established before all demo sources. Fictional callback; no real contact or bank ownership assertion.",
+      "recorded_by": "synthetic-fixture-author",
+      "recorded_at": "2026-10-01T08:00:00Z"
+    },
+    "last_verified_at": "2026-10-03T08:00:00Z"
+  },
+  "cases": [
+    {
+      "case_id": "changed",
+      "title": "Plausible Acme treasury update with a different destination",
+      "inputs": {
+        "sources": [
+          {
+            "source_id": "c0d51ad0-dcd5-584f-b251-839392966053",
+            "kind": "EMAIL",
+            "text": "From: accounts@acme.example\nReply-To: accounts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nPayment details have changed.\nReason: We completed an internal treasury update for invoice ACME-001.\nPlease pay this invoice to IBAN GB57TEST00000000009928.\n",
+            "sha256": "b29489fae6028a3bfb6655da8045e269e83e23d4dbfe505dc16ca96880840d64",
+            "captured_at": "2026-10-04T08:00:00Z",
+            "captured_by": "synthetic-demo-author",
+            "label": "Plausible Acme treasury update with a different destination",
+            "page_number": null
+          }
+        ],
+        "evidence": {
+          "vendor_name": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "Acme Supplies (synthetic)",
+                "evidence": {
+                  "evidence_id": "60988e5d-f79c-5b6a-8350-5294240ac835",
+                  "source_id": "c0d51ad0-dcd5-584f-b251-839392966053",
+                  "field": "vendor_name",
+                  "extracted_value": "Acme Supplies (synthetic)",
+                  "exact_excerpt": "Vendor: Acme Supplies (synthetic)",
+                  "location": {
+                    "char_start": 60,
+                    "char_end": 93,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "sender_email": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "accounts@acme.example",
+                "evidence": {
+                  "evidence_id": "96f4fc6f-604c-5735-afcd-ce848e03696a",
+                  "source_id": "c0d51ad0-dcd5-584f-b251-839392966053",
+                  "field": "sender_email",
+                  "extracted_value": "accounts@acme.example",
+                  "exact_excerpt": "From: accounts@acme.example",
+                  "location": {
+                    "char_start": 0,
+                    "char_end": 27,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "reply_to": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "accounts@acme.example",
+                "evidence": {
+                  "evidence_id": "66d1252b-d522-58dd-ac2c-2d03fb1d9fcf",
+                  "source_id": "c0d51ad0-dcd5-584f-b251-839392966053",
+                  "field": "reply_to",
+                  "extracted_value": "accounts@acme.example",
+                  "exact_excerpt": "Reply-To: accounts@acme.example",
+                  "location": {
+                    "char_start": 28,
+                    "char_end": 59,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "invoice_number": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "ACME-001",
+                "evidence": {
+                  "evidence_id": "546389e9-e00b-5af8-a18c-a175a994b055",
+                  "source_id": "c0d51ad0-dcd5-584f-b251-839392966053",
+                  "field": "invoice_number",
+                  "extracted_value": "ACME-001",
+                  "exact_excerpt": "Invoice: ACME-001",
+                  "location": {
+                    "char_start": 94,
+                    "char_end": 111,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "amount": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "1250.00",
+                "evidence": {
+                  "evidence_id": "eac1d44c-07ba-510e-9457-cc3891fc7e1a",
+                  "source_id": "c0d51ad0-dcd5-584f-b251-839392966053",
+                  "field": "amount",
+                  "extracted_value": "1250.00",
+                  "exact_excerpt": "Amount: 1250.00 GBP",
+                  "location": {
+                    "char_start": 112,
+                    "char_end": 131,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "currency": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "GBP",
+                "evidence": {
+                  "evidence_id": "981f409b-c8c2-513d-ad7f-f65fe0a60329",
+                  "source_id": "c0d51ad0-dcd5-584f-b251-839392966053",
+                  "field": "currency",
+                  "extracted_value": "GBP",
+                  "exact_excerpt": "Amount: 1250.00 GBP",
+                  "location": {
+                    "char_start": 112,
+                    "char_end": 131,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "bank_name": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "Synthetic Demo Bank",
+                "evidence": {
+                  "evidence_id": "7478c7ee-84f1-5cb2-ae11-739679f8b89c",
+                  "source_id": "c0d51ad0-dcd5-584f-b251-839392966053",
+                  "field": "bank_name",
+                  "extracted_value": "Synthetic Demo Bank",
+                  "exact_excerpt": "Bank: Synthetic Demo Bank",
+                  "location": {
+                    "char_start": 132,
+                    "char_end": 157,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "account_identifier": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "GB57TEST00000000009928",
+                "evidence": {
+                  "evidence_id": "6a1d1af0-9068-5b58-a331-02393d3bc786",
+                  "source_id": "c0d51ad0-dcd5-584f-b251-839392966053",
+                  "field": "account_identifier",
+                  "extracted_value": "GB57TEST00000000009928",
+                  "exact_excerpt": "Please pay this invoice to IBAN GB57TEST00000000009928.",
+                  "location": {
+                    "char_start": 259,
+                    "char_end": 314,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "routing_identifier": {
+            "status": "MISSING",
+            "candidates": []
+          },
+          "destination_scheme": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "IBAN",
+                "evidence": {
+                  "evidence_id": "5bd5f189-b1f0-5481-938a-7a0cfb85dc9e",
+                  "source_id": "c0d51ad0-dcd5-584f-b251-839392966053",
+                  "field": "destination_scheme",
+                  "extracted_value": "IBAN",
+                  "exact_excerpt": "Please pay this invoice to IBAN GB57TEST00000000009928.",
+                  "location": {
+                    "char_start": 259,
+                    "char_end": 314,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "claims_details_changed": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": true,
+                "evidence": {
+                  "evidence_id": "1f824cb5-89bb-5e0c-9920-636d74b0f044",
+                  "source_id": "c0d51ad0-dcd5-584f-b251-839392966053",
+                  "field": "claims_details_changed",
+                  "extracted_value": "Payment details have changed.",
+                  "exact_excerpt": "Payment details have changed.",
+                  "location": {
+                    "char_start": 158,
+                    "char_end": 187,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "stated_reason_for_change": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "We completed an internal treasury update for invoice ACME-001.",
+                "evidence": {
+                  "evidence_id": "3a9abec2-f822-575d-be79-6baf8644633c",
+                  "source_id": "c0d51ad0-dcd5-584f-b251-839392966053",
+                  "field": "stated_reason_for_change",
+                  "extracted_value": "We completed an internal treasury update for invoice ACME-001.",
+                  "exact_excerpt": "Reason: We completed an internal treasury update for invoice ACME-001.",
+                  "location": {
+                    "char_start": 188,
+                    "char_end": 258,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "request_id": "8f1a9c63-e4af-5c19-b665-0b56b3585019",
+          "source_ids": [
+            "c0d51ad0-dcd5-584f-b251-839392966053"
+          ],
+          "extraction": {
+            "attempt_id": "aabe734b-6e8c-563c-8d6e-b2a9d9e58e67",
+            "method": "FIXTURE",
+            "extracted_at": "2026-10-04T08:01:00Z",
+            "schema_version": "1",
+            "operator_id": "synthetic-demo-author"
+          }
+        }
+      },
+      "expected_state": "VERIFY",
+      "required_reasons": [
+        "DESTINATION_CHANGED"
+      ]
+    },
+    {
+      "case_id": "unchanged",
+      "title": "Same business context with the supported trusted destination",
+      "inputs": {
+        "sources": [
+          {
+            "source_id": "0ab7a0df-0c87-5c07-bb65-bf49d9ad2930",
+            "kind": "EMAIL",
+            "text": "From: accounts@acme.example\nReply-To: accounts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nPlease pay this invoice to IBAN GB46TEST00000000003821.\n",
+            "sha256": "5ca7e08a900d135516d9aaf6483897f62889773685c454d6d63c890fbcafa1d5",
+            "captured_at": "2026-10-04T08:00:00Z",
+            "captured_by": "synthetic-demo-author",
+            "label": "Same business context with the supported trusted destination",
+            "page_number": null
+          }
+        ],
+        "evidence": {
+          "vendor_name": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "Acme Supplies (synthetic)",
+                "evidence": {
+                  "evidence_id": "16c58539-eb28-5411-8bbd-125a7f22b1b3",
+                  "source_id": "0ab7a0df-0c87-5c07-bb65-bf49d9ad2930",
+                  "field": "vendor_name",
+                  "extracted_value": "Acme Supplies (synthetic)",
+                  "exact_excerpt": "Vendor: Acme Supplies (synthetic)",
+                  "location": {
+                    "char_start": 60,
+                    "char_end": 93,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "sender_email": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "accounts@acme.example",
+                "evidence": {
+                  "evidence_id": "aa59f398-5860-586d-b0ef-2268a1ef3c66",
+                  "source_id": "0ab7a0df-0c87-5c07-bb65-bf49d9ad2930",
+                  "field": "sender_email",
+                  "extracted_value": "accounts@acme.example",
+                  "exact_excerpt": "From: accounts@acme.example",
+                  "location": {
+                    "char_start": 0,
+                    "char_end": 27,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "reply_to": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "accounts@acme.example",
+                "evidence": {
+                  "evidence_id": "7dcafe66-2098-5ccc-89be-76146353c941",
+                  "source_id": "0ab7a0df-0c87-5c07-bb65-bf49d9ad2930",
+                  "field": "reply_to",
+                  "extracted_value": "accounts@acme.example",
+                  "exact_excerpt": "Reply-To: accounts@acme.example",
+                  "location": {
+                    "char_start": 28,
+                    "char_end": 59,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "invoice_number": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "ACME-001",
+                "evidence": {
+                  "evidence_id": "054b9d29-a692-5c08-8189-ec7dcba25392",
+                  "source_id": "0ab7a0df-0c87-5c07-bb65-bf49d9ad2930",
+                  "field": "invoice_number",
+                  "extracted_value": "ACME-001",
+                  "exact_excerpt": "Invoice: ACME-001",
+                  "location": {
+                    "char_start": 94,
+                    "char_end": 111,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "amount": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "1250.00",
+                "evidence": {
+                  "evidence_id": "7b967347-a63c-5ba6-a09b-5cb52565510c",
+                  "source_id": "0ab7a0df-0c87-5c07-bb65-bf49d9ad2930",
+                  "field": "amount",
+                  "extracted_value": "1250.00",
+                  "exact_excerpt": "Amount: 1250.00 GBP",
+                  "location": {
+                    "char_start": 112,
+                    "char_end": 131,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "currency": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "GBP",
+                "evidence": {
+                  "evidence_id": "fb03947f-b879-5ab6-b291-7feefa3fafe5",
+                  "source_id": "0ab7a0df-0c87-5c07-bb65-bf49d9ad2930",
+                  "field": "currency",
+                  "extracted_value": "GBP",
+                  "exact_excerpt": "Amount: 1250.00 GBP",
+                  "location": {
+                    "char_start": 112,
+                    "char_end": 131,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "bank_name": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "Synthetic Demo Bank",
+                "evidence": {
+                  "evidence_id": "bb0cf046-2f91-576f-b799-58838bf06688",
+                  "source_id": "0ab7a0df-0c87-5c07-bb65-bf49d9ad2930",
+                  "field": "bank_name",
+                  "extracted_value": "Synthetic Demo Bank",
+                  "exact_excerpt": "Bank: Synthetic Demo Bank",
+                  "location": {
+                    "char_start": 132,
+                    "char_end": 157,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "account_identifier": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "GB46TEST00000000003821",
+                "evidence": {
+                  "evidence_id": "5012fb84-2a63-5a14-9111-3694773efaac",
+                  "source_id": "0ab7a0df-0c87-5c07-bb65-bf49d9ad2930",
+                  "field": "account_identifier",
+                  "extracted_value": "GB46TEST00000000003821",
+                  "exact_excerpt": "Please pay this invoice to IBAN GB46TEST00000000003821.",
+                  "location": {
+                    "char_start": 158,
+                    "char_end": 213,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "routing_identifier": {
+            "status": "MISSING",
+            "candidates": []
+          },
+          "destination_scheme": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "IBAN",
+                "evidence": {
+                  "evidence_id": "2005cba4-cf6d-589d-b3a4-62290ac176d4",
+                  "source_id": "0ab7a0df-0c87-5c07-bb65-bf49d9ad2930",
+                  "field": "destination_scheme",
+                  "extracted_value": "IBAN",
+                  "exact_excerpt": "Please pay this invoice to IBAN GB46TEST00000000003821.",
+                  "location": {
+                    "char_start": 158,
+                    "char_end": 213,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "claims_details_changed": {
+            "status": "MISSING",
+            "candidates": []
+          },
+          "stated_reason_for_change": {
+            "status": "MISSING",
+            "candidates": []
+          },
+          "request_id": "e1c2efde-8433-5d83-8b43-8d8fe3a7bbca",
+          "source_ids": [
+            "0ab7a0df-0c87-5c07-bb65-bf49d9ad2930"
+          ],
+          "extraction": {
+            "attempt_id": "58f59a36-6c59-5bfd-ba94-f424254d6170",
+            "method": "FIXTURE",
+            "extracted_at": "2026-10-04T08:01:00Z",
+            "schema_version": "1",
+            "operator_id": "synthetic-demo-author"
+          }
+        }
+      },
+      "expected_state": "UNCHANGED",
+      "required_reasons": [
+        "DESTINATION_MATCH"
+      ]
+    },
+    {
+      "case_id": "conflicting",
+      "title": "Two competing invoice instructions retained as observations",
+      "inputs": {
+        "sources": [
+          {
+            "source_id": "89c3950c-f526-5ad1-a6c5-656adaa70d44",
+            "kind": "EMAIL",
+            "text": "From: accounts@acme.example\nReply-To: accounts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nEmail instruction: pay this invoice to IBAN GB57TEST00000000009928.\nInvoice instruction: pay this invoice to IBAN GB46TEST00000000003821.\n",
+            "sha256": "579c65181f9f5347c9207179442f4055064aa1888fea8cbee8700ef329373f3c",
+            "captured_at": "2026-10-04T08:00:00Z",
+            "captured_by": "synthetic-demo-author",
+            "label": "Two competing invoice instructions retained as observations",
+            "page_number": null
+          }
+        ],
+        "evidence": {
+          "vendor_name": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "Acme Supplies (synthetic)",
+                "evidence": {
+                  "evidence_id": "62f1032c-5330-560a-a92c-0efa1ba3f620",
+                  "source_id": "89c3950c-f526-5ad1-a6c5-656adaa70d44",
+                  "field": "vendor_name",
+                  "extracted_value": "Acme Supplies (synthetic)",
+                  "exact_excerpt": "Vendor: Acme Supplies (synthetic)",
+                  "location": {
+                    "char_start": 60,
+                    "char_end": 93,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "sender_email": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "accounts@acme.example",
+                "evidence": {
+                  "evidence_id": "7e1ba05c-5799-5f0e-9f19-39b53b1307c4",
+                  "source_id": "89c3950c-f526-5ad1-a6c5-656adaa70d44",
+                  "field": "sender_email",
+                  "extracted_value": "accounts@acme.example",
+                  "exact_excerpt": "From: accounts@acme.example",
+                  "location": {
+                    "char_start": 0,
+                    "char_end": 27,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "reply_to": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "accounts@acme.example",
+                "evidence": {
+                  "evidence_id": "5b9056df-feb7-5a12-84ef-09b3e89cefe4",
+                  "source_id": "89c3950c-f526-5ad1-a6c5-656adaa70d44",
+                  "field": "reply_to",
+                  "extracted_value": "accounts@acme.example",
+                  "exact_excerpt": "Reply-To: accounts@acme.example",
+                  "location": {
+                    "char_start": 28,
+                    "char_end": 59,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "invoice_number": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "ACME-001",
+                "evidence": {
+                  "evidence_id": "ca035457-df01-5603-8963-6f2cff135855",
+                  "source_id": "89c3950c-f526-5ad1-a6c5-656adaa70d44",
+                  "field": "invoice_number",
+                  "extracted_value": "ACME-001",
+                  "exact_excerpt": "Invoice: ACME-001",
+                  "location": {
+                    "char_start": 94,
+                    "char_end": 111,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "amount": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "1250.00",
+                "evidence": {
+                  "evidence_id": "2d3b9e5e-2cc4-5e6f-883d-7c65e91f9a0b",
+                  "source_id": "89c3950c-f526-5ad1-a6c5-656adaa70d44",
+                  "field": "amount",
+                  "extracted_value": "1250.00",
+                  "exact_excerpt": "Amount: 1250.00 GBP",
+                  "location": {
+                    "char_start": 112,
+                    "char_end": 131,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "currency": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "GBP",
+                "evidence": {
+                  "evidence_id": "66dfe622-8cac-57c1-8e8b-ba4820b95cb0",
+                  "source_id": "89c3950c-f526-5ad1-a6c5-656adaa70d44",
+                  "field": "currency",
+                  "extracted_value": "GBP",
+                  "exact_excerpt": "Amount: 1250.00 GBP",
+                  "location": {
+                    "char_start": 112,
+                    "char_end": 131,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "bank_name": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "Synthetic Demo Bank",
+                "evidence": {
+                  "evidence_id": "a6e7f36c-6d51-5ce4-9e01-2fc3a4970998",
+                  "source_id": "89c3950c-f526-5ad1-a6c5-656adaa70d44",
+                  "field": "bank_name",
+                  "extracted_value": "Synthetic Demo Bank",
+                  "exact_excerpt": "Bank: Synthetic Demo Bank",
+                  "location": {
+                    "char_start": 132,
+                    "char_end": 157,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "account_identifier": {
+            "status": "AMBIGUOUS",
+            "candidates": [
+              {
+                "value": "GB57TEST00000000009928",
+                "evidence": {
+                  "evidence_id": "f7c471e8-e39a-5e34-9cb9-bd2cb65bb0df",
+                  "source_id": "89c3950c-f526-5ad1-a6c5-656adaa70d44",
+                  "field": "account_identifier",
+                  "extracted_value": "GB57TEST00000000009928",
+                  "exact_excerpt": "Email instruction: pay this invoice to IBAN GB57TEST00000000009928.",
+                  "location": {
+                    "char_start": 158,
+                    "char_end": 225,
+                    "page_number": null
+                  },
+                  "extraction_status": "AMBIGUOUS"
+                }
+              },
+              {
+                "value": "GB46TEST00000000003821",
+                "evidence": {
+                  "evidence_id": "c3503cb2-fba9-5485-99e9-ae6fcdc7313f",
+                  "source_id": "89c3950c-f526-5ad1-a6c5-656adaa70d44",
+                  "field": "account_identifier",
+                  "extracted_value": "GB46TEST00000000003821",
+                  "exact_excerpt": "Invoice instruction: pay this invoice to IBAN GB46TEST00000000003821.",
+                  "location": {
+                    "char_start": 226,
+                    "char_end": 295,
+                    "page_number": null
+                  },
+                  "extraction_status": "AMBIGUOUS"
+                }
+              }
+            ]
+          },
+          "routing_identifier": {
+            "status": "MISSING",
+            "candidates": []
+          },
+          "destination_scheme": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "IBAN",
+                "evidence": {
+                  "evidence_id": "ab8fe0a9-25f8-5274-9567-3bd945419872",
+                  "source_id": "89c3950c-f526-5ad1-a6c5-656adaa70d44",
+                  "field": "destination_scheme",
+                  "extracted_value": "IBAN",
+                  "exact_excerpt": "Email instruction: pay this invoice to IBAN GB57TEST00000000009928.",
+                  "location": {
+                    "char_start": 158,
+                    "char_end": 225,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "claims_details_changed": {
+            "status": "MISSING",
+            "candidates": []
+          },
+          "stated_reason_for_change": {
+            "status": "MISSING",
+            "candidates": []
+          },
+          "request_id": "527f8c6b-5e8d-5cd9-9aed-4942b3e1d8c5",
+          "source_ids": [
+            "89c3950c-f526-5ad1-a6c5-656adaa70d44"
+          ],
+          "extraction": {
+            "attempt_id": "6a8a03ec-afc8-5795-8213-87ba6c92d9e8",
+            "method": "FIXTURE",
+            "extracted_at": "2026-10-04T08:01:00Z",
+            "schema_version": "1",
+            "operator_id": "synthetic-demo-author"
+          }
+        }
+      },
+      "expected_state": "UNCERTAIN",
+      "required_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ]
+    },
+    {
+      "case_id": "extraction-failure",
+      "title": "Actual disabled-provider extraction, not a model-success claim",
+      "inputs": {
+        "sources": [
+          {
+            "source_id": "127868ef-0bce-5e2b-a6b5-6ed4ffb086a0",
+            "kind": "EMAIL",
+            "text": "From: accounts@acme.example\nReply-To: accounts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nPlease pay this invoice to IBAN GB57TEST00000000009928.\n",
+            "sha256": "e5a3e1be7296b1dfa21c9852f8f00df3e62df6021a98f8a16370c38cbcd1d21b",
+            "captured_at": "2026-10-04T08:00:00Z",
+            "captured_by": "synthetic-demo-author",
+            "label": "Actual disabled-provider extraction, not a model-success claim",
+            "page_number": null
+          }
+        ],
+        "evidence": {
+          "vendor_name": {
+            "status": "UNREADABLE",
+            "candidates": []
+          },
+          "sender_email": {
+            "status": "UNREADABLE",
+            "candidates": []
+          },
+          "reply_to": {
+            "status": "UNREADABLE",
+            "candidates": []
+          },
+          "invoice_number": {
+            "status": "UNREADABLE",
+            "candidates": []
+          },
+          "amount": {
+            "status": "UNREADABLE",
+            "candidates": []
+          },
+          "currency": {
+            "status": "UNREADABLE",
+            "candidates": []
+          },
+          "bank_name": {
+            "status": "UNREADABLE",
+            "candidates": []
+          },
+          "account_identifier": {
+            "status": "UNREADABLE",
+            "candidates": []
+          },
+          "routing_identifier": {
+            "status": "UNREADABLE",
+            "candidates": []
+          },
+          "destination_scheme": {
+            "status": "UNREADABLE",
+            "candidates": []
+          },
+          "claims_details_changed": {
+            "status": "UNREADABLE",
+            "candidates": []
+          },
+          "stated_reason_for_change": {
+            "status": "UNREADABLE",
+            "candidates": []
+          },
+          "request_id": "acf010cd-1620-589a-b729-ca2c2c1ded65",
+          "source_ids": [
+            "127868ef-0bce-5e2b-a6b5-6ed4ffb086a0"
+          ],
+          "extraction": {
+            "attempt_id": "1746b8a8-bd89-5d98-80bf-9759db15b6d9",
+            "method": "NOT_ATTEMPTED",
+            "extracted_at": "2026-10-04T08:01:00Z",
+            "schema_version": "1",
+            "failure_code": "NOT_CONFIGURED"
+          }
+        }
+      },
+      "expected_state": "UNCERTAIN",
+      "required_reasons": [
+        "EXTRACTION_FAILED"
+      ]
+    },
+    {
+      "case_id": "historical-omission",
+      "title": "Deliberately omit current account from fixture observations",
+      "inputs": {
+        "sources": [
+          {
+            "source_id": "58c1f794-2d54-524c-8e0b-ff19be4e7574",
+            "kind": "EMAIL",
+            "text": "From: accounts@acme.example\nReply-To: accounts@acme.example\nVendor: Acme Supplies (synthetic)\nInvoice: ACME-001\nAmount: 1250.00 GBP\nBank: Synthetic Demo Bank\nOur old account was IBAN GB46TEST00000000003821.\n----- Forwarded current invoice -----\nCurrent invoice: please pay to IBAN GB57TEST00000000009928.\n",
+            "sha256": "d5bd2231ea92bcedbad17af9275fcb75ff93e2761ef4b7187f68dfd877ec4f54",
+            "captured_at": "2026-10-04T08:00:00Z",
+            "captured_by": "synthetic-demo-author",
+            "label": "Deliberately omit current account from fixture observations",
+            "page_number": null
+          }
+        ],
+        "evidence": {
+          "vendor_name": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "Acme Supplies (synthetic)",
+                "evidence": {
+                  "evidence_id": "8650bb0e-4ea0-5d6b-bf46-25a1c29693ea",
+                  "source_id": "58c1f794-2d54-524c-8e0b-ff19be4e7574",
+                  "field": "vendor_name",
+                  "extracted_value": "Acme Supplies (synthetic)",
+                  "exact_excerpt": "Vendor: Acme Supplies (synthetic)",
+                  "location": {
+                    "char_start": 60,
+                    "char_end": 93,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "sender_email": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "accounts@acme.example",
+                "evidence": {
+                  "evidence_id": "d4168cc2-b415-5685-81ae-e37b3bb39a7d",
+                  "source_id": "58c1f794-2d54-524c-8e0b-ff19be4e7574",
+                  "field": "sender_email",
+                  "extracted_value": "accounts@acme.example",
+                  "exact_excerpt": "From: accounts@acme.example",
+                  "location": {
+                    "char_start": 0,
+                    "char_end": 27,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "reply_to": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "accounts@acme.example",
+                "evidence": {
+                  "evidence_id": "b157362b-bc01-5285-8957-4075ab01d059",
+                  "source_id": "58c1f794-2d54-524c-8e0b-ff19be4e7574",
+                  "field": "reply_to",
+                  "extracted_value": "accounts@acme.example",
+                  "exact_excerpt": "Reply-To: accounts@acme.example",
+                  "location": {
+                    "char_start": 28,
+                    "char_end": 59,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "invoice_number": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "ACME-001",
+                "evidence": {
+                  "evidence_id": "c9b34a0c-6fa6-5ea4-88cf-10129d560610",
+                  "source_id": "58c1f794-2d54-524c-8e0b-ff19be4e7574",
+                  "field": "invoice_number",
+                  "extracted_value": "ACME-001",
+                  "exact_excerpt": "Invoice: ACME-001",
+                  "location": {
+                    "char_start": 94,
+                    "char_end": 111,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "amount": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "1250.00",
+                "evidence": {
+                  "evidence_id": "297e1c94-bb25-5b90-a907-1b0cbbfd48dd",
+                  "source_id": "58c1f794-2d54-524c-8e0b-ff19be4e7574",
+                  "field": "amount",
+                  "extracted_value": "1250.00",
+                  "exact_excerpt": "Amount: 1250.00 GBP",
+                  "location": {
+                    "char_start": 112,
+                    "char_end": 131,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "currency": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "GBP",
+                "evidence": {
+                  "evidence_id": "5698da90-b262-5347-84af-2eb4faa5b307",
+                  "source_id": "58c1f794-2d54-524c-8e0b-ff19be4e7574",
+                  "field": "currency",
+                  "extracted_value": "GBP",
+                  "exact_excerpt": "Amount: 1250.00 GBP",
+                  "location": {
+                    "char_start": 112,
+                    "char_end": 131,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "bank_name": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "Synthetic Demo Bank",
+                "evidence": {
+                  "evidence_id": "16602dba-4369-5718-891c-e9ff9402fa97",
+                  "source_id": "58c1f794-2d54-524c-8e0b-ff19be4e7574",
+                  "field": "bank_name",
+                  "extracted_value": "Synthetic Demo Bank",
+                  "exact_excerpt": "Bank: Synthetic Demo Bank",
+                  "location": {
+                    "char_start": 132,
+                    "char_end": 157,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "account_identifier": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "GB46TEST00000000003821",
+                "evidence": {
+                  "evidence_id": "0502a0aa-8d15-5cbb-9434-7e861594ea22",
+                  "source_id": "58c1f794-2d54-524c-8e0b-ff19be4e7574",
+                  "field": "account_identifier",
+                  "extracted_value": "GB46TEST00000000003821",
+                  "exact_excerpt": "Our old account was IBAN GB46TEST00000000003821.",
+                  "location": {
+                    "char_start": 158,
+                    "char_end": 206,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "routing_identifier": {
+            "status": "MISSING",
+            "candidates": []
+          },
+          "destination_scheme": {
+            "status": "FOUND",
+            "candidates": [
+              {
+                "value": "IBAN",
+                "evidence": {
+                  "evidence_id": "9e9eb3d6-95cb-5ad5-9f94-98fb701298a1",
+                  "source_id": "58c1f794-2d54-524c-8e0b-ff19be4e7574",
+                  "field": "destination_scheme",
+                  "extracted_value": "IBAN",
+                  "exact_excerpt": "Our old account was IBAN GB46TEST00000000003821.",
+                  "location": {
+                    "char_start": 158,
+                    "char_end": 206,
+                    "page_number": null
+                  },
+                  "extraction_status": "FOUND"
+                }
+              }
+            ]
+          },
+          "claims_details_changed": {
+            "status": "MISSING",
+            "candidates": []
+          },
+          "stated_reason_for_change": {
+            "status": "MISSING",
+            "candidates": []
+          },
+          "request_id": "23830236-ba7d-56a5-ba4f-17d9fa7ea723",
+          "source_ids": [
+            "58c1f794-2d54-524c-8e0b-ff19be4e7574"
+          ],
+          "extraction": {
+            "attempt_id": "00d46fbd-3348-567b-a585-a78fc569bf21",
+            "method": "FIXTURE",
+            "extracted_at": "2026-10-04T08:01:00Z",
+            "schema_version": "1",
+            "operator_id": "synthetic-demo-author"
+          }
+        }
+      },
+      "expected_state": "UNCERTAIN",
+      "required_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ]
+    }
+  ]
+}

@@ -23,6 +23,8 @@ The operator workflow returns 503 while the passphrase is unconfigured. App init
 
 ## Seeded synthetic demonstration
 
+The original fixture workflow below remains available. The [Acme evidence-proof demonstration](DEMO_SCRIPT.md) additionally seeds five separate cases through the existing `CaseInputs`/SQLite contracts without automatically reviewing or comparing them. It pairs the operator workflow with a generated report that retains actual gold benchmark artifacts and explicitly marks live extraction/end-to-end metrics as unmeasured. The independent source inventory now visibly highlights destination values not retained by extraction; matching a retained value does not prove that every source occurrence or instruction role was captured.
+
 1. Log in with the configured operator passphrase and an attribution label.
 2. Click **Add seeded synthetic vendor (account ending 3821)**. This stores the bundled fictional onboarding record and callback `+1-202-555-0182`.
 3. Open **Open seeded synthetic email case**; the seeded vendor and exact email are populated for inspection. Alternatively use **Create a case and run extraction** and select Synthetic PayProof Demo Supplies.

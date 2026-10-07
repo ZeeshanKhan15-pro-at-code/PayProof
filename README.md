@@ -1,5 +1,7 @@
 # PayProof
 
+For the reproducible Acme 3821→9928 mechanism proof and separate gold/live results, see the [2–4 minute demo script](docs/DEMO_SCRIPT.md) and [saved evidence report](benchmarks/demo-proof-v1/report.html). Run `make demo-proof OUTPUT=/tmp/payproof-proof-new-run` from the repository root; choose a new output directory each time. This uses explicit synthetic observations and simulated report-only source review, never live fallback or automatic human confirmation.
+
 Phase 1 is frozen as a local, synthetic CLI comparison prototype. See the [handoff](docs/PHASE1_HANDOFF.md) for the freeze checklist and [Phase-2 release gates](docs/PHASE2_RELEASE_GATES.md) for current installation, HTTP, credential and provider readiness evidence. The repository demonstrates the core mechanism; the complete persistent release described in the [architecture](docs/ARCHITECTURE.md) is unfinished.
 
 ### Problem

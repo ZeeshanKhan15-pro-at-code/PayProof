@@ -123,7 +123,7 @@ def render_result(case: CaseContract) -> str:
     ]
     explanations = {
         "UNCHANGED": "The complete supported payment destination matches the trusted baseline. This is not payment approval.",
-        "VERIFY": "The payment destination changed and requires independent human verification. A change may be a legitimate vendor update.",
+        "VERIFY": "The payment destination changed and requires independent human verification.",
         "UNCERTAIN": "The payment destination cannot be compared safely. Resolve the listed issues and review the sources before a new comparison.",
     }
     lines.append(explanations[result.state])

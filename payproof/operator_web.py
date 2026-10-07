@@ -16,7 +16,7 @@ from werkzeug.wrappers import Response
 from payproof.cases import start_case
 from payproof.config import Settings
 from payproof.documents import capture_text
-from payproof.instruction_safety import source_inventory
+from payproof.instruction_safety import extracted_keys, observation_key, source_inventory
 from payproof.normalization import canonical_iban
 from payproof.schemas import (
     EVIDENCE_FIELDS,
@@ -377,6 +377,8 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             case=case,
             snapshot=case.snapshot,
             inventory=source_inventory(case.snapshot.sources),
+            extracted_destination_keys=extracted_keys(case.snapshot.evidence),
+            observation_key=observation_key,
             history=history,
             attempts=attempts,
             fields=EVIDENCE_FIELDS,

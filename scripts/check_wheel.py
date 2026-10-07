@@ -146,6 +146,12 @@ from payproof.fixtures import load_corpus
 from payproof.web import create_app
 corpus = load_corpus()
 assert len(corpus.vendors) == 4 and len(corpus.requests) == 10
+from payproof.demo_proof import load_demo, run_demo
+proof_bundle = load_demo()
+assert proof_bundle.vendor.canonical_vendor_name == 'Acme Supplies (synthetic)'
+proof_outcomes = run_demo(proof_bundle)
+assert [c.comparison.state for c in proof_outcomes] == ['VERIFY', 'UNCHANGED', 'UNCERTAIN', 'UNCERTAIN', 'UNCERTAIN']
+assert all(c.verification is None for c in proof_outcomes)
 import secrets
 settings = load_settings({'PAYPROOF_ENV': 'production', 'PAYPROOF_SECRET_KEY': secrets.token_urlsafe(48)})
 app = create_app(settings)
