@@ -1,140 +1,142 @@
 # PayProof
 
-For the reproducible Acme 3821→9928 mechanism proof and separate gold/live results, see the [2–4 minute demo script](docs/DEMO_SCRIPT.md) and [saved evidence report](benchmarks/demo-proof-v1/report.html). Run `make demo-proof OUTPUT=/tmp/payproof-proof-new-run` from the repository root; choose a new output directory each time. This uses explicit synthetic observations and simulated report-only source review, never live fallback or automatic human confirmation.
-
-Phase 1 is frozen as a local, synthetic CLI comparison prototype. See the [handoff](docs/PHASE1_HANDOFF.md) for the freeze checklist and [Phase-2 release gates](docs/PHASE2_RELEASE_GATES.md) for current installation, HTTP, credential and provider readiness evidence. The repository demonstrates the core mechanism; the complete persistent release described in the [architecture](docs/ARCHITECTURE.md) is unfinished.
+PayProof compares requested payment destinations with previously trusted vendor information and requires independent human checking when they differ. Phase 2 implements a persistent, gated operator workflow. Release assessment: **PARTIAL**, with a failed gold evaluation gate and blocked clean-install, live-provider, actual HTTP and credential-revocation gates. See the [release report](docs/PHASE2_RELEASE_REPORT.md), [handoff](docs/PHASE2_HANDOFF.md) and [integrator context](docs/AI_HANDOFF.md). No production-readiness or security certification is claimed.
 
 ### Problem
 
-A business receives apparently legitimate payment instructions whose destination may differ from previously trusted vendor information. PayProof shows the change, its evidence and the previously trusted contact for independent human checking. It does not approve payment, classify fraud or establish bank-account ownership.
+A plausible invoice can request a destination different from the vendor's prior instructions. PayProof shows the old/new destination, exact evidence and known-good callback. It does not classify fraud, approve payments, process money or establish bank account ownership.
 
-### Phase-1 architecture
+### Implemented architecture
 
-One Python package contains bounded text capture, strict Pydantic contracts, structured extraction, exact source validation, conservative normalization, explicit human source review, deterministic comparison and CLI evidence display. Dependencies are pinned; Flask exposes read-only debug/liveness endpoints. There is no database or implemented verification command.
+One Python package: Flask server-rendered forms, strict Pydantic contracts, stdlib SQLite, one synchronous OpenAI extraction adapter and a pure deterministic comparator. Dependencies are pinned in `requirements-dev.txt`; no ORM, queue, frontend framework or distributed service.
 
 ```text
-selected trusted baseline -----------------------------------------+
-                                                                   |
-email/invoice/plain text -> extraction -> schema + source validation |
-                                       -> display all source spans |
-                                       -> human source review      |
-                                       -> normalization/comparison-+
-                                       -> state, reasons, differences,
-                                          evidence, trusted callback
+trusted vendor + prior callback -> immutable SQLite baseline revision --+
+                                                                      |
+pasted/uploaded UTF-8 text -> source-only extraction                    |
+                           -> strict schema + exact evidence validation|
+                           -> source inventory + explicit human review|
+                           -> deterministic normalization/comparison <-+
+                           -> UNCHANGED / VERIFY / UNCERTAIN
+                           -> source/evidence/result history in SQLite
+
+explicit independent human check using prior trusted callback
+                           -> separate revision-bound attestation/event
+                           -> VERIFIED derived only if confirmed/current
+                           -> no payment action; comparison is preserved
 ```
 
-[DATA_MODEL.md](docs/DATA_MODEL.md) defines canonical contracts. [VERTICAL_SLICE.md](docs/VERTICAL_SLICE.md) describes the connected workflow. SQLite persistence and explicit independent-verification events are available through the private local `workflow` CLI. The web operator workflow is available at `/operator` when its environment-only gate is configured. No architecture or comparison rule was changed for this freeze.
+The private `workflow` CLI and gated `/operator` forms share backend contracts and storage commands. Operators create/select prior trusted records, paste/upload synthetic UTF-8 `.txt`/`.eml` documents, run extraction, inspect sources/spans, acknowledge source review, compare and optionally record an independent human outcome. SQLite retains immutable snapshots/events and timestamps. Migration v1 initializes idempotently and survives restart; unknown/nonempty-unversioned schemas fail closed. No later migration, web correction editor, deletion interface or automatic baseline replacement exists.
 
 ### AI role
 
-AI proposes source-backed field observations only. The model receives source text, not the trusted baseline, and cannot select the vendor, infer trust, set a comparison state or impersonate a human. Unexpected verdict/confirmation fields, duplicate JSON keys, invalid schema, fabricated quotes and partial account tokens fail closed. Missing observations remain missing.
-
-Extraction has explicit `disabled`, `fixture` and `live` modes. The seeded demo uses exact synthetic fixtures offline. The Responses API adapter has mocked integration coverage; live extraction accuracy is unmeasured. Arbitrary text and email/invoice pairs need a compatible configured live provider/model. No silent fixture fallback exists. See [EXTRACTION.md](docs/EXTRACTION.md) and [LIVE_EXTRACTION.md](docs/LIVE_EXTRACTION.md) for configuration, mocked integrations and actual smoke status.
+Modes are explicit: `disabled`, `fixture`, `live`. Live sends only source IDs, kinds and text to the fixed OpenAI Responses endpoint with strict output, no tools and `store=false`. The model never receives/selects the baseline or callback, returns verdicts or records verification. Unknown fields, malformed JSON/schema, fabricated/nonunique excerpts and clipped account evidence fail closed. Missing stays missing. Timeouts/provider failures are explicit unsuccessful attempts; live never falls back to fixtures. Provider/model compatibility and live accuracy are **unmeasured**. See [LIVE_EXTRACTION.md](docs/LIVE_EXTRACTION.md).
 
 ### Deterministic safety layer
 
-The pure comparator uses complete checksum-valid GB/DE IBANs. Only ASCII spaces and ASCII case are normalized. Leading zeros and full identifiers are preserved; punctuation, Unicode lookalikes, masked values and unsupported destinations are not repaired. Bank display names, amount, currency and sender context do not determine destination equality.
+Full checksum-valid GB/DE IBANs only. Normalize ASCII spaces and letter case; preserve zeros/full identity. Do not repair Unicode, punctuation, OCR, masked values or unsupported schemes. Bank names, sender, amount, currency and invoice context do not determine destination equality.
 
-| State | Meaning |
+| Comparison | Meaning |
 | --- | --- |
-| `UNCHANGED` | Complete reviewed supported destination equals the selected trusted baseline; no payment authorization |
-| `VERIFY` | Complete reviewed supported destination differs; independent human verification required |
-| `UNCERTAIN` | Missing, failed, unsupported, conflicting or unreviewed evidence prevents a reliable comparison |
+| `UNCHANGED` | Complete supported reviewed destination matches the prior baseline; destination equality only |
+| `VERIFY` | Complete supported destination differs; independently check the exact instructions |
+| `UNCERTAIN` | Failed, missing, unsupported, conflicting, incomplete or unreviewed evidence prevents reliable comparison |
 
-Only the explicit human `workflow verify` command can create a separate scoped confirmation, from which the durable workflow derives `VERIFIED` when current. The underlying comparison stays `UNCHANGED` or `VERIFY`. Typing `REVIEWED` acknowledges source review and does not verify the vendor or account. See [COMPARISON.md](docs/COMPARISON.md).
+An independent bounded lexical inventory exposes competing/omitted source regions. Model confidence and broad source acknowledgement cannot suppress them; context hints do not prove intent. Known competing instructions abstain toward `UNCERTAIN`.
+
+`VERIFIED` is never an AI/comparison state. Only an explicit human action recording the exact check, previously trusted contact, outcome, person/role, server time and optional notes can create a scoped confirmation. The comparison is preserved. Stale case/vendor/contact/engine revisions require fresh review/comparison. Negative/inconclusive outcomes do not confirm. Human action IDs are idempotent; case creation is not. See [DATA_MODEL.md](docs/DATA_MODEL.md).
 
 ### Current benchmark
 
-`make benchmark` runs the frozen [30-case diagnostic specification](docs/BENCHMARK_SPEC.md) and saves [JSON](benchmarks/phase1-v1/results/gold/report.json) and [readable results](benchmarks/phase1-v1/results/gold/summary.txt). The table below is the historical Phase-1 run; the current-instruction safety rerun and its two retained utility failures follow it.
+The final [72-case gold run](benchmarks/phase2-freeze/gold/report.json) and [summary](benchmarks/phase2-freeze/gold/summary.txt) use supplied gold observations and simulated source review. They are **not live extraction or human-review performance**. Independent label review is pending; frozen labels/protocol were not changed.
 
-| Gold comparison metric | Actual count |
+| Reviewed gold metric | Saved result |
 | --- | --- |
-| Correct states and exact result agreement | 30/30 |
-| Known consequential changes | 13 |
-| Correct `VERIFY` detections | 10; all 10 supported changes |
-| Changed cases not detected as `VERIFY` | 3; unsupported and returned `UNCERTAIN` |
-| Critical changed cases falsely `UNCHANGED` | 0 |
-| Unchanged cases incorrectly `VERIFY` | 0 |
-| Expected uncertainty handled correctly | 13/13 |
-| Deterministic-comparison failures | 0 |
-| Unreviewed gold gate correct | 30/30 |
+| Overall status | **FAIL**, exit 1 |
+| Correct states | 56/72 |
+| Exact state/reasons/values/evidence | 53/72 |
+| Known consequential changes | 24 |
+| Correct `VERIFY` detections | 12/24 |
+| Changed cases abstained `UNCERTAIN` | 12 |
+| Critical false `UNCHANGED` | 0 |
+| False `VERIFY` on unchanged cases | 0 |
+| Correct uncertainty including reasons | 30/33 |
+| Uncertain-state recall alone | 33/33 |
+| Comparison scoring failures / failed operations | 19 / 0 |
+| Extraction metrics | NOT_RUN |
 
-Gold reviews are explicitly simulated. [Recorded configured-extraction results](benchmarks/phase1-v1/results/extraction/summary.txt) contain 30 `NOT_CONFIGURED` failures, zero successful classifications and zero comparison failures. They do not measure live AI accuracy. Independent labels remain `PENDING`; this public diagnostic corpus does not satisfy the architecture's 36-case held-out release evaluation. See [run notes](benchmarks/phase1-v1/results/README.md).
+The failures remain visible: 16 conservative state/reason mismatches and three reason-only mismatches. Abstention is not successful change detection. The separate unreviewed gate has 72/72 state matches but 53/72 exact matches and remains FAIL. Live extraction and live end-to-end metrics are **NOT_MEASURED / NOT_CONFIGURED**. Historical Phase-1 30/30 is not current performance; its later guard run is 28/30. Gold/live/curated demos are never pooled.
 
-The 2026-10-06 [current-instruction safety rerun](docs/CURRENT_INSTRUCTION_SAFETY.md) preserves separate [BEFORE](benchmarks/instruction-safety/before/summary.txt) and [AFTER](benchmarks/instruction-safety/after/summary.txt) results. Against the unchanged diagnostic labels, the stronger guard yields **28/30 correct states**, eight source-correct change detections, zero critical false UNCHANGED and two additional abstentions. The benchmark exits 1 for those utility mismatches; the historical Phase-1 30/30 result above is not current performance. No live extraction score is claimed.
+### Seeded evidence proof
 
-The separate [Phase-2 held-out specification](docs/PHASE2_BENCHMARK_SPEC.md) freezes 72 new synthetic cases before predictor execution. `make benchmark-heldout-validate` validates definitions only. No held-out performance is claimed; independent human label review remains pending. Keep this set out of tuning and use the documented explicit commands for future evaluation.
+[DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) gives a 2–4 minute walkthrough: Acme 3821→9928 change, supported unchanged, conflicts, disabled-extraction failure and historical-only extraction omission. The proof runner uses authored synthetic observations and explicitly simulated report-only review; it never creates human confirmation. Optional operator seed cases start unreviewed/uncompared.
+
+```bash
+.venv/bin/python -m payproof.demo_proof \
+  --output /tmp/payproof-proof-new-run \
+  --seed-data-dir data/acme-demo-new-run
+```
+
+Use new directories. The [saved report](benchmarks/demo-proof-v1/report.html) retains all inputs/outcomes and separate benchmark artifacts. Demo success is mechanism proof, not held-out model accuracy. Full accounts are compared; suffixes are display aids. Contacts/accounts are fictional; do not call the synthetic callback.
 
 ### Current limitations
 
-- The [current-instruction source guard](docs/CURRENT_INSTRUCTION_SAFETY.md) blocks independently detected competing, omitted and reference-only destination regions even after a broad review acknowledgement. It is a lexical tripwire, not exhaustive discovery or proof of payment intent; undetected role/omission errors remain possible. Review every original source and independently verify vendor updates.
-- The original CLI demo remains in memory; `workflow` CLI and the gated `/operator` web pages persist cases and explicit independent checks. The prototype uses one shared operator passphrase and operator labels, not individual authenticated identities or enterprise access controls.
-- GB/DE IBAN and UTF-8 plain text only. Separate routing, other schemes/countries, OCR, PDF ingestion and automatic vendor matching are unsupported. Conservative grounding can reject undelimited numeric columns or footnotes.
-- Fixture success and mocked provider tests are not real-world extraction accuracy. Socket timeouts do not establish a complete provider wall-clock deadline.
-- Tracked secret fields are empty and local `.env` files are ignored. A credential-like value existed in earlier Git history; owner revocation/rotation, if live, is still required. This freeze does not certify secret-free history or revoke credentials.
-- Clean installation could not be completed here because package-index DNS access was blocked and the download approval service was unavailable. Existing-environment checks and package smoke validation are recorded separately in the handoff.
+- Synthetic evaluation; independent label review pending; failed strict gold gate; no live accuracy. Discovery cannot prove exhaustive coverage/intent, and unrecognized OCR/role/omission errors remain possible.
+- One shared operator passphrase and attribution labels, process-local session registry. Logout/restart revoke sessions. One Gunicorn worker required; no multi-user identity/tenant isolation.
+- UTF-8 text, 16 sources/20,000 aggregate characters, 100,000-byte HTTP body. No PDF/OCR, integrations, other schemes or automatic vendor matching.
+- Socket I/O timeout is not a complete provider wall-clock deadline. No automatic retries. Duplicate case creation can incur repeated extraction costs, bounded by burst limits.
+- Host/database administrators are trusted; application history is not cryptographically tamperproof. Private SQLite/WAL/backups need access controls. Stronger validators can reject old unsafe snapshots; never silently relabel them.
+- Current credential fields are blank; historical credential-like material needs owner revocation/synthetic-status confirmation. Pattern scans cannot prove absence/revocation. Guards do not detect every encoded/unknown secret.
+- Fresh pinned install is blocked here by package-index DNS/network access. Installed-wheel checks use the existing pinned interpreter. Real production socket startup is blocked by sandbox EPERM; passing in-process health/request tests are separate evidence.
 
-The [red-team report](docs/PHASE1_REDTEAM.md) records the fixes and residual risks. Phase 2 priorities and architecture discrepancies are listed in the [handoff](docs/PHASE1_HANDOFF.md).
+See [PHASE2_REDTEAM_REPORT.md](docs/PHASE2_REDTEAM_REPORT.md) for fixed P0/P1 findings and residual risks. Phase 3 starts with operational gates and independent evaluation, then presentation polish without weakening safety.
 
 ### How to run
 
-Requires Python 3.11+, `venv`, pip and GNU Make. First installation needs package-index access. From the repository root:
+Python 3.11+, `venv`, pip, GNU Make; first setup needs package-index access:
 
 ```bash
-make verify
-make demo
+make setup
+make lint typecheck test
+make build
+.venv/bin/python -m payproof check
 ```
 
-`make verify` installs pinned dependencies, runs lint/format checks, strict typecheck, all tests, initialization, gold benchmark and production package build with an actual temporary-target wheel installation and smoke validation using the invoking interpreter’s dependencies. `make demo` displays original text and extracted evidence before prompting. Read them and type `REVIEWED`; the full account changes from `GB46TEST00000000003821` to `GB57TEST00000000009928`, producing `VERIFY / DESTINATION_CHANGED`. The fixture, contacts and accounts are fictional.
+`make verify` is the older aggregate: its diagnostic benchmark exits 1 and stops before build. Run the explicit commands above and benchmark separately to exercise every gate; never count that failure as a pass.
 
-| Command | Purpose |
+| Command | Actual behavior |
 | --- | --- |
-| `make setup` | Create/update `.venv` with pinned dependencies |
-| `make lint typecheck test` | Run configured quality checks |
-| `make demo-smoke` | Offline seeded demo with explicitly simulated source review |
-| `.venv/bin/python -m payproof demo --no-review` | Leave the demo `UNCERTAIN / REVIEW_REQUIRED` (exit 2) |
-| `make benchmark` | Save the 30-case gold diagnostic run |
-| `make benchmark-heldout-validate` | Validate the frozen 72-case definitions without predicting |
-| `make benchmark-extraction` | Evaluate configured extraction; missing configuration is a failure |
-| `make build` | Build wheel/source distribution and validate installed package contents |
-| `make serve` | Read-only local server at `http://127.0.0.1:8000`; `/healthz` is liveness only |
+| `make setup` | Complete pinned set and editable installation |
+| `make lint typecheck test` | Lint/format, strict mypy, complete synthetic suite |
+| `make build` | Wheel/sdist plus installed-target smoke using existing dependencies |
+| `.venv/bin/python scripts/check_wheel.py --http` | Installed Gunicorn listener/health; exit 2 for infrastructure block |
+| `.venv/bin/python -m payproof workflow init` | Private SQLite v1 initialization |
+| `make serve` | Loopback Flask without debugger/reloader; `/operator` needs configured gate; `/healthz` is liveness only |
+| `make production` | One Gunicorn worker/two threads on loopback 8000; host restricts access and provides HTTPS |
+| `make demo` / `make demo-smoke` | Original fixture demo with explicit / simulated source review |
+| `make demo-proof OUTPUT=/tmp/payproof-proof-new` | New artifact-backed Acme report |
+| `make benchmark-heldout-validate` | Frozen definitions/protocol only; no predictions |
+| `.venv/bin/python -m payproof.heldout_benchmark --evaluate-gold --output /tmp/payproof-gold-new` | Gold evaluation; currently FAIL; no model |
+| `.venv/bin/python scripts/smoke_live_extraction.py` | Environment-configured small live synthetic smoke |
+| `.venv/bin/python -m payproof.heldout_benchmark --live --output /tmp/payproof-live-new` | Configured live pipeline; no fixture substitution |
+| `.venv/bin/python scripts/check_credential_history.py` | Value-free reachable history; findings need owner triage |
 
-The CLI also supports `check`, `debug`, `extract`, `analyze`, and `benchmark-fixtures`. The installed console command is `.venv/bin/payproof`. File analysis is described in [VERTICAL_SLICE.md](docs/VERTICAL_SLICE.md). Exit 0 means a completed supported comparison, exit 2 means uncertainty/invalid CLI usage, and exit 1 means an operation/configuration failure; none authorizes payment.
+`workflow --help` lists durable commands. Held-out output directories must be new. Gold and CLI exit statuses never authorize payment.
 
-Process environment is authoritative; `.env` is **not automatically loaded**. Optional local configuration:
+### Configuration
 
-```bash
-cp .env.example .env
-# Edit the ignored local file; never commit credentials.
-set -a
-. ./.env
-set +a
-make debug
-```
+Process environment is authoritative; `.env` is not loaded automatically. `.env.example` is an empty credential/model template. Supply secrets privately through the host environment; never commit or paste them into source, documents, URLs or logs.
 
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `PAYPROOF_ENV` | `development` | `development`, `test`, or `production` |
-| `PAYPROOF_PORT` | `8000` | Local `serve` port, 1024–65535 |
-| `PAYPROOF_EXTRACTION_MODE` | `disabled` | `disabled`, `fixture`, or `live` |
-| `PAYPROOF_PROVIDER_API_KEY` | Absent | Server-only provider credential, redacted in settings |
-| `PAYPROOF_PROVIDER_MODEL` | Absent in process environment | Explicit model compatible with the fixed OpenAI Responses endpoint and structured output; example model text is not proof of compatibility |
-| `PAYPROOF_EXTRACTION_TIMEOUT_SECONDS` | `30` | Provider socket I/O timeout, 1–60 seconds |
-| `PAYPROOF_SECRET_KEY` | Absent | Production requires at least 32 nonblank characters, supplied independently |
-| `PAYPROOF_DATA_DIR` | `./data` | Reserved data path; no database is created |
+| Variable | Default / requirement |
+| --- | --- |
+| `PAYPROOF_ENV` | `development`; also `test`/`production` |
+| `PAYPROOF_PORT` | `8000`, ASCII digits, 1024–65535 for local server |
+| `PAYPROOF_DATA_DIR` | `./data`, private persistent SQLite directory |
+| `PAYPROOF_EXTRACTION_MODE` | `disabled`; `fixture` matches exact bundled development text; `live` needs key/model |
+| `PAYPROOF_PROVIDER_API_KEY` | Absent; server-only; never reuse exposed history |
+| `PAYPROOF_PROVIDER_MODEL` | Absent; explicit compatible model for fixed `https://api.openai.com/v1/responses` and strict output |
+| `PAYPROOF_EXTRACTION_TIMEOUT_SECONDS` | `30`, ASCII digits, 1–60 |
+| `PAYPROOF_SECRET_KEY` | Absent; random 32+ characters for production/operator workflow |
+| `PAYPROOF_OPERATOR_TOKEN` | Absent; distinct random 32+ character passphrase plus signing secret for operator pages |
 
-Unknown `PAYPROOF_*` variables and invalid settings fail startup. The demo ignores live configuration; initialization, gold benchmarks and replay never call the provider. Live `extract`, `analyze`, and extraction benchmarking send source text to the configured provider. Use synthetic data for demonstrations. `make production` runs Gunicorn on loopback port 8000 with a host-provided signing secret; it serves the gated operator workflow when both operator and signing secrets are configured. Restrict access and provide HTTPS for production cookies.
-
-### Durable local workflow
-
-Use `PAYPROOF_DATA_DIR` for a private persistent local directory (default `data/`). Initialize with `.venv/bin/python -m payproof workflow init`. Commands and the new strict workflow contracts are documented in [DATA_MODEL.md](docs/DATA_MODEL.md#durable-local-workflow-phase-2). `workflow --help` lists commands. The gated web forms use the same storage commands, expected revisions and verification contracts.
-
-The local OS user controls baseline entry and human actions. Operator labels are attribution, not authentication. A confirmation records an independent human attestation of exact instructions, not account ownership or permission to pay. Stale revisions require refresh, source review and comparison again. SQLite files, journals and backups contain source text and must remain private and outside Git.
-
-### Minimal operator web workflow
-
-See [WEB_WORKFLOW.md](docs/WEB_WORKFLOW.md) for setup and the seeded demonstration. Configure `PAYPROOF_SECRET_KEY` and `PAYPROOF_OPERATOR_TOKEN` as distinct random secrets (32+ characters each), `PAYPROOF_DATA_DIR` as private persistent storage, and explicitly choose an extraction mode. Run `make serve` and open `http://127.0.0.1:8000/operator`. Login uses the operator passphrase; API keys are never submitted through the UI. The browser root redirects to this page; JSON health/capability requests remain available.
-
-Create/select a prior trusted vendor, paste or upload UTF-8 synthetic text, run extraction, inspect all sources/spans, acknowledge source review, and run comparison. Only a separate, unchecked human form can record an independent-check outcome using the stored trusted contact. History and old comparisons remain visible; stale records cannot be confirmed. No payment-authorization action exists.
-
-The [Phase-2 red-team report](docs/PHASE2_REDTEAM_REPORT.md) records fixes for omitted split/malformed destinations, session replay/revocation and configured-secret boundary failures. Before/intermediate/after gold held-out runs remain preserved: the final gold track is still FAIL at 56/72 correct states, with zero critical false UNCHANGED. Live held-out extraction remains NOT_CONFIGURED. These diagnostics do not certify security or production readiness.
+Unknown `PAYPROOF_*`, invalid values, missing live key/model and missing production signing secret reject startup with sanitized errors. Health initializes neither storage nor provider. Production cookies require HTTPS. CSRF, same-origin checks, strict forms, escaped evidence, CSP, no-store pages, expected revisions and configured-secret guards protect the writable workflow. Operator labels are attribution, not proof of individual identity or an actual callback.

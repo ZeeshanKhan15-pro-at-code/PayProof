@@ -1,4 +1,26 @@
-# Phase-2 release gates
+# Phase-2 release gates — final assessment
+
+Current assessment: 2026-10-07, **PARTIAL**. The [final release report](PHASE2_RELEASE_REPORT.md) and [handoff](PHASE2_HANDOFF.md) supersede the historical 2026-10-05 assessment retained below. The application now has SQLite persistence, writable gated operator forms and explicit independent human events; it is not the earlier read-only skeleton.
+
+| Gate | Previous status | Current status | Evidence | Remaining blocker | Exact reproduction command |
+| --- | --- | --- | --- | --- | --- |
+| Clean pinned install | BLOCKED | BLOCKED | New isolated venv; verbose value-free pip/DNS diagnosis: index DNS/network failure | Accessible index or complete trusted wheelhouse | `python3 -m venv /tmp/payproof-clean-new`; its Python `-m pip install --no-cache-dir --retries 0 --timeout 5 -r requirements-dev.txt` |
+| Installed production package | PASS with existing dependencies | PASS with existing pinned dependencies | Built/installed wheel; outside-checkout fixtures, Acme paths, migrations/restart, gated pages/assets and console checks | Fresh dependency environment is separate | `.venv/bin/python -m build --no-isolation`; `.venv/bin/python scripts/check_wheel.py` |
+| Production HTTP / health | BLOCKED | BLOCKED for real HTTP; PASS WSGI health | Socket PermissionError errno 1; installed production WSGI health200 | Host permitting loopback sockets | `.venv/bin/python scripts/check_wheel.py --http` |
+| Configuration | PASS | PASS | Strict tests, blank credential/model template; separate signing/operator secrets | Live compatibility separately blocked | `.venv/bin/python -m pytest -q tests/test_skeleton.py tests/test_live_extraction.py` |
+| Current credential patterns | PASS blank fields | PASS value-free current-pattern check, not active-secret certification | Only intentional synthetic private-key test header | Pattern checks cannot prove all unknown secrets absent | `.venv/bin/python scripts/check_credential_history.py` plus current metadata in freeze audit |
+| Historical active credential risk | BLOCKED | BLOCKED pending owner | Same `.env.example` historical literal, values not disclosed | Synthetic/revocation confirmation; rotate if genuine | `.venv/bin/python scripts/check_credential_history.py` |
+| Live provider smoke/held-out | BLOCKED | BLOCKED / NOT_CONFIGURED | Final smoke and live harness exit2, zero calls, metrics NOT_MEASURED | Fresh key/model and outbound access | `.venv/bin/python scripts/smoke_live_extraction.py`; `.venv/bin/python -m payproof.heldout_benchmark --live --output /tmp/payproof-live-new` |
+| Persistent workflow/safety/tests | Not implemented in early gate audit | PASS synthetic coverage | 754 tests, immutable/revision/human invariants, seeded web workflow | Real humans/provider not evaluated | `.venv/bin/python -m pytest -q` |
+| Held-out gold evaluation | Not evaluated | FAIL | 56/72 states,53/72 exact,19 scoring failures,zero critical falseUNCHANGED | Independent label/role review and utility/reason gaps | `.venv/bin/python -m payproof.heldout_benchmark --evaluate-gold --output /tmp/payproof-gold-new` |
+| Independent labels | PENDING | BLOCKED / PENDING | Frozen protocol/corpus hashes valid | Independent human review | Review frozen source roles/exclusions/labels; version any future change before prediction |
+
+Final evidence: [verification](../benchmarks/phase2-freeze/verification.json), [clean setup](../benchmarks/phase2-freeze/clean-install.json), [credentials](../benchmarks/phase2-freeze/credentials.json), [gold](../benchmarks/phase2-freeze/gold/report.json), [live status](../benchmarks/phase2-freeze/live-attempt.json). New output/data directories are required for reproduction. A complete milestone/tag is withheld, not silently represented as a passing release.
+
+---
+
+## Historical 2026-10-05 assessment (superseded)
+
 
 Assessment date: 2026-10-05. Scope: installation, distributable package, HTTP health, configuration, historical credential exposure and provider readiness. The [Phase-1 handoff](PHASE1_HANDOFF.md) remains the freeze snapshot. Comparison semantics, canonical schemas, evidence/extraction contracts, safety states, architecture and benchmark labels are unchanged.
 

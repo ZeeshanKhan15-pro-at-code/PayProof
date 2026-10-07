@@ -1,12 +1,12 @@
 # PayProof architecture
 
-Status: Phase-1 architecture frozen. This document is a build contract, not an implemented system.
+Status: architecture decisions frozen; the Phase-2 implementation now includes the gated Flask operator workflow, SQLite snapshots/events and explicit independent human checks. See [PHASE2_RELEASE_REPORT.md](PHASE2_RELEASE_REPORT.md) for verified, failed and blocked release gates. The original inspection and phase allocation below are retained as planning history, not current capability claims.
 
 ## Scope and repository inspection
 
 PayProof helps a business notice that a requested payment destination differs from a previously trusted vendor destination and require independent human verification. It does not decide whether to pay or whether fraud occurred.
 
-At inspection, the workspace contained no application source, dependency manifest, existing documentation, or usable Git repository. There is no existing implementation to preserve. No application features are implemented by this architecture task.
+At the original architecture inspection, the workspace contained no application source, dependency manifest, existing documentation, or usable Git repository. That inspection preceded the current implementation.
 
 The three-day target is one operator, one deployment, manually selected vendors, pasted text, and IBAN destinations. Every comparison is scoped to a specific trusted vendor baseline revision. No automatic vendor matching is permitted.
 
@@ -109,7 +109,7 @@ The case view shows both the original comparison and, if present, “VERIFIED by
 
 The implemented engine and exact normalization/reason derivation are documented in [COMPARISON.md](COMPARISON.md).
 
-The local input-to-evidence CLI workflow is documented in [VERTICAL_SLICE.md](VERTICAL_SLICE.md). The persistent server/verification slice below remains the release target.
+The local input-to-evidence CLI workflow is documented in [VERTICAL_SLICE.md](VERTICAL_SLICE.md). The persistent server/verification slice is implemented and documented in [WEB_WORKFLOW.md](WEB_WORKFLOW.md); operational release gates remain separately assessed.
 
 Inputs are the reviewed candidate, immutable baseline revision, and their validity/evidence metadata. Outputs are a result and reason codes. The function performs no I/O.
 
@@ -229,6 +229,8 @@ Suggested three-day sequence: day 1 establishes data contracts, baseline entry, 
 Before a decisive comparison, a bounded deterministic lexical inventory independently checks all frozen source text for competing or unaccounted-for destination-like regions. It receives no baseline or model confidence, preserves exact context, and cannot prove intent or exclude a candidate as historical. Comparison and stored-result validation fail toward UNCERTAIN when this gate is unresolved; a blanket source-review acknowledgement cannot override it. AI extraction records retain their original provenance and are never populated from this inventory. No new state, provider or service is introduced. See [current-instruction safety](CURRENT_INSTRUCTION_SAFETY.md) for explicit detection limits, UI context and benchmark utility cost.
 
 ### PHASE-1 ARCHITECTURE DECISION
+
+The following allocation is the original three-day plan. Phase 1 actually froze a smaller CLI slice; Phase 2 added persistence, gated web workflow and independent checks. Implemented source review acknowledges all observations without a candidate-selection UI; independent lexical discovery can still require `UNCERTAIN`. Corrections use new source-bound CLI snapshots, not an inline web editor. Raw provider audit bytes are transient in the extraction API and are not durably stored by the operator workflow; validated observations and sanitized failures are durable. Version-1 SQL initialization exists; no later migration or retention/deletion interface is implemented. The original 36-case evaluation target was superseded by the separate frozen 72-case protocol, whose current gold result is FAIL and whose live results are unmeasured. Duplicate human actions are idempotent; case creation is not. These implementation limits do not change the safety mechanism or declare unmet release gates passed.
 
 Implement exactly these capabilities in Phase 1:
 

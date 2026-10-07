@@ -1,0 +1,247 @@
+{
+  "date": "2026-10-07",
+  "raw_logs_retained": false,
+  "configuration": {
+    "extraction_mode": "disabled",
+    "provider_key_available": false,
+    "provider_model_configured": false
+  },
+  "gates": [
+    {
+      "gate": "lint",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "started_at": "2026-10-07T13:06:15.938221+00:00",
+      "finished_at": "2026-10-07T13:06:15.969749+00:00"
+    },
+    {
+      "gate": "format",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "started_at": "2026-10-07T13:06:15.971071+00:00",
+      "finished_at": "2026-10-07T13:06:16.011377+00:00"
+    },
+    {
+      "gate": "typecheck",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "mypy"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "started_at": "2026-10-07T13:06:16.012867+00:00",
+      "finished_at": "2026-10-07T13:06:17.245949+00:00"
+    },
+    {
+      "gate": "tests",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "started_at": "2026-10-07T13:06:17.247786+00:00",
+      "passed_tests": 754,
+      "finished_at": "2026-10-07T13:06:58.725431+00:00"
+    },
+    {
+      "gate": "initialization",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "payproof",
+        "check"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "started_at": "2026-10-07T13:06:58.726862+00:00",
+      "finished_at": "2026-10-07T13:07:00.260848+00:00"
+    },
+    {
+      "gate": "persistence_initialization",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "payproof",
+        "workflow",
+        "init"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "started_at": "2026-10-07T13:07:00.262482+00:00",
+      "finished_at": "2026-10-07T13:07:01.640942+00:00"
+    },
+    {
+      "gate": "persistence_restart",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "payproof",
+        "workflow",
+        "init"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "started_at": "2026-10-07T13:07:01.642334+00:00",
+      "finished_at": "2026-10-07T13:07:03.499817+00:00"
+    },
+    {
+      "gate": "heldout_definition_validation",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "payproof.heldout_benchmark"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "started_at": "2026-10-07T13:07:03.501478+00:00",
+      "finished_at": "2026-10-07T13:07:05.232945+00:00"
+    },
+    {
+      "gate": "heldout_compiler_validation",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "scripts/compile_heldout.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "started_at": "2026-10-07T13:07:05.237524+00:00",
+      "finished_at": "2026-10-07T13:07:06.441433+00:00"
+    },
+    {
+      "gate": "build",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "build",
+        "--no-isolation"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "started_at": "2026-10-07T13:07:06.443045+00:00",
+      "finished_at": "2026-10-07T13:07:12.978984+00:00"
+    },
+    {
+      "gate": "installed_package_and_production_http",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "scripts/check_wheel.py",
+        "--http"
+      ],
+      "exit_code": 2,
+      "status": "BLOCKED",
+      "started_at": "2026-10-07T13:07:12.980125+00:00",
+      "observations": [
+        {
+          "wheel": "installed_and_initialized",
+          "dependencies": "existing_interpreter",
+          "vendors": 4,
+          "requests": 10,
+          "production_wsgi_health": 200,
+          "http_binding": "NOT_TESTED",
+          "sqlite_migration_restart": "PASS",
+          "gated_operator_pages_assets": "PASS"
+        },
+        {
+          "installed_console_entrypoint": "PASS",
+          "provider_called": false
+        },
+        {
+          "http_binding": "BLOCKED",
+          "reason": "PermissionError",
+          "errno": 1
+        }
+      ],
+      "reason": "SOCKET_CREATION_DENIED",
+      "finished_at": "2026-10-07T13:07:19.478797+00:00"
+    },
+    {
+      "gate": "live_smoke",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "scripts/smoke_live_extraction.py"
+      ],
+      "exit_code": 2,
+      "status": "BLOCKED",
+      "started_at": "2026-10-07T13:07:19.481098+00:00",
+      "reason": "NOT_CONFIGURED",
+      "provider_calls": 0,
+      "finished_at": "2026-10-07T13:07:20.515823+00:00"
+    },
+    {
+      "gate": "live_benchmark",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "payproof.heldout_benchmark",
+        "--live",
+        "--output",
+        "benchmarks/phase2-freeze/live"
+      ],
+      "exit_code": 2,
+      "status": "BLOCKED",
+      "started_at": "2026-10-07T13:07:20.517336+00:00",
+      "reason": "NOT_CONFIGURED",
+      "provider_calls": 0,
+      "completed_live_cases": 0,
+      "metrics": "NOT_MEASURED",
+      "finished_at": "2026-10-07T13:07:22.042418+00:00"
+    },
+    {
+      "gate": "final_documented_package_build",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "build",
+        "--no-isolation"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "started_at": "2026-10-07T13:10:45.423961+00:00",
+      "finished_at": "2026-10-07T13:10:54.239075+00:00",
+      "reason": "Rebuild after final release report and status artifacts were added; no application changes or repeated tests."
+    },
+    {
+      "gate": "final_documented_package_smoke",
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "scripts/check_wheel.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "started_at": "2026-10-07T13:10:54.242031+00:00",
+      "finished_at": "2026-10-07T13:11:01.738732+00:00",
+      "reason": "Rebuild after final release report and status artifacts were added; no application changes or repeated tests.",
+      "observations": [
+        {
+          "wheel": "installed_and_initialized",
+          "dependencies": "existing_interpreter",
+          "vendors": 4,
+          "requests": 10,
+          "production_wsgi_health": 200,
+          "http_binding": "NOT_TESTED",
+          "sqlite_migration_restart": "PASS",
+          "gated_operator_pages_assets": "PASS"
+        },
+        {
+          "installed_console_entrypoint": "PASS",
+          "provider_called": false
+        }
+      ]
+    }
+  ]
+}

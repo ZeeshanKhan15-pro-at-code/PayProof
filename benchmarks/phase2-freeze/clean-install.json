@@ -1,0 +1,35 @@
+{
+  "fresh_venv": "/tmp/payproof-freeze-clean-khoecxih/venv",
+  "system_site_packages": false,
+  "venv_exit_code": 0,
+  "status": "BLOCKED",
+  "command": [
+    "/tmp/payproof-freeze-clean-khoecxih/venv/bin/python",
+    "-m",
+    "pip",
+    "install",
+    "-vvv",
+    "--disable-pip-version-check",
+    "--no-cache-dir",
+    "--retries",
+    "0",
+    "--timeout",
+    "5",
+    "-r",
+    "/home/zeeshan-khan/Desktop/PayProof/requirements-dev.txt"
+  ],
+  "dependency_install_exit_code": 1,
+  "reason": "PACKAGE_INDEX_DNS_OR_NETWORK_UNAVAILABLE",
+  "application_install": "NOT_RUN",
+  "diagnostic_flags": {
+    "dns_resolution": true,
+    "network_connection": true,
+    "no_distribution_summary": true,
+    "timeout": false
+  },
+  "index_dns_probe": {
+    "status": "BLOCKED",
+    "exception_type": "gaierror",
+    "errno": -3
+  }
+}

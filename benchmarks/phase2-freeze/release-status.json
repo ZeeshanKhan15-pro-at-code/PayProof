@@ -1,0 +1,123 @@
+{
+  "assessment_date": "2026-10-07",
+  "overall": "PARTIAL",
+  "milestone_commit": "WITHHELD_FAILED_AND_BLOCKED_GATES",
+  "freeze_tag": "WITHHELD_FAILED_AND_BLOCKED_GATES",
+  "tests": {
+    "gate": "tests",
+    "command": [
+      "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+    ],
+    "exit_code": 0,
+    "status": "PASS",
+    "started_at": "2026-10-07T13:06:17.247786+00:00",
+    "passed_tests": 754,
+    "finished_at": "2026-10-07T13:06:58.725431+00:00"
+  },
+  "gold": {
+    "status": "FAIL",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "payproof.heldout_benchmark",
+      "--evaluate-gold",
+      "--output",
+      "benchmarks/phase2-freeze/gold"
+    ],
+    "exit_code": 1,
+    "dataset": "payproof-phase2-heldout-72-v1",
+    "corpus_sha256": "203a43619b2baaf516063e5f2add4ce86a828c8ac8dc6c1e29edb6e09363c2d0",
+    "reviewed_metrics": {
+      "total_cases": 72,
+      "correct_state_classifications": 56,
+      "exact_correct_cases": 53,
+      "consequential_changes": 24,
+      "consequential_changes_detected": 12,
+      "consequential_changes_missed": 12,
+      "supported_consequential_changes": 24,
+      "supported_changes_detected": 12,
+      "critical_false_unchanged": 0,
+      "critical_miss_case_ids": [],
+      "changed_cases_abstained": 12,
+      "changed_cases_failed": 0,
+      "unchanged_cases_incorrectly_escalated": 0,
+      "supported_unchanged_cases": 15,
+      "supported_unchanged_resolved": 11,
+      "supported_unchanged_unnecessarily_escalated": 4,
+      "expected_uncertain_cases": 33,
+      "uncertain_cases_handled_correctly": 30,
+      "unsafe_definitive_on_uncertain": 0,
+      "unnecessary_abstentions": 16,
+      "uncertainty_recall": {
+        "numerator": 33,
+        "denominator": 33
+      },
+      "uncertainty_precision": {
+        "numerator": 33,
+        "denominator": 49
+      },
+      "extraction_failures": null,
+      "extraction_error_cases": null,
+      "deterministic_comparison_failures": 19,
+      "failed_operations": 0,
+      "confusion": {
+        "UNCHANGED": {
+          "UNCHANGED": 11,
+          "VERIFY": 0,
+          "UNCERTAIN": 4,
+          "FAILED": 0
+        },
+        "VERIFY": {
+          "UNCHANGED": 0,
+          "VERIFY": 12,
+          "UNCERTAIN": 12,
+          "FAILED": 0
+        },
+        "UNCERTAIN": {
+          "UNCHANGED": 0,
+          "VERIFY": 0,
+          "UNCERTAIN": 33,
+          "FAILED": 0
+        }
+      },
+      "error_categories": {
+        "comparison:REASON_MISMATCH": 19,
+        "comparison:STATE_MISMATCH": 16
+      },
+      "fields": {}
+    }
+  },
+  "live": {
+    "date": "2026-10-07",
+    "status": "BLOCKED",
+    "reason": "NOT_CONFIGURED",
+    "command": ".venv/bin/python -m payproof.heldout_benchmark --live --output benchmarks/phase2-freeze/live",
+    "exit_code": 2,
+    "extraction_mode": "disabled",
+    "provider_key_available": false,
+    "provider_model_configured": false,
+    "provider_calls": 0,
+    "completed_live_cases": 0,
+    "planned_cases": 72,
+    "live_metrics": "NOT_MEASURED",
+    "diagnostic": "Current process lacks configured live extraction; no fixture substitution or passing result claimed."
+  },
+  "clean_install_status": "BLOCKED",
+  "critical_false_unchanged_scope": "gold comparison only; live NOT_MEASURED",
+  "known_reproduced_open_p0": 0,
+  "known_reproduced_open_implementation_p1": 0,
+  "open_p1_release_risks": [
+    {
+      "risk": "historical credential validity/revocation unknown",
+      "status": "BLOCKED_OWNER_CONFIRMATION_REQUIRED"
+    }
+  ],
+  "independent_label_review": "PENDING",
+  "raw_logs_or_secret_values_retained": false,
+  "production_package_status": "PASS",
+  "production_wsgi_health": "PASS",
+  "production_http_status": "BLOCKED"
+}

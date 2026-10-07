@@ -1,0 +1,23 @@
+{
+  "fresh_venv": "/tmp/payproof-freeze-clean-khoecxih/venv",
+  "system_site_packages": false,
+  "venv_exit_code": 0,
+  "status": "FAIL",
+  "command": [
+    "/tmp/payproof-freeze-clean-khoecxih/venv/bin/python",
+    "-m",
+    "pip",
+    "install",
+    "--disable-pip-version-check",
+    "--no-cache-dir",
+    "--retries",
+    "0",
+    "--timeout",
+    "5",
+    "-r",
+    "/home/zeeshan-khan/Desktop/PayProof/requirements-dev.txt"
+  ],
+  "dependency_install_exit_code": 1,
+  "reason": "PINNED_INSTALLATION_FAILED",
+  "application_install": "NOT_RUN"
+}
