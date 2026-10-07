@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-07",
+  "credential_values_included": false,
+  "initial_pre_fix": {
+    "total": 13,
+    "failed": 8,
+    "passed": 5,
+    "failed_test_ids": [
+      "tests/test_phase2_redteam.py::test_logged_out_cookie_cannot_be_replayed",
+      "tests/test_phase2_redteam.py::test_rotated_operator_gate_rejects_pre_rotation_session",
+      "tests/test_phase2_redteam.py::test_escaped_configured_secret_in_notes_is_not_stored_or_rendered",
+      "tests/test_phase2_redteam.py::test_public_model_configuration_cannot_contain_web_secret[secret_key]",
+      "tests/test_phase2_redteam.py::test_public_model_configuration_cannot_contain_web_secret[operator_token]",
+      "tests/test_phase2_redteam.py::test_omitted_spaced_country_or_bank_letters_cannot_match[D E89370400440532013000]",
+      "tests/test_phase2_redteam.py::test_omitted_spaced_country_or_bank_letters_cannot_match[G B82W E S T12345698765432]",
+      "tests/test_phase2_redteam.py::test_omitted_spaced_country_or_bank_letters_cannot_match[D\\u200bE89370400440532013000]"
+    ]
+  },
+  "additional_pre_fix_extraction": {
+    "selected": 3,
+    "failed": 3,
+    "failed_test_ids": [
+      "tests/test_phase2_redteam.py::test_extraction_rejects_other_configured_secrets_before_provider[secret_key]",
+      "tests/test_phase2_redteam.py::test_extraction_rejects_other_configured_secrets_before_provider[operator_token]",
+      "tests/test_phase2_redteam.py::test_echoed_operator_secret_is_not_retained_as_metadata_or_raw_response"
+    ]
+  },
+  "additional_pre_fix_configuration": {
+    "selected": 1,
+    "failed": 1,
+    "test": "test_signing_secret_cannot_reuse_provider_credential"
+  },
+  "after": {
+    "full_suite_passed": 744,
+    "new_regression_instances": 30
+  },
+  "scope": "Synthetic mocked omissions and direct Flask/SQLite attacks. Not live-model performance.",
+  "follow_up_pre_fix_identifier": {
+    "selected": 2,
+    "failed": 2,
+    "phase": "after first fixes, before explicit remittance-region extension",
+    "failed_test_ids": [
+      "tests/test_phase2_redteam.py::test_truncated_split_candidate_cannot_disappear_from_inventory[D E8937040044053201300]",
+      "tests/test_phase2_redteam.py::test_truncated_split_candidate_cannot_disappear_from_inventory[G B82W E S T1234569876543]"
+    ]
+  }
+}

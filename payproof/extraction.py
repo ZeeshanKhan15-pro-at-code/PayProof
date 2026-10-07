@@ -11,7 +11,12 @@ from pydantic import ValidationError
 
 from payproof.config import Settings, load_settings
 from payproof.extraction_contract import PROMPT_VERSION, WireExtractionPayload
-from payproof.openai_extraction import FailureCode, OpenAIExtractionProvider, ProviderFailure
+from payproof.openai_extraction import (
+    FailureCode,
+    OpenAIExtractionProvider,
+    ProviderFailure,
+    _reject_credential_echo,
+)
 from payproof.provenance import account_quote_is_complete
 from payproof.schemas import (
     EVIDENCE_FIELDS,
@@ -20,6 +25,7 @@ from payproof.schemas import (
     PaymentRequestEvidence,
     SourceDocument,
 )
+from payproof.secret_guard import reject_configured_secrets
 from payproof.validation import parse_contract
 
 
@@ -158,6 +164,10 @@ def extract_attempt(
         credential = settings.provider_api_key.get_secret_value()
         if credential and any(credential in source.text for source in sources):
             raise ExtractionInputError("Source contains the configured provider credential")
+    try:
+        reject_configured_secrets(tuple(s.model_dump(mode="json") for s in sources), settings)
+    except ValueError:
+        raise ExtractionInputError("Source contains a configured credential") from None
     request_id = request_id if request_id is not None else uuid4()
     metadata = ExtractionMetadata(
         attempt_id=uuid4(),
@@ -199,6 +209,10 @@ def extract_attempt(
         )
         try:
             completion = provider.complete(sources)
+            for secret in (settings.provider_api_key, settings.secret_key, settings.operator_token):
+                if secret is not None and secret.get_secret_value():
+                    _reject_credential_echo(completion.raw_response, secret.get_secret_value())
+            reject_configured_secrets((completion.model, completion.text), settings)
             raw = completion.raw_response
             wire = parse_contract(WireExtractionPayload, completion.text)
             fields = _ground_wire(wire, sources)

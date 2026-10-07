@@ -26,13 +26,19 @@ class Settings(Contract):
 
     @model_validator(mode="after")
     def production_secret(self) -> "Settings":
-        if (
-            self.provider_api_key is not None
-            and self.provider_api_key.get_secret_value()
-            and self.provider_model is not None
-            and self.provider_api_key.get_secret_value() in self.provider_model
+        if self.provider_model is not None and any(
+            secret is not None
+            and secret.get_secret_value()
+            and secret.get_secret_value() in self.provider_model
+            for secret in (self.provider_api_key, self.secret_key, self.operator_token)
         ):
-            raise ValueError("provider model must not contain the provider credential")
+            raise ValueError("provider model must not contain a configured credential")
+        if (
+            self.secret_key is not None
+            and self.provider_api_key is not None
+            and self.secret_key.get_secret_value() == self.provider_api_key.get_secret_value()
+        ):
+            raise ValueError("session signing secret must differ from provider credential")
         if self.extraction_mode == "live":
             if (
                 self.provider_api_key is None

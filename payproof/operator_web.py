@@ -27,6 +27,7 @@ from payproof.schemas import (
     TrustedVendorRecord,
     TrustProvenance,
 )
+from payproof.secret_guard import reject_configured_secrets
 from payproof.storage import SQLiteStore, WorkflowError
 from payproof.workflow_contracts import CaseInputs, IndependentCheckAction
 
@@ -51,6 +52,10 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
     app.permanent_session_lifetime = timedelta(minutes=30)
     attempts: dict[str, list[float]] = {}
     lock = Lock()
+    # One process-local gate epoch; restarting or rotating configuration expires
+    # old sessions. Revocation is immediate on logout, without a new auth service.
+    epoch = secrets.token_urlsafe(32)
+    active_sessions: dict[str, float] = {}
 
     def bounded_rate(key: str, limit: int) -> None:
         with lock:
@@ -88,6 +93,17 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
                 status=503,
                 mimetype="text/plain",
             )
+        with lock:
+            now = time.monotonic()
+            for identifier in tuple(active_sessions):
+                if active_sessions[identifier] <= now:
+                    del active_sessions[identifier]
+            sid = str(session.get("rate_id", ""))
+            valid = session.get("gate_epoch") == epoch and sid in active_sessions
+            if valid:
+                active_sessions[sid] = now + 1800
+        if session.get("operator") and not valid:
+            session.clear()
         if request.method == "POST":
             if request.endpoint != "operator_login" and not session.get("operator"):
                 abort(401)
@@ -151,20 +167,16 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
     def human() -> str:
         return str(session["operator"])
 
-    def fields(allowed: set[str]) -> None:
+    def fields(allowed: set[str], allowed_files: set[str] | None = None) -> None:
+        if set(request.files) - (allowed_files or set()):
+            raise ValueError("unexpected file fields")
         if set(request.form) - (allowed | {"csrf"}) or any(
             len(request.form.getlist(k)) != 1 for k in request.form
         ):
             raise ValueError("unexpected form fields")
 
-    def no_secrets(text: str) -> None:
-        for secret in (settings.secret_key, settings.operator_token, settings.provider_api_key):
-            if (
-                secret is not None
-                and secret.get_secret_value()
-                and secret.get_secret_value() in text
-            ):
-                raise ValueError("credential-like input rejected")
+    def no_secrets(value: object) -> None:
+        reject_configured_secrets(value, settings)
 
     @app.route("/operator/login", methods=["GET", "POST"])
     def operator_login() -> str | Response:
@@ -183,10 +195,17 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             no_secrets(operator)
             if not operator or len(operator) > 256:
                 raise ValueError("operator label required")
+            with lock:
+                active_sessions.pop(str(session.get("rate_id", "")), None)
+                if len(active_sessions) >= 512:
+                    abort(429)
+                sid = secrets.token_urlsafe(32)
+                active_sessions[sid] = time.monotonic() + 1800
             session.clear()
             session["operator"] = operator
             session["csrf"] = secrets.token_urlsafe(32)
-            session["rate_id"] = secrets.token_urlsafe(16)
+            session["rate_id"] = sid
+            session["gate_epoch"] = epoch
             session.permanent = True
             return redirect(url_for("operator_home"))
         return render_template("operator_login.html")
@@ -194,15 +213,20 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
     @app.post("/operator/logout")
     def operator_logout() -> Response:
         fields(set())
+        with lock:
+            active_sessions.pop(str(session.get("rate_id", "")), None)
         session.clear()
         return redirect(url_for("operator_login"))
 
     @app.get("/operator")
     def operator_home() -> str:
+        vendors, cases = store().list_vendors(), store().list_cases()
+        no_secrets(tuple(v.model_dump(mode="json") for v in vendors))
+        no_secrets(tuple(c.model_dump(mode="json") for c in cases))
         return render_template(
             "operator_home.html",
-            vendors=store().list_vendors(),
-            cases=store().list_cases(),
+            vendors=vendors,
+            cases=cases,
             mode=settings.extraction_mode,
         )
 
@@ -222,7 +246,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
                 "trusted_before_request",
             }
         )
-        no_secrets(str(request.form))
+        no_secrets(tuple(request.form.values()))
         if request.form.get("trusted_before_request") != "yes":
             raise ValueError("prior trust must be explicitly acknowledged")
         verified_at = datetime.fromisoformat(request.form["verified_at"].replace("Z", "+00:00"))
@@ -281,15 +305,20 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
 
         demo = next(r for r in load_corpus().requests if r.fixture_id == "demo-account-change")
         if request.method == "GET":
+            vendors = store().list_vendors()
+            no_secrets(tuple(v.model_dump(mode="json") for v in vendors))
             return render_template(
                 "operator_new_case.html",
-                vendors=store().list_vendors(),
+                vendors=vendors,
                 mode=settings.extraction_mode,
                 demo_text=demo.source.text,
                 demo_selected=request.args.get("demo") == "1",
                 demo_vendor_id=demo.vendor_id,
             )
-        fields({"vendor_id", "email", "invoice", "vendor_notice", "plain_text", "upload_kind"})
+        fields(
+            {"vendor_id", "email", "invoice", "vendor_notice", "plain_text", "upload_kind"},
+            {"upload"},
+        )
         if set(request.files) - {"upload"}:
             raise ValueError("unsupported upload field")
         bounded_rate("extract:" + str(session["rate_id"]), 6)
@@ -303,6 +332,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
         ):
             # Browser form transport uses CRLF. Freeze pasted text with LF before
             # extraction; uploaded file contents remain untouched.
+            no_secrets(request.form.get(name, ""))
             text = request.form.get(name, "").replace("\r\n", "\n")
             if text:
                 no_secrets(text)
@@ -326,6 +356,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             )
         # Existing capture and source-bound contracts enforce aggregate bounds too.
         snapshot = start_case(baseline, tuple(sources), settings=settings)
+        no_secrets(snapshot.model_dump(mode="json"))
         case = store().create_case(
             CaseInputs(sources=snapshot.sources, evidence=snapshot.evidence),
             baseline.vendor_id,
@@ -337,13 +368,17 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
     @app.get("/operator/cases/<uuid:case_id>")
     def operator_case(case_id: UUID) -> str:
         case = store().get_case(case_id)
+        history, attempts = store().case_history(case_id), store().verification_events(case_id)
+        no_secrets(case.model_dump(mode="json"))
+        no_secrets(tuple(c.model_dump(mode="json") for c in history))
+        no_secrets(tuple(e.model_dump(mode="json") for e in attempts))
         return render_template(
             "operator_case.html",
             case=case,
             snapshot=case.snapshot,
             inventory=source_inventory(case.snapshot.sources),
-            history=store().case_history(case_id),
-            attempts=store().verification_events(case_id),
+            history=history,
+            attempts=attempts,
             fields=EVIDENCE_FIELDS,
             reason_explanations=REASON_EXPLANATIONS,
         )
@@ -383,7 +418,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
                 operator_id=human(),
             )
         elif action == "verify":
-            no_secrets(str(request.form))
+            no_secrets(tuple(request.form.values()))
             command = IndependentCheckAction.model_validate(
                 {
                     "action_id": UUID(request.form["action_id"]),

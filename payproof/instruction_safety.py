@@ -18,13 +18,24 @@ if TYPE_CHECKING:
 
 MAX_OBSERVATIONS = 256
 _COMPACT = re.compile(r"(?<!\w)[^\W\d_]{2}[\d*]{2}[^\s.,;:!?()<>\[\]{}\"']{8,64}")
+# Discovery tolerates suspicious separators so an extractor cannot hide a
+# competing identifier by omitting it. Identity normalization is unchanged:
+# Unicode/control characters remain invalid and must never be repaired.
+_SEPARATOR = r"[\s\u00a0\u1680\u2000-\u200f\u2028-\u202f\u205f\u2060-\u206f\u3000\ufeff]*"
+# GB/DE-shaped structures, including suspicious Unicode letters/digits. Detection
+# does not identify a country or repair a value; canonical_iban still rejects
+# unsupported characters. Fixed structure lengths avoid consuming adjacent prose.
+_LETTER = r"[^\W\d_]"
 _GROUPED = re.compile(
-    r"(?<!\w)(?:GB[ \t\r\n]*[0-9]{2}[ \t\r\n]*[A-Z]{4}"
-    r"(?:[ \t\r\n]*[0-9]){14}|DE(?:[ \t\r\n]*[0-9]){20})(?![A-Za-z0-9])",
-    re.IGNORECASE | re.ASCII,
+    rf"(?<!\w)(?:{_LETTER}{_SEPARATOR}{_LETTER}"
+    rf"(?:{_SEPARATOR}\d){{2}}(?:{_SEPARATOR}{_LETTER}){{4}}"
+    rf"(?:{_SEPARATOR}\d){{14}}|{_LETTER}{_SEPARATOR}{_LETTER}"
+    rf"(?:{_SEPARATOR}\d){{20}})(?![A-Za-z0-9])",
+    re.IGNORECASE,
 )
 _LABEL = re.compile(
     r"\b(?:IBAN|routing(?:\s+(?:number|identifier))?|sort\s+code|wallet|"
+    r"remit(?:\s+to)?|send\s+(?:funds|payment)(?:\s+to)?|pay\s+(?:to|into|via)|"
     r"account\s+(?:number|identifier)|account(?=\s*(?:[:=#]|was\b|is\b|ending\b)))\b",
     re.IGNORECASE | re.ASCII,
 )

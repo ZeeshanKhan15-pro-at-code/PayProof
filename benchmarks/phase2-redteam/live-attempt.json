@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-07",
+  "status": "BLOCKED",
+  "reason": "NOT_CONFIGURED",
+  "command": ".venv/bin/python -m payproof.heldout_benchmark --live --output benchmarks/phase2-redteam/live-2026-10-07",
+  "exit_code": 2,
+  "extraction_mode": "disabled",
+  "provider_key_available": false,
+  "provider_model_configured": false,
+  "provider_calls": 0,
+  "completed_live_cases": 0,
+  "planned_cases": 72,
+  "live_metrics": "NOT_MEASURED",
+  "diagnostic": "Held-out input/configuration failed: ValueError; no passing result claimed."
+}

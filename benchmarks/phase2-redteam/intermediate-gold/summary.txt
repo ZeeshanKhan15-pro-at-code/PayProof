@@ -1,0 +1,80 @@
+PayProof benchmark
+Dataset: payproof-phase2-heldout-72-v1
+Corpus SHA-256: 203a43619b2baaf516063e5f2add4ce86a828c8ac8dc6c1e29edb6e09363c2d0
+Label review: PENDING; HELD_OUT_FROM_MODEL_AND_TUNING
+Human-action enforcement and independent verification: NOT_EVALUATED
+
+Track: gold_comparison (FAIL; SIMULATED_GOLD_SOURCE_REVIEW)
+Total cases: 72
+Correct states: 56/72
+Exact correct (state/reasons/values/evidence): 53/72
+Consequential changes: 24
+Detected: 12
+Missed (not detected as correct VERIFY): 12
+Supported changes detected: 12/24
+Changed cases abstained: 12
+Changed cases failed: 0
+Critical missed changes (false UNCHANGED): 0
+False escalations (incorrect VERIFY): 0
+Uncertain handled correctly: 30/33
+Extraction failures: NOT_RUN (gold inputs)
+Extraction error cases: NOT_RUN
+Deterministic-comparison failures: 19
+Failed operations: 0
+FAIL PP-17: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-18: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-19: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-20: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-41: comparison:STATE_MISMATCH: Expected UNCHANGED; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_MATCH',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-42: comparison:STATE_MISMATCH: Expected UNCHANGED; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_MATCH',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-43: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-44: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-45: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-46: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-47: comparison:STATE_MISMATCH: Expected UNCHANGED; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_MATCH',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-48: comparison:STATE_MISMATCH: Expected UNCHANGED; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_MATCH',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-57: comparison:REASON_MISMATCH: Expected ('UNSUPPORTED_DESTINATION',); observed ('UNSUPPORTED_DESTINATION', 'DESTINATION_INVALID').
+FAIL PP-58: comparison:REASON_MISMATCH: Expected ('UNSUPPORTED_DESTINATION',); observed ('UNSUPPORTED_DESTINATION', 'DESTINATION_INVALID').
+FAIL PP-60: comparison:REASON_MISMATCH: Expected ('UNSUPPORTED_DESTINATION',); observed ('UNSUPPORTED_DESTINATION', 'DESTINATION_INVALID').
+FAIL PP-65: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-66: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-67: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-68: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+
+Track: gold_review_gate (FAIL; NO_SOURCE_REVIEW)
+Total cases: 72
+Correct states: 72/72
+Exact correct (state/reasons/values/evidence): 53/72
+Extraction failures: NOT_RUN (gold inputs)
+Extraction error cases: NOT_RUN
+Deterministic-comparison failures: 19
+Failed operations: 0
+FAIL PP-17: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-18: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-19: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-20: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-41: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-42: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-43: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-44: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-45: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-46: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-47: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-48: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-57: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED', 'UNSUPPORTED_DESTINATION'); observed ('REVIEW_REQUIRED', 'UNSUPPORTED_DESTINATION', 'DESTINATION_INVALID').
+FAIL PP-58: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED', 'UNSUPPORTED_DESTINATION'); observed ('REVIEW_REQUIRED', 'UNSUPPORTED_DESTINATION', 'DESTINATION_INVALID').
+FAIL PP-60: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED', 'UNSUPPORTED_DESTINATION'); observed ('REVIEW_REQUIRED', 'UNSUPPORTED_DESTINATION', 'DESTINATION_INVALID').
+FAIL PP-65: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-66: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-67: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-68: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+
+Extraction: NOT_RUN; mode=NOT_RUN; source=NOT_RUN
+Gold results are not live extraction accuracy. UNCERTAIN is not successful change detection.
+Scoring SHA-256: 5a9821811850c588bef7accab55a22b76d79457d013b0d16ead0d52c28483d01
+
+Held-out supplemental metrics:
+{
+  "status": "NOT_RUN",
+  "extraction_metrics": null
+}

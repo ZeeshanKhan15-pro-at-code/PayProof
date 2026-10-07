@@ -75,3 +75,9 @@ To reproduce:
 ```
 
 The benchmark command intentionally exits 1 for the two unchanged-label utility mismatches. Do not weaken its acceptance criteria or change labels to get exit 0. The separate held-out definitions remain frozen. Live model performance remains unmeasured; absent environment configuration is not replaced with a fixture or mock accuracy claim.
+
+## Phase-2 red-team extension (2026-10-07)
+
+Mocked omission plus incorrect review reproduced `UNCHANGED` when a current destination split its country/bank letters and only an earlier account was extracted. The lexical inventory now detects fixed GB/DE-shaped structures with separated country/bank letters, Unicode whitespace/format controls and suspicious Unicode letters/digits. These remain raw candidate observations with exact offsets/context. Normalization still rejects unsupported Unicode/control characters; discovery never repairs or equates lookalikes. Fixed structure lengths avoid consuming trailing prose. Explicit remit/send-funds/pay-to regions retain truncated or OCR-corrupted instructions when no complete candidate is recognized. Competing or unsupported observations force the existing uncertainty gate. No confidence override or AI intent verdict was added.
+
+[The full report](PHASE2_REDTEAM_REPORT.md) preserves before/after gold held-out runs and the new regressions. New detections remain non-exhaustive. Old comparison engine fingerprints become stale; snapshots that violate newly strengthened source validation may fail closed on reload and need private recovery/new-case creation. Retain originals; do not rewrite their historical result as though the new engine produced it.

@@ -12,6 +12,7 @@ from pydantic import ValidationError
 from payproof.config import load_settings
 from payproof.presentation import render_evidence, render_result
 from payproof.schemas import TrustedVendorRecord
+from payproof.secret_guard import reject_configured_secrets
 from payproof.storage import SQLiteStore, WorkflowError
 from payproof.validation import parse_contract
 from payproof.workflow_contracts import CaseInputs, IndependentCheckAction, StoredCase
@@ -80,11 +81,18 @@ def main(argv: list[str] | None = None) -> int:
     store = None
     try:
         settings = load_settings(os.environ)
+        reject_configured_secrets(vars(args), settings)
+
+        def show(case: StoredCase) -> None:
+            reject_configured_secrets(case.model_dump(mode="json"), settings)
+            display(case)
+
         store = SQLiteStore(settings.data_dir / "payproof.sqlite3")
         if args.command == "init":
             print("SQLite schema version 1 initialized.")
         elif args.command == "vendor-add":
             record = parse_contract(TrustedVendorRecord, read_input(args.file))
+            reject_configured_secrets(record.model_dump(mode="json"), settings)
             store.put_vendor(
                 record, operator_id=args.operator, expected_revision_id=args.expected_revision
             )
@@ -98,8 +106,10 @@ def main(argv: list[str] | None = None) -> int:
                 (("PLAIN_TEXT", args.text), ("EMAIL", args.email), ("INVOICE", args.invoice)),
                 args.operator,
             )
+            reject_configured_secrets(tuple(s.model_dump(mode="json") for s in sources), settings)
             snapshot = start_case(extraction_baseline, sources, settings=settings)
-            display(
+            reject_configured_secrets(snapshot.model_dump(mode="json"), settings)
+            show(
                 store.create_case(
                     CaseInputs(sources=snapshot.sources, evidence=snapshot.evidence),
                     args.vendor_id,
@@ -109,11 +119,13 @@ def main(argv: list[str] | None = None) -> int:
             )
         elif args.command == "case-import":
             data = parse_contract(CaseInputs, read_input(args.file))
-            display(store.create_case(data, args.vendor_id, operator_id=args.operator))
+            reject_configured_secrets(data.model_dump(mode="json"), settings)
+            show(store.create_case(data, args.vendor_id, operator_id=args.operator))
         elif args.command == "show":
-            display(store.get_case(args.case_id))
+            show(store.get_case(args.case_id))
         elif args.command == "events":
             for event in store.verification_events(args.case_id):
+                reject_configured_secrets(event.model_dump(mode="json"), settings)
                 print(event.model_dump_json(indent=2))
         elif args.command in ("replace", "refresh"):
             current = store.get_case(args.case_id)
@@ -124,21 +136,22 @@ def main(argv: list[str] | None = None) -> int:
                     sources=current.snapshot.sources, evidence=current.snapshot.evidence
                 )
             )
-            display(
+            reject_configured_secrets(data.model_dump(mode="json"), settings)
+            show(
                 store.replace_inputs(
                     args.case_id, args.revision_id, data, operator_id=args.operator
                 )
             )
         elif args.command == "review":
             current = store.get_case(args.case_id)
-            display(current)
+            show(current)
             if (
                 input("After reading every source and competing destination, type REVIEWED: ")
                 != "REVIEWED"
             ):
                 print("No review recorded.")
                 return 1
-            display(
+            show(
                 store.review(
                     args.case_id,
                     args.revision_id,
@@ -147,10 +160,10 @@ def main(argv: list[str] | None = None) -> int:
                 )
             )
         elif args.command == "compare":
-            display(store.compare(args.case_id, args.revision_id, operator_id=args.operator))
+            show(store.compare(args.case_id, args.revision_id, operator_id=args.operator))
         elif args.command == "verify":
             current = store.get_case(args.case_id)
-            display(current)
+            show(current)
             baseline = current.snapshot.baseline
             result = current.snapshot.comparison
             if (
@@ -193,12 +206,13 @@ def main(argv: list[str] | None = None) -> int:
                     "notes": notes,
                 }
             )
+            reject_configured_secrets(action.model_dump(mode="json"), settings)
             print(
                 store.record_independent_check(
                     args.case_id, args.revision_id, action
                 ).model_dump_json(indent=2)
             )
-            display(store.get_case(args.case_id))
+            show(store.get_case(args.case_id))
         return 0
     except WorkflowError as exc:
         print(f"Workflow rejected: {exc}")
