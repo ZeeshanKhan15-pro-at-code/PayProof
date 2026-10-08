@@ -234,4 +234,103 @@ def test_migration_v1_restart_and_unconfigured_readiness(tmp_path):
         db.close()
     app = create_app(load_settings({"PAYPROOF_ENV": "test", "PAYPROOF_DATA_DIR": str(tmp_path)}))
     assert app.test_client().get("/healthz").status_code == 200
-    assert app.test_client().get("/readyz").status_code == 503
+    assert app.test_client().get("/readyz").status_code == 200
+
+
+def test_case_correction_and_retry_keep_failed_history_and_reject_stale_posts(web):
+    client = login(web)
+    draft_id, _ = new_draft(web)
+    assert post(client, f"/operator/baselines/{draft_id}", assertion()).status_code == 302
+    baseline = vendor(web)
+    response = post(
+        client,
+        "/operator/cases/new",
+        {"vendor_id": str(baseline.vendor_id), "plain_text": "No payment destination supplied."},
+    )
+    case_id = UUID(response.location.rsplit("/", 1)[1])
+    failed = current(web, case_id)
+    assert failed.snapshot.evidence.extraction.failure_code
+    assert step(web, case_id, "compare").status_code == 302
+    assert current(web, case_id).snapshot.comparison.state == "UNCERTAIN"
+    assert step(web, case_id, "verify", verify_data()).status_code == 409
+    from payproof.fixtures import load_corpus
+
+    text = next(
+        r for r in load_corpus().requests if r.fixture_id == "demo-account-change"
+    ).source.text
+    old_revision = str(current(web, case_id).revision_id)
+    replacement = {"revision_id": old_revision, "email": text}
+    path = f"/operator/cases/{case_id}/sources"
+    assert client.get(path).status_code == 200
+    assert post(client, path, replacement).status_code == 302
+    assert post(client, path, replacement).status_code == 409
+    assert current(web, case_id).snapshot.review is None
+    assert current(web, case_id).snapshot.comparison is None
+    assert step(web, case_id, "review", {"source_review": "yes"}).status_code == 302
+    assert step(web, case_id, "compare").status_code == 302
+    assert current(web, case_id).snapshot.comparison.state == "VERIFY"
+    old_revision = str(current(web, case_id).revision_id)
+    assert step(web, case_id, "extract").status_code == 302
+    assert (
+        post(
+            client, f"/operator/cases/{case_id}/extract", {"revision_id": old_revision}
+        ).status_code
+        == 409
+    )
+    assert current(web, case_id).snapshot.comparison is None
+    db = SQLiteStore(web[2].data_dir / "payproof.sqlite3")
+    assert db.case_history(case_id)[0].snapshot.evidence.extraction.failure_code
+    db.close()
+
+
+def test_revision_race_and_tampered_state_are_rejected(web):
+    client = login(web)
+    draft_id, _ = new_draft(web)
+    assert post(client, f"/operator/baselines/{draft_id}", assertion()).status_code == 302
+    prior = vendor(web)
+    url = f"/operator/baselines/new?vendor_id={prior.vendor_id}"
+    first, _ = new_draft(web, {"account": NEW, "expected_revision_id": str(prior.revision_id)}, url)
+    second, _ = new_draft(web, {"expected_revision_id": str(prior.revision_id)}, url)
+    assert post(client, f"/operator/baselines/{first}", assertion()).status_code == 302
+    assert post(client, f"/operator/baselines/{second}", assertion()).status_code == 409
+    assert post(client, url, {"expected_revision_id": str(prior.revision_id)}).status_code == 409
+    assert (
+        post(
+            client, f"/operator/baselines/{first}", assertion() | {"state": "VERIFIED"}
+        ).status_code
+        == 400
+    )
+    assert vendor(web).payment_identity.account_identifier == NEW
+
+
+def test_concurrent_baseline_confirmation_records_one_assertion(web):
+    from concurrent.futures import ThreadPoolExecutor
+
+    from payproof.baselines import BaselineAssertion
+
+    login(web)
+    draft_id, _ = new_draft(web)
+    action = BaselineAssertion(
+        draft_id=draft_id,
+        operator_id="same-human",
+        source_reviewed=True,
+        previously_trusted=True,
+        contact_independently_established=True,
+        contact_method="PHONE",
+        contact_value="+1-202-555-0144",
+    )
+
+    def confirm(_):
+        db = SQLiteStore(web[2].data_dir / "payproof.sqlite3")
+        try:
+            return db.assert_baseline(action).revision_id
+        finally:
+            db.close()
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        revisions = list(pool.map(confirm, range(2)))
+    assert revisions[0] == revisions[1]
+    db = SQLiteStore(web[2].data_dir / "payproof.sqlite3")
+    assert db.db.execute("SELECT count(*) FROM baseline_assertions").fetchone()[0] == 1
+    assert db.db.execute("SELECT count(*) FROM vendor_revisions").fetchone()[0] == 1
+    db.close()

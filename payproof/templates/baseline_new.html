@@ -1,6 +1,6 @@
 {% extends 'operator_base.html' %}{% block content %}
-<h2>{{ 'Revise previously trusted vendor' if vendor else 'Establish a previously trusted baseline' }}</h2>
-<p>First collect A: previously trusted information. Uploading or extracting it does not establish trust. You must inspect the draft and explicitly assert prior trust and an independently established contact. B: the current request is entered separately after this step.</p>
+<h2>A. {{ 'Revise previously trusted vendor' if vendor else 'Establish a previously trusted baseline' }}</h2>
+<p><a href="{{ url_for('operator_create_case') }}">Already established a baseline in this workspace? Select it for the current request</a></p><p>First collect A: previously trusted information. Uploading or extracting it does not establish trust. You must inspect the draft and explicitly assert prior trust and an independently established contact. B: the current request is entered separately after this step.</p>
 {% if vendor %}<p>Current revision {{ vendor.revision_id }}. Confirming a revision makes existing cases stale; they require refresh, source review and comparison.</p>{% endif %}
 <form method="post" enctype="multipart/form-data"><input type="hidden" name="csrf" value="{{ session.csrf }}">{% if vendor %}<input type="hidden" name="expected_revision_id" value="{{ vendor.revision_id }}">{% endif %}<input type="hidden" name="submission_id" value="{{ new_action_id() }}">
 <label>Vendor name <input name="name" value="{{ vendor.canonical_vendor_name if vendor else '' }}" required maxlength="256"></label>

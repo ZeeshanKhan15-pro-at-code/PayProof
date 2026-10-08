@@ -137,7 +137,7 @@ metadata = next(d for d in distributions(path=[str(site)]) if d.metadata['Name']
 assert metadata.version == '0.1.0'
 from payproof.storage import SQLiteStore
 store = SQLiteStore(Path('private-data/payproof.sqlite3'))
-assert store.db.execute('PRAGMA user_version').fetchone()[0] == 1
+assert store.db.execute('PRAGMA user_version').fetchone()[0] == 2
 store.close()
 store = SQLiteStore(Path('private-data/payproof.sqlite3'))
 store.close()
@@ -177,6 +177,14 @@ page = client.get(created.location, base_url='https://localhost')
 assert page.status_code == 200 and b'GB57TEST00000000009928' in page.data
 assert b'Acknowledge source review only' in page.data
 assert client.get('/static/operator.css', base_url='https://localhost').status_code == 200
+public_client = operator_app.test_client()
+landing = public_client.get('/', base_url='https://localhost', headers={'Accept':'text/html'})
+assert landing.status_code == 200 and b'VERIFY A PAYMENT REQUEST' in landing.data
+public_home = public_client.get('/workspace/', base_url='https://localhost')
+assert public_home.status_code == 200 and b'Synthetic PayProof Demo Supplies' not in public_home.data
+assert public_client.get('/workspace/baselines/new', base_url='https://localhost').status_code == 200
+assert public_client.get('/workspace/static/operator.css', base_url='https://localhost').status_code == 200
+assert public_client.get('/workspace/login', base_url='https://localhost').status_code == 404
 assert operator_token.encode() not in page.data
 from contextlib import redirect_stdout
 from io import StringIO

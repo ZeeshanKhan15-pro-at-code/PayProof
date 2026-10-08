@@ -1,0 +1,35 @@
+{
+  "gates": {
+    "lint": "PASS",
+    "format": "PASS",
+    "typecheck": "PASS",
+    "tests": "PASS",
+    "configuration": "PASS",
+    "gold_diagnostic": "FAIL",
+    "gold_heldout": "FAIL",
+    "frozen_protocol": "PASS",
+    "build": "PASS",
+    "package_smoke": "PASS"
+  },
+  "tests_passed": 785,
+  "test_provider_evidence": "MOCKED",
+  "http_smoke": {
+    "class": "SYNTHETIC_LOCAL",
+    "installed_gunicorn_binding": "PASS",
+    "health_status": 200,
+    "capability_status": 200
+  },
+  "live_provider": "NOT_RERUN; last attempt HTTP403",
+  "gold_heldout": {
+    "cases": 72,
+    "correct_states": 56,
+    "exact_correct": 53,
+    "critical_false_unchanged": 0
+  },
+  "gold_diagnostic": {
+    "cases": 30,
+    "correct_states": 28,
+    "critical_false_unchanged": 0
+  },
+  "public_deployment": "NOT_PERFORMED"
+}

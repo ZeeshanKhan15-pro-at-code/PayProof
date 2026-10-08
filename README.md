@@ -1,6 +1,6 @@
 # PayProof
 
-PayProof compares requested payment destinations with previously trusted vendor information and requires independent human checking when they differ. Phase 2 implements a persistent, gated operator workflow. Release assessment: **PARTIAL**, with a failed gold evaluation gate and blocked clean-install, live-provider, actual HTTP and credential-revocation gates. See the [release report](docs/PHASE2_RELEASE_REPORT.md), [handoff](docs/PHASE2_HANDOFF.md) and [integrator context](docs/AI_HANDOFF.md). No production-readiness or security certification is claimed.
+PayProof compares requested payment destinations with previously trusted vendor information and requires independent human checking when they differ. The current implementation includes a no-login isolated temporary public workspace and a persistent private operator workflow. Release assessment: **PARTIAL**, with a failed gold evaluation gate and blocked clean-install, live-provider, actual HTTP and credential-revocation gates. See the [release report](docs/PHASE2_RELEASE_REPORT.md), [handoff](docs/PHASE2_HANDOFF.md) and [integrator context](docs/AI_HANDOFF.md). No production-readiness or security certification is claimed.
 
 ### Problem
 
@@ -26,7 +26,7 @@ explicit independent human check using prior trusted callback
                            -> no payment action; comparison is preserved
 ```
 
-The private `workflow` CLI and gated `/operator` forms share backend contracts and storage commands. Operators create/select prior trusted records, paste/upload synthetic UTF-8 `.txt`/`.eml` documents, run extraction, inspect sources/spans, acknowledge source review, compare and optionally record an independent human outcome. SQLite retains immutable snapshots/events and timestamps. Migration v1 initializes idempotently and survives restart; unknown/nonempty-unversioned schemas fail closed. No later migration, web correction editor, deletion interface or automatic baseline replacement exists.
+The private `workflow` CLI and gated `/operator` forms share backend contracts and storage commands. Operators create/select prior trusted records, paste/upload synthetic UTF-8 `.txt`/`.eml` documents, run extraction, inspect sources/spans, acknowledge source review, compare and optionally record an independent human outcome. SQLite retains immutable snapshots/events and timestamps. Migration2 adds reviewed baseline drafts/assertions and idempotent submissions, preserving migration1 data on restart. Web forms support explicit baseline revision and current-source replacement; old results become stale/historical. Independent human receipts are JSON attestations, not ownership certificates. No deletion interface or automatic trust/baseline replacement exists.
 
 ### AI role
 
@@ -111,7 +111,7 @@ make build
 | `make build` | Wheel/sdist plus installed-target smoke using existing dependencies |
 | `.venv/bin/python scripts/check_wheel.py --http` | Installed Gunicorn listener/health; exit 2 for infrastructure block |
 | `.venv/bin/python -m payproof workflow init` | Private SQLite v1 initialization |
-| `make serve` | Loopback Flask without debugger/reloader; `/operator` needs configured gate; `/healthz` is liveness only |
+| `make serve` | Loopback Flask; browser landing and `/workspace` require no login; private `/operator` retains its gate |
 | `make production` | One Gunicorn worker/two threads on loopback 8000; host restricts access and provides HTTPS |
 | `make demo` / `make demo-smoke` | Original fixture demo with explicit / simulated source review |
 | `make demo-proof OUTPUT=/tmp/payproof-proof-new` | New artifact-backed Acme report |
@@ -144,3 +144,9 @@ Process environment is authoritative; the local launcher used by `make serve` lo
 Unknown `PAYPROOF_*`, invalid values, missing live key/model and missing production signing secret reject startup with sanitized errors. Health initializes neither storage nor provider. Production cookies require HTTPS. CSRF, same-origin checks, strict forms, escaped evidence, CSP, no-store pages, expected revisions and configured-secret guards protect the writable workflow. Operator labels are attribution, not proof of individual identity or an actual callback.
 
 Live Featherless configuration and current foundation limits: [provider boundary](docs/PHASE3_PROVIDER_AND_FOUNDATION.md). Local `make serve` loads ignored `.env` through `scripts/run_local.py`; process environment wins. `make verify` runs all gates and retains failures without overwriting saved benchmarks.
+
+### Public workspace
+
+Start at the browser landing page: **VERIFY A PAYMENT REQUEST**. Establish A: previously trusted information, then provide B: the new request. Baseline uploads/extraction remain untrusted drafts until explicit human source/prior-trust/contact assertions. Public workspaces use separate temporary stores and never expose private operator records. Use synthetic/test data only; sessions expire after 30 minutes of inactivity and access ends on restart.
+
+Anonymous live extraction is off by default. Enable `PAYPROOF_PUBLIC_LIVE_ENABLED=true` only with live mode/key/model and a chosen `PAYPROOF_PUBLIC_LIVE_MAX_CALLS` lifetime allowance (default20, shared and durable across sessions/restarts). Current Featherless access remains unverified after HTTP403. The secondary Acme sample is labeled DEMO EXAMPLE and uses fixtures. Details: [public isolation, workflow and limits](docs/PUBLIC_WORKSPACE.md). `/healthz` is liveness; `/readyz` is local storage/configuration readiness and does not probe the provider.

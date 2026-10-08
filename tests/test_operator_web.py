@@ -406,7 +406,8 @@ def test_mocked_live_extraction_failures_remain_unresolved(web, monkeypatch, var
 
 def test_browser_entry_and_unknown_upload_are_safe(web):
     client = login(web)
-    assert client.get("/", headers={"Accept": "text/html"}).location == "/operator"
+    landing = client.get("/", headers={"Accept": "text/html"})
+    assert landing.status_code == 200 and "VERIFY A PAYMENT REQUEST" in landing.text
     post(client, "/operator/demo-vendor")
     fixture = next(r for r in load_corpus().requests if r.fixture_id == "demo-account-change")
     response = post(

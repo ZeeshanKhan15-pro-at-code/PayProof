@@ -1,0 +1,10 @@
+{% extends 'operator_base.html' %}{% block content %}
+<h2>Independent human attestation receipt</h2>
+{% set event = receipt.event %}
+<p class="state"><strong>{{ receipt.status }}</strong> — recorded outcome {{ event.outcome }}</p>
+{% if not receipt.current %}<aside class="blocked">This record is historical. It does not attest to the current case or trusted revision. Inspect the current evidence and complete a new review/comparison before any new independent check.</aside>{% endif %}
+<p>This receipt records a human action. It does not authorize payment, establish bank-account ownership or certify the identity of the person making the assertion.</p>
+<dl><dt>Case</dt><dd>{{ case_id }}</dd><dt>Event</dt><dd>{{ event.event_id }}</dd><dt>Recorded at</dt><dd>{{ event.recorded_at }}</dd><dt>Recorded by</dt><dd>{{ event.operator_id }}</dd><dt>What was checked</dt><dd>{{ event.what_was_checked }}</dd><dt>Exact checked destination</dt><dd><code>{{ event.checked_identity.account_identifier }}</code></dd><dt>Previously trusted contact</dt><dd>{{ event.trusted_contact.method }}: {{ event.trusted_contact.value }}</dd><dt>Trusted contact origin</dt><dd>{{ event.trusted_contact.provenance.source_reference }} · {{ event.trusted_contact.provenance.description }}</dd><dt>Independently reached person/role</dt><dd>{{ event.independently_reached_person or 'not reached' }}</dd><dt>Comparison ID</dt><dd>{{ event.comparison_id }}</dd><dt>Trusted revision</dt><dd>{{ event.baseline_revision_id }}</dd><dt>Notes</dt><dd>{{ event.notes or 'none' }}</dd></dl>
+<p>Payment authorization: {{ receipt.payment_authorization }} · Account ownership: {{ receipt.account_ownership }}</p>
+<a href="{{ url_for('operator_case', case_id=case_id) }}">Return to evidence and case history</a>
+{% endblock %}

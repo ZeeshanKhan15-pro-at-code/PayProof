@@ -32,7 +32,7 @@ def test_default_startup_has_no_secret_provider_or_storage_side_effect(tmp_path)
     destination = tmp_path / "not-created"
     settings = load_settings({"PAYPROOF_DATA_DIR": str(destination)})
     app = create_app(settings)
-    assert app.test_client().get("/healthz").json["stage"] == "skeleton"
+    assert app.test_client().get("/healthz").json["stage"] == "public_workspace"
     assert settings.secret_key is None
     assert settings.extraction_mode == "disabled"
     assert not destination.exists()

@@ -12,7 +12,7 @@ from urllib.parse import urlsplit
 from uuid import NAMESPACE_URL, UUID, uuid4, uuid5
 
 from flask import Flask, abort, g, jsonify, redirect, render_template, request, session, url_for
-from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import HTTPException, TooManyRequests
 from werkzeug.wrappers import Response
 
 from payproof.baselines import BaselineAssertion, BaselineDraft
@@ -35,6 +35,11 @@ from payproof.secret_guard import reject_configured_secrets
 from payproof.storage import SQLiteStore, WorkflowError
 from payproof.workflow_contracts import CaseInputs, IndependentCheckAction
 
+
+class SourceInputError(ValueError):
+    """Only fixed, user-actionable validation messages, never source contents."""
+
+
 # Presentation-only descriptions: all decision logic remains in the comparator.
 REASON_EXPLANATIONS = {
     "BASELINE_UNAVAILABLE": "There is no prior trusted vendor baseline available for this comparison.",
@@ -52,7 +57,8 @@ REASON_EXPLANATIONS = {
 }
 
 
-def register_operator_workflow(app: Flask, settings: Settings) -> None:
+def register_operator_workflow(app: Flask, settings: Settings, *, public: bool = False) -> None:
+    prefix = "" if public else "/operator"
     app.permanent_session_lifetime = timedelta(minutes=30)
     attempts: dict[str, list[float]] = {}
     lock = Lock()
@@ -78,7 +84,25 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
 
     def store() -> SQLiteStore:
         if "workflow_store" not in g:
-            g.workflow_store = SQLiteStore(settings.data_dir / "payproof.sqlite3")
+            path = settings.data_dir / "payproof.sqlite3"
+            if public:
+                sid = str(session.get("rate_id", ""))
+                if (
+                    not session.get("operator")
+                    or len(sid) != 32
+                    or any(c not in "0123456789abcdef" for c in sid)
+                ):
+                    abort(403)
+                root = settings.data_dir / "public-sessions"
+                if root.is_symlink():
+                    raise WorkflowError("public storage must not be a symlink")
+                folder = root / sid
+                if folder.is_symlink():
+                    raise WorkflowError("public storage must not be a symlink")
+                folder.mkdir(parents=True, exist_ok=True, mode=0o700)
+                folder.touch(exist_ok=True)
+                path = folder / "payproof.sqlite3"
+            g.workflow_store = SQLiteStore(path)
         return g.workflow_store  # type: ignore[no-any-return]
 
     @app.teardown_appcontext
@@ -89,9 +113,11 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
 
     @app.before_request
     def protect_operator() -> Response | None:
-        if not request.path.startswith("/operator"):
+        if not public and not request.path.startswith("/operator"):
             return None
-        if settings.operator_token is None:
+        if public and request.endpoint == "static":
+            return None
+        if not public and settings.operator_token is None:
             return Response(
                 "Operator workflow is not configured. Set PAYPROOF_OPERATOR_TOKEN and PAYPROOF_SECRET_KEY.",
                 status=503,
@@ -108,6 +134,26 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
                 active_sessions[sid] = now + 1800
         if session.get("operator") and not valid:
             session.clear()
+        if public and not valid:
+            if request.method != "GET":
+                abort(403)
+            from payproof.public_workspace import MAX_PUBLIC_SESSIONS, cleanup_sessions
+
+            bounded_rate("public-session:" + (request.remote_addr or "unknown"), 4)
+            cleanup_sessions(settings.data_dir / "public-sessions")
+            with lock:
+                if len(active_sessions) >= MAX_PUBLIC_SESSIONS:
+                    abort(429)
+                sid = uuid4().hex
+                active_sessions[sid] = time.monotonic() + 1800
+            session.clear()
+            session.update(
+                operator="anonymous-human",
+                csrf=secrets.token_urlsafe(32),
+                rate_id=sid,
+                gate_epoch=epoch,
+            )
+            session.permanent = True
         if request.method == "POST":
             if request.endpoint != "operator_login" and not session.get("operator"):
                 abort(401)
@@ -128,7 +174,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
 
     @app.after_request
     def private_response(response: Response) -> Response:
-        if request.path.startswith("/operator"):
+        if public or request.path.startswith("/operator"):
             response.headers["Cache-Control"] = "no-store"
             response.headers["X-Content-Type-Options"] = "nosniff"
             response.headers["Referrer-Policy"] = "same-origin"
@@ -138,7 +184,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
         return response
 
     def safe_error(error: Exception) -> tuple[str, int]:
-        if not request.path.startswith("/operator"):
+        if not public and not request.path.startswith("/operator"):
             if isinstance(error, HTTPException):
                 return str(error.description), error.code or 500
             return "Request failed.", 500
@@ -163,6 +209,10 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
                 503: "Storage is unavailable. No successful write is claimed.",
             }.get(code or 500, "Request could not be completed.")
         )
+        if isinstance(error, SourceInputError):
+            message = str(error)
+        if public and isinstance(error, TooManyRequests):
+            message = error.description
         return render_template("operator_error.html", message=message), code or 500
 
     for error_type in (ValueError, sqlite3.Error, HTTPException):
@@ -182,7 +232,19 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
     def no_secrets(value: object) -> None:
         reject_configured_secrets(value, settings)
 
-    def read_sources() -> tuple[SourceDocument, ...]:
+    def before_extraction() -> None:
+        if public and settings.extraction_mode == "live":
+            from payproof.public_workspace import reserve_live_call
+
+            bounded_rate("public-extract:" + (request.remote_addr or "unknown"), 3)
+            try:
+                reserve_live_call(settings)
+            except WorkflowError:
+                raise TooManyRequests(
+                    description="Public live request allowance is exhausted. No provider request was made; the owner must replenish the configured allowance."
+                ) from None
+
+    def read_sources(*, required: bool = False) -> tuple[SourceDocument, ...]:
         sources: list[SourceDocument] = []
         for name, kind in (
             ("email", "EMAIL"),
@@ -201,11 +263,20 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             if not upload.filename:
                 continue
             if not upload.filename.lower().endswith((".txt", ".eml")):
-                raise ValueError("only UTF-8 text upload supported")
+                raise SourceInputError(
+                    "Only UTF8 .txt and raw .eml text files are supported. PDF, MSG, MIME attachments and OCR are not parsed."
+                )
             raw = upload.stream.read(80_001)
             if len(raw) > 80_000:
-                raise ValueError("upload too large")
-            text = raw.decode("utf-8")
+                raise SourceInputError(
+                    "Each upload must be at most 80,000 bytes; reduce the file size. Nothing was truncated."
+                )
+            try:
+                text = raw.decode("utf-8")
+            except UnicodeError:
+                raise SourceInputError(
+                    "The upload is not valid UTF8 text. Export a UTF8 .txt file and try again."
+                ) from None
             no_secrets(text)
             sources.append(
                 capture_text(
@@ -214,10 +285,16 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
                     kind=cast(SourceKind, request.form.get("upload_kind", "PLAIN_TEXT")),
                 )
             )
+        if required and not sources:
+            raise SourceInputError(
+                "Paste the current request text or choose a supported UTF8 .txt/.eml upload."
+            )
         return tuple(sources)
 
-    @app.route("/operator/login", methods=["GET", "POST"])
+    @app.route((prefix + "/login" or "/"), methods=["GET", "POST"])
     def operator_login() -> str | Response:
+        if public:
+            abort(404)
         if request.method == "POST":
             fields({"token", "operator"})
             bounded_rate("login:" + (request.remote_addr or "unknown"), 5)
@@ -248,15 +325,15 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             return redirect(url_for("operator_home"))
         return render_template("operator_login.html")
 
-    @app.post("/operator/logout")
+    @app.post(prefix + "/logout" or "/")
     def operator_logout() -> Response:
         fields(set())
         with lock:
             active_sessions.pop(str(session.get("rate_id", "")), None)
         session.clear()
-        return redirect(url_for("operator_login"))
+        return redirect(url_for("operator_home" if public else "operator_login"))
 
-    @app.get("/operator")
+    @app.get(prefix + "" or "/")
     def operator_home() -> str:
         vendors, cases = store().list_vendors(), store().list_cases()
         no_secrets(tuple(v.model_dump(mode="json") for v in vendors))
@@ -266,9 +343,10 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             vendors=vendors,
             cases=cases,
             mode=settings.extraction_mode,
+            public=public,
         )
 
-    @app.route("/operator/vendors/new", methods=["GET", "POST"])
+    @app.route((prefix + "/vendors/new" or "/"), methods=["GET", "POST"])
     def operator_vendor() -> str | Response:
         if request.method == "GET":
             return render_template("operator_vendor.html")
@@ -326,7 +404,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
         store().put_vendor(vendor, operator_id=human())
         return redirect(url_for("operator_home"))
 
-    @app.route("/operator/baselines/new", methods=["GET", "POST"])
+    @app.route((prefix + "/baselines/new" or "/"), methods=["GET", "POST"])
     def baseline_new() -> str | Response:
         vendor = (
             store().get_vendor(UUID(request.args["vendor_id"]))
@@ -361,7 +439,9 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             raise WorkflowError("trusted vendor changed; reload revision form")
         sources = read_sources()
         if sources and request.form.get("account", "").strip():
-            raise ValueError("choose manual destination or source evidence")
+            raise SourceInputError(
+                "Choose manual full destination OR previous source evidence, not both. The draft will be reviewed before trust is asserted."
+            )
         values = {k: v for k, v in request.form.items() if k not in {"csrf", "submission_id"}}
         digest = sha256(
             json.dumps(
@@ -391,6 +471,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
         inputs = None
         if sources:
             bounded_rate("extract:" + str(session["rate_id"]), 6)
+            before_extraction()
             evidence = extract_documents(sources, settings=settings)
             inputs = CaseInputs(sources=sources, evidence=evidence)
         draft = BaselineDraft(
@@ -417,7 +498,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
         store().save_baseline_draft(draft)
         return redirect(url_for("baseline_draft", draft_id=draft.draft_id))
 
-    @app.route("/operator/baselines/<uuid:draft_id>", methods=["GET", "POST"])
+    @app.route((prefix + "/baselines/<uuid:draft_id>" or "/"), methods=["GET", "POST"])
     def baseline_draft(draft_id: UUID) -> str | Response:
         draft = store().get_baseline_draft(draft_id)
         no_secrets(draft.model_dump(mode="json"))
@@ -446,8 +527,12 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
                     "contact_value": request.form["contact"],
                 }
             )
-            store().assert_baseline(action)
-            return redirect(url_for("operator_home"))
+            record = store().assert_baseline(action)
+            return redirect(
+                url_for("operator_create_case", vendor_id=record.vendor_id)
+                if public
+                else url_for("operator_home")
+            )
         try:
             destination = draft.identity().account_identifier
             issue = None
@@ -460,14 +545,18 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             "baseline_draft.html", draft=draft, destination=destination, issue=issue
         )
 
-    @app.get("/operator/cases/<uuid:case_id>/receipts/<uuid:event_id>")
-    def verification_receipt(case_id: UUID, event_id: UUID) -> Response:
+    @app.get(prefix + "/cases/<uuid:case_id>/receipts/<uuid:event_id>" or "/")
+    def verification_receipt(case_id: UUID, event_id: UUID) -> str | Response:
         receipt = store().verification_receipt(case_id, event_id)
         no_secrets(receipt)
+        if request.accept_mimetypes.best == "text/html":
+            return render_template("verification_receipt.html", receipt=receipt, case_id=case_id)
         return jsonify(receipt)
 
-    @app.post("/operator/demo-vendor")
+    @app.post(prefix + "/demo-vendor" or "/")
     def operator_demo_vendor() -> Response:
+        if public:
+            abort(404)
         fields(set())
         from payproof.fixtures import load_corpus
 
@@ -479,7 +568,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
         store().put_vendor(vendor, operator_id=human())
         return redirect(url_for("operator_home"))
 
-    @app.route("/operator/cases/new", methods=["GET", "POST"])
+    @app.route((prefix + "/cases/new" or "/"), methods=["GET", "POST"])
     def operator_create_case() -> str | Response:
         from payproof.fixtures import load_corpus
 
@@ -494,6 +583,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
                 demo_text=demo.source.text,
                 demo_selected=request.args.get("demo") == "1",
                 demo_vendor_id=demo.vendor_id,
+                selected_vendor_id=request.args.get("vendor_id"),
             )
         fields(
             {
@@ -511,7 +601,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             raise ValueError("unsupported upload field")
         bounded_rate("extract:" + str(session["rate_id"]), 6)
         baseline = store().get_vendor(UUID(request.form["vendor_id"]))
-        sources = read_sources()
+        sources = read_sources(required=True)
         digest = sha256(
             json.dumps(
                 {
@@ -530,6 +620,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
         if previous is not None:
             return redirect(url_for("operator_case", case_id=previous))
         # Existing capture and source-bound contracts enforce aggregate bounds too.
+        before_extraction()
         snapshot = start_case(baseline, tuple(sources), settings=settings)
         no_secrets(snapshot.model_dump(mode="json"))
         case = store().create_case(
@@ -542,7 +633,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
         )
         return redirect(url_for("operator_case", case_id=case.case_id))
 
-    @app.route("/operator/cases/<uuid:case_id>/sources", methods=["GET", "POST"])
+    @app.route((prefix + "/cases/<uuid:case_id>/sources" or "/"), methods=["GET", "POST"])
     def operator_replace_sources(case_id: UUID) -> str | Response:
         current = store().get_case(case_id)
         baseline = store().get_vendor(current.selected_vendor_id)
@@ -564,7 +655,8 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
         if current.revision_id != revision:
             raise WorkflowError("stale case: reload the source form")
         bounded_rate("extract:" + str(session["rate_id"]), 6)
-        sources = read_sources()
+        sources = read_sources(required=True)
+        before_extraction()
         evidence = extract_documents(sources, settings=settings, request_id=case_id)
         inputs = CaseInputs(sources=sources, evidence=evidence)
         no_secrets(inputs.model_dump(mode="json"))
@@ -577,7 +669,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
         )
         return redirect(url_for("operator_case", case_id=case_id))
 
-    @app.get("/operator/cases/<uuid:case_id>")
+    @app.get(prefix + "/cases/<uuid:case_id>" or "/")
     def operator_case(case_id: UUID) -> str:
         case = store().get_case(case_id)
         history, attempts = store().case_history(case_id), store().verification_events(case_id)
@@ -597,7 +689,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             reason_explanations=REASON_EXPLANATIONS,
         )
 
-    @app.post("/operator/cases/<uuid:case_id>/<action>")
+    @app.post(prefix + "/cases/<uuid:case_id>/<action>" or "/")
     def operator_case_action(case_id: UUID, action: str) -> Response:
         allowed = {"revision_id"}
         if action == "review":
@@ -641,6 +733,7 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
                 capture_text(s.text, kind=s.kind, operator_id=human())
                 for s in current.snapshot.sources
             )
+            before_extraction()
             evidence = extract_documents(sources, settings=settings, request_id=case_id)
             inputs = CaseInputs(sources=sources, evidence=evidence)
             no_secrets(inputs.model_dump(mode="json"))
@@ -669,6 +762,36 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             abort(404)
         return redirect(url_for("operator_case", case_id=case_id))
 
+    @app.route((prefix + "/example"), methods=["GET", "POST"])
+    def public_example() -> str | Response:
+        from payproof.demo_proof import load_demo
+
+        bundle = load_demo()
+        item = bundle.cases[0]
+        if request.method == "POST":
+            fields(set())
+            store().put_vendor(bundle.vendor, operator_id=human())
+            existing = (
+                store()
+                .db.execute(
+                    "SELECT 1 FROM case_heads WHERE case_id=?",
+                    (str(item.inputs.evidence.request_id),),
+                )
+                .fetchone()
+            )
+            if not existing:
+                store().create_case(item.inputs, bundle.vendor.vendor_id, operator_id=human())
+            return redirect(url_for("operator_case", case_id=item.inputs.evidence.request_id))
+        return render_template("public_example.html", bundle=bundle, item=item)
+
     @app.context_processor
     def operator_context() -> dict[str, object]:
-        return {"new_action_id": uuid4}
+        return {
+            "new_action_id": uuid4,
+            "public_workspace": public,
+            "extraction_label": "LIVE EXTRACTION"
+            if settings.extraction_mode == "live"
+            else "DEMO EXAMPLE"
+            if settings.extraction_mode == "fixture"
+            else "LIVE EXTRACTION DISABLED",
+        }
