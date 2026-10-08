@@ -1,0 +1,22 @@
+{
+  "status": "BLOCKED",
+  "reason": "PROVIDER_HTTP_403",
+  "provider": "featherless",
+  "base_url": "https://api.featherless.ai/v1",
+  "model": "Qwen/Qwen3.8-27B",
+  "model_id_verified": false,
+  "api_secret_status": "CONFIGURED_VALIDITY_UNKNOWN",
+  "request_mode": "chat_completions_json_object",
+  "pipeline_attempts": 3,
+  "network_enabled_pipeline_attempts": 2,
+  "model_catalog_attempts": 2,
+  "last_http_status": 403,
+  "explicit_network_policy_marker": false,
+  "last_pipeline_latency_seconds": 0.375,
+  "schema_result": "NOT_RUN",
+  "grounding_result": "NOT_ESTABLISHED",
+  "end_to_end": "BLOCKED",
+  "safe_failure_code": "PROVIDER_UNAVAILABLE",
+  "fixture_fallback": false,
+  "root_cause": "UNKNOWN; HTTP denial does not prove invalid credentials or invalid model"
+}

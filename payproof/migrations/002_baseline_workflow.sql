@@ -1,0 +1,13 @@
+BEGIN IMMEDIATE;
+CREATE TABLE baseline_drafts (draft_id TEXT PRIMARY KEY, payload TEXT NOT NULL);
+CREATE TABLE baseline_assertions (draft_id TEXT PRIMARY KEY REFERENCES baseline_drafts(draft_id), action_sha256 TEXT NOT NULL, payload TEXT NOT NULL, vendor_revision_id TEXT NOT NULL REFERENCES vendor_revisions(revision_id), recorded_at TEXT NOT NULL);
+CREATE TABLE workflow_submissions (submission_id TEXT PRIMARY KEY, kind TEXT NOT NULL, digest TEXT NOT NULL, result_id TEXT NOT NULL);
+CREATE TRIGGER immutable_draft_update BEFORE UPDATE ON baseline_drafts BEGIN SELECT RAISE(ABORT,'immutable draft'); END;
+CREATE TRIGGER immutable_draft_delete BEFORE DELETE ON baseline_drafts BEGIN SELECT RAISE(ABORT,'immutable draft'); END;
+CREATE TRIGGER immutable_assertion_update BEFORE UPDATE ON baseline_assertions BEGIN SELECT RAISE(ABORT,'immutable assertion'); END;
+CREATE TRIGGER immutable_assertion_delete BEFORE DELETE ON baseline_assertions BEGIN SELECT RAISE(ABORT,'immutable assertion'); END;
+CREATE TRIGGER immutable_submission_update BEFORE UPDATE ON workflow_submissions BEGIN SELECT RAISE(ABORT,'immutable submission'); END;
+CREATE TRIGGER immutable_submission_delete BEFORE DELETE ON workflow_submissions BEGIN SELECT RAISE(ABORT,'immutable submission'); END;
+INSERT INTO schema_migrations VALUES (2, strftime('%Y-%m-%dT%H:%M:%fZ','now'));
+PRAGMA user_version=2;
+COMMIT;

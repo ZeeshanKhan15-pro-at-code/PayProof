@@ -1,0 +1,18 @@
+{% extends 'operator_base.html' %}{% block content %}
+<h2>Baseline draft — no trust conferred by extraction</h2>
+<p>{{ draft.name }} · draft {{ draft.draft_id }} · captured by {{ draft.operator_id }} at {{ draft.created_at }} · prior checked date asserted: {{ draft.prior_verified_at }}</p>
+<p>Origin: {{ draft.source_reference }} · {{ draft.description }}</p>
+{% if draft.inputs %}
+{% for source in draft.inputs.sources %}<h3>Original prior source {{ source.source_id }}</h3><p>SHA256 {{ source.sha256 }} · {{ source.kind }} · captured {{ source.captured_at }}</p><pre>{{ source.text }}</pre>{% endfor %}
+<p>Extraction: {{ draft.inputs.evidence.extraction.method }} · failure: {{ draft.inputs.evidence.extraction.failure_code or 'none' }}</p>
+{% for name, observation in draft.inputs.evidence.model_dump().items() %}{% if observation is mapping and 'candidates' in observation %}<h4>{{ name }} · {{ observation.status }}</h4>{% for candidate in observation.candidates %}<p>{{ candidate.value }} · source {{ candidate.evidence.source_id }}</p><pre>{{ candidate.evidence.exact_excerpt }}</pre>{% endfor %}{% endif %}{% endfor %}
+{% else %}<p>Manual destination input: <code>{{ draft.manual_account }}</code></p>{% endif %}
+{% if issue %}<aside class="blocked">{{ issue }}</aside>{% else %}
+<p>Destination to assert: <code>{{ destination }}</code>. A human assertion does not establish account ownership or authorize payment.</p>
+<form method="post"><input type="hidden" name="csrf" value="{{ session.csrf }}">
+<label><input type="checkbox" name="source_reviewed" value="yes" required> I reviewed the complete original prior evidence and exact destination, including competing instructions.</label>
+<label><input type="checkbox" name="previously_trusted" value="yes" required> I deliberately assert this destination was established as trusted before the current request, independently of that request.</label>
+<label>Previously known-good contact method <select name="contact_method" required><option value="">Choose</option><option>PHONE</option><option>KNOWN_PORTAL</option><option>IN_PERSON</option></select></label>
+<label>Previously known-good contact <input name="contact" required maxlength="256"></label>
+<label><input type="checkbox" name="contact_independently_established" value="yes" required> This contact was independently established previously; it is not taken from the current suspect request.</label>
+<button>Record my explicit baseline trust assertion</button></form>{% endif %}{% endblock %}

@@ -14,12 +14,7 @@ $(VENV)/.ready: pyproject.toml requirements-dev.txt
 
 # Sequential sub-make keeps verification deterministic, even under make -j.
 verify: setup
-	$(MAKE) lint
-	$(MAKE) typecheck
-	$(MAKE) test
-	$(PY) -m payproof check
-	$(MAKE) benchmark
-	$(MAKE) build
+	$(PY) scripts/verify_foundation.py
 
 lint: setup
 	$(VENV)/bin/ruff check .
@@ -64,7 +59,7 @@ demo-proof: setup
 
 # Local operator server (writes require environment-configured gate), no debugger/reloader.
 serve: setup
-	$(PY) -m payproof serve
+	$(PY) scripts/run_local.py $(PY) -m payproof serve
 
 # A host/reverse proxy must restrict access and provide HTTPS.
 production: setup

@@ -1,21 +1,25 @@
 """Small server-rendered adapter to existing durable workflow commands."""
 
+import json
 import secrets
 import sqlite3
 import time
 from datetime import UTC, datetime, timedelta
+from hashlib import sha256
 from threading import Lock
 from typing import cast
 from urllib.parse import urlsplit
-from uuid import UUID, uuid4
+from uuid import NAMESPACE_URL, UUID, uuid4, uuid5
 
-from flask import Flask, abort, g, redirect, render_template, request, session, url_for
+from flask import Flask, abort, g, jsonify, redirect, render_template, request, session, url_for
 from werkzeug.exceptions import HTTPException
 from werkzeug.wrappers import Response
 
+from payproof.baselines import BaselineAssertion, BaselineDraft
 from payproof.cases import start_case
 from payproof.config import Settings
 from payproof.documents import capture_text
+from payproof.extraction import extract_documents
 from payproof.instruction_safety import extracted_keys, observation_key, source_inventory
 from payproof.normalization import canonical_iban
 from payproof.schemas import (
@@ -178,6 +182,40 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
     def no_secrets(value: object) -> None:
         reject_configured_secrets(value, settings)
 
+    def read_sources() -> tuple[SourceDocument, ...]:
+        sources: list[SourceDocument] = []
+        for name, kind in (
+            ("email", "EMAIL"),
+            ("invoice", "INVOICE"),
+            ("vendor_notice", "VENDOR_NOTICE"),
+            ("plain_text", "PLAIN_TEXT"),
+        ):
+            # Browser form transport uses CRLF. Freeze pasted text with LF before
+            # extraction; uploaded file contents remain untouched.
+            no_secrets(request.form.get(name, ""))
+            text = request.form.get(name, "").replace("\r\n", "\n")
+            if text:
+                no_secrets(text)
+                sources.append(capture_text(text, operator_id=human(), kind=cast(SourceKind, kind)))
+        for upload in request.files.getlist("upload"):
+            if not upload.filename:
+                continue
+            if not upload.filename.lower().endswith((".txt", ".eml")):
+                raise ValueError("only UTF-8 text upload supported")
+            raw = upload.stream.read(80_001)
+            if len(raw) > 80_000:
+                raise ValueError("upload too large")
+            text = raw.decode("utf-8")
+            no_secrets(text)
+            sources.append(
+                capture_text(
+                    text,
+                    operator_id=human(),
+                    kind=cast(SourceKind, request.form.get("upload_kind", "PLAIN_TEXT")),
+                )
+            )
+        return tuple(sources)
+
     @app.route("/operator/login", methods=["GET", "POST"])
     def operator_login() -> str | Response:
         if request.method == "POST":
@@ -260,9 +298,11 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             recorded_at=verified_at,
         )
         raw = request.form["account"]
+        key = json.dumps(dict(request.form) | {"operator": human(), "csrf": ""}, sort_keys=True)
+        identity = uuid5(NAMESPACE_URL, "manual-baseline:" + key)
         vendor = TrustedVendorRecord(
-            vendor_id=uuid4(),
-            revision_id=uuid4(),
+            vendor_id=identity,
+            revision_id=uuid5(identity, "revision"),
             canonical_vendor_name=request.form["name"],
             payment_identity=NormalizedPaymentIdentity(
                 normalization_version="iban-gb-de-v1",
@@ -272,8 +312,8 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             ),
             callback_contact=TrustedCallbackContact.model_validate(
                 {
-                    "contact_id": uuid4(),
-                    "revision_id": uuid4(),
+                    "contact_id": uuid5(identity, "contact"),
+                    "revision_id": uuid5(identity, "contact-revision"),
                     "method": request.form["contact_method"],
                     "value": request.form["contact"],
                     "provenance": provenance,
@@ -285,6 +325,146 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
         )
         store().put_vendor(vendor, operator_id=human())
         return redirect(url_for("operator_home"))
+
+    @app.route("/operator/baselines/new", methods=["GET", "POST"])
+    def baseline_new() -> str | Response:
+        vendor = (
+            store().get_vendor(UUID(request.args["vendor_id"]))
+            if request.args.get("vendor_id")
+            else None
+        )
+        if request.method == "GET":
+            return render_template("baseline_new.html", vendor=vendor)
+        fields(
+            {
+                "name",
+                "source_reference",
+                "description",
+                "verified_at",
+                "account",
+                "email",
+                "invoice",
+                "vendor_notice",
+                "plain_text",
+                "upload_kind",
+                "submission_id",
+                "expected_revision_id",
+                "bank_name",
+                "trusted_email",
+                "trusted_domain",
+                "currency",
+            },
+            {"upload"},
+        )
+        no_secrets(tuple(request.form.values()))
+        if vendor and request.form.get("expected_revision_id") != str(vendor.revision_id):
+            raise WorkflowError("trusted vendor changed; reload revision form")
+        sources = read_sources()
+        if sources and request.form.get("account", "").strip():
+            raise ValueError("choose manual destination or source evidence")
+        values = {k: v for k, v in request.form.items() if k not in {"csrf", "submission_id"}}
+        digest = sha256(
+            json.dumps(
+                {
+                    "form": values,
+                    "sources": [(s.kind, s.text) for s in sources],
+                    "operator": human(),
+                    "vendor": str(vendor.vendor_id) if vendor else None,
+                },
+                sort_keys=True,
+            ).encode()
+        ).hexdigest()
+        draft_id = uuid5(
+            NAMESPACE_URL,
+            "baseline:" + str(request.form.get("submission_id") or digest) + ":" + human(),
+        )
+        existing = (
+            store()
+            .db.execute("SELECT payload FROM baseline_drafts WHERE draft_id=?", (str(draft_id),))
+            .fetchone()
+        )
+        if existing:
+            old = store().get_baseline_draft(draft_id)
+            if old.submission_digest != digest:
+                raise WorkflowError("baseline submission identifier reused")
+            return redirect(url_for("baseline_draft", draft_id=draft_id))
+        inputs = None
+        if sources:
+            bounded_rate("extract:" + str(session["rate_id"]), 6)
+            evidence = extract_documents(sources, settings=settings)
+            inputs = CaseInputs(sources=sources, evidence=evidence)
+        draft = BaselineDraft(
+            draft_id=draft_id,
+            vendor_id=vendor.vendor_id if vendor else uuid4(),
+            expected_vendor_revision_id=vendor.revision_id if vendor else None,
+            operator_id=human(),
+            created_at=datetime.now(UTC),
+            submission_digest=digest,
+            name=request.form["name"],
+            bank_name=request.form.get("bank_name", "").strip() or None,
+            trusted_email=request.form.get("trusted_email", "").strip() or None,
+            trusted_domain=request.form.get("trusted_domain", "").strip() or None,
+            currency=request.form.get("currency", "").strip() or None,
+            source_reference=request.form["source_reference"],
+            description=request.form["description"],
+            prior_verified_at=datetime.fromisoformat(
+                request.form["verified_at"].replace("Z", "+00:00")
+            ),
+            manual_account=request.form.get("account", "").strip() or None,
+            inputs=inputs,
+        )
+        no_secrets(draft.model_dump(mode="json"))
+        store().save_baseline_draft(draft)
+        return redirect(url_for("baseline_draft", draft_id=draft.draft_id))
+
+    @app.route("/operator/baselines/<uuid:draft_id>", methods=["GET", "POST"])
+    def baseline_draft(draft_id: UUID) -> str | Response:
+        draft = store().get_baseline_draft(draft_id)
+        no_secrets(draft.model_dump(mode="json"))
+        if request.method == "POST":
+            fields(
+                {
+                    "source_reviewed",
+                    "previously_trusted",
+                    "contact_independently_established",
+                    "contact_method",
+                    "contact",
+                }
+            )
+            no_secrets(tuple(request.form.values()))
+            action = BaselineAssertion.model_validate(
+                {
+                    "draft_id": draft_id,
+                    "operator_id": human(),
+                    "source_reviewed": request.form.get("source_reviewed") == "yes",
+                    "previously_trusted": request.form.get("previously_trusted") == "yes",
+                    "contact_independently_established": request.form.get(
+                        "contact_independently_established"
+                    )
+                    == "yes",
+                    "contact_method": request.form["contact_method"],
+                    "contact_value": request.form["contact"],
+                }
+            )
+            store().assert_baseline(action)
+            return redirect(url_for("operator_home"))
+        try:
+            destination = draft.identity().account_identifier
+            issue = None
+        except ValueError:
+            destination, issue = (
+                None,
+                "Baseline destination is unresolved; no trust assertion can be recorded. Inspect all sources or create a corrected draft.",
+            )
+        return render_template(
+            "baseline_draft.html", draft=draft, destination=destination, issue=issue
+        )
+
+    @app.get("/operator/cases/<uuid:case_id>/receipts/<uuid:event_id>")
+    def verification_receipt(case_id: UUID, event_id: UUID) -> Response:
+        receipt = store().verification_receipt(case_id, event_id)
+        no_secrets(receipt)
+        return jsonify(receipt)
 
     @app.post("/operator/demo-vendor")
     def operator_demo_vendor() -> Response:
@@ -316,44 +496,39 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
                 demo_vendor_id=demo.vendor_id,
             )
         fields(
-            {"vendor_id", "email", "invoice", "vendor_notice", "plain_text", "upload_kind"},
+            {
+                "vendor_id",
+                "email",
+                "invoice",
+                "vendor_notice",
+                "plain_text",
+                "upload_kind",
+                "submission_id",
+            },
             {"upload"},
         )
         if set(request.files) - {"upload"}:
             raise ValueError("unsupported upload field")
         bounded_rate("extract:" + str(session["rate_id"]), 6)
         baseline = store().get_vendor(UUID(request.form["vendor_id"]))
-        sources: list[SourceDocument] = []
-        for name, kind in (
-            ("email", "EMAIL"),
-            ("invoice", "INVOICE"),
-            ("vendor_notice", "VENDOR_NOTICE"),
-            ("plain_text", "PLAIN_TEXT"),
-        ):
-            # Browser form transport uses CRLF. Freeze pasted text with LF before
-            # extraction; uploaded file contents remain untouched.
-            no_secrets(request.form.get(name, ""))
-            text = request.form.get(name, "").replace("\r\n", "\n")
-            if text:
-                no_secrets(text)
-                sources.append(capture_text(text, operator_id=human(), kind=cast(SourceKind, kind)))
-        for upload in request.files.getlist("upload"):
-            if not upload.filename:
-                continue
-            if not upload.filename.lower().endswith((".txt", ".eml")):
-                raise ValueError("only UTF-8 text upload supported")
-            raw = upload.stream.read(80_001)
-            if len(raw) > 80_000:
-                raise ValueError("upload too large")
-            text = raw.decode("utf-8")
-            no_secrets(text)
-            sources.append(
-                capture_text(
-                    text,
-                    operator_id=human(),
-                    kind=cast(SourceKind, request.form.get("upload_kind", "PLAIN_TEXT")),
-                )
-            )
+        sources = read_sources()
+        digest = sha256(
+            json.dumps(
+                {
+                    "operator": human(),
+                    "vendor": str(baseline.vendor_id),
+                    "sources": [(s.kind, s.text) for s in sources],
+                },
+                sort_keys=True,
+            ).encode()
+        ).hexdigest()
+        submission = uuid5(
+            NAMESPACE_URL,
+            "case:" + str(request.form.get("submission_id") or digest) + ":" + human(),
+        )
+        previous = store().submission(submission, "CASE", digest)
+        if previous is not None:
+            return redirect(url_for("operator_case", case_id=previous))
         # Existing capture and source-bound contracts enforce aggregate bounds too.
         snapshot = start_case(baseline, tuple(sources), settings=settings)
         no_secrets(snapshot.model_dump(mode="json"))
@@ -362,8 +537,45 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
             baseline.vendor_id,
             operator_id=human(),
             expected_vendor_revision_id=baseline.revision_id,
+            submission_id=submission,
+            submission_digest=digest,
         )
         return redirect(url_for("operator_case", case_id=case.case_id))
+
+    @app.route("/operator/cases/<uuid:case_id>/sources", methods=["GET", "POST"])
+    def operator_replace_sources(case_id: UUID) -> str | Response:
+        current = store().get_case(case_id)
+        baseline = store().get_vendor(current.selected_vendor_id)
+        if request.method == "GET":
+            no_secrets(current.model_dump(mode="json"))
+            return render_template(
+                "operator_new_case.html",
+                editing=current,
+                vendors=(baseline,),
+                mode=settings.extraction_mode,
+                demo_text="",
+                demo_selected=False,
+            )
+        fields(
+            {"revision_id", "email", "invoice", "vendor_notice", "plain_text", "upload_kind"},
+            {"upload"},
+        )
+        revision = UUID(request.form["revision_id"])
+        if current.revision_id != revision:
+            raise WorkflowError("stale case: reload the source form")
+        bounded_rate("extract:" + str(session["rate_id"]), 6)
+        sources = read_sources()
+        evidence = extract_documents(sources, settings=settings, request_id=case_id)
+        inputs = CaseInputs(sources=sources, evidence=evidence)
+        no_secrets(inputs.model_dump(mode="json"))
+        store().replace_inputs(
+            case_id,
+            revision,
+            inputs,
+            operator_id=human(),
+            expected_vendor_revision_id=baseline.revision_id,
+        )
+        return redirect(url_for("operator_case", case_id=case_id))
 
     @app.get("/operator/cases/<uuid:case_id>")
     def operator_case(case_id: UUID) -> str:
@@ -418,6 +630,26 @@ def register_operator_workflow(app: Flask, settings: Settings) -> None:
                 revision,
                 CaseInputs(sources=current.snapshot.sources, evidence=current.snapshot.evidence),
                 operator_id=human(),
+            )
+        elif action == "extract":
+            current = database.get_case(case_id)
+            if current.revision_id != revision:
+                raise WorkflowError("stale case: refresh before retry")
+            baseline = database.get_vendor(current.selected_vendor_id)
+            bounded_rate("extract:" + str(session["rate_id"]), 6)
+            sources = tuple(
+                capture_text(s.text, kind=s.kind, operator_id=human())
+                for s in current.snapshot.sources
+            )
+            evidence = extract_documents(sources, settings=settings, request_id=case_id)
+            inputs = CaseInputs(sources=sources, evidence=evidence)
+            no_secrets(inputs.model_dump(mode="json"))
+            database.replace_inputs(
+                case_id,
+                revision,
+                inputs,
+                operator_id=human(),
+                expected_vendor_revision_id=baseline.revision_id,
             )
         elif action == "verify":
             no_secrets(tuple(request.form.values()))

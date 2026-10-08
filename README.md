@@ -8,7 +8,7 @@ A plausible invoice can request a destination different from the vendor's prior 
 
 ### Implemented architecture
 
-One Python package: Flask server-rendered forms, strict Pydantic contracts, stdlib SQLite, one synchronous OpenAI extraction adapter and a pure deterministic comparator. Dependencies are pinned in `requirements-dev.txt`; no ORM, queue, frontend framework or distributed service.
+One Python package: Flask server-rendered forms, strict Pydantic contracts, stdlib SQLite, synchronous OpenAI Responses / Featherless chat-completions adapters and a pure deterministic comparator. Dependencies are pinned in `requirements-dev.txt`; no ORM, queue, frontend framework or distributed service.
 
 ```text
 trusted vendor + prior callback -> immutable SQLite baseline revision --+
@@ -30,7 +30,7 @@ The private `workflow` CLI and gated `/operator` forms share backend contracts a
 
 ### AI role
 
-Modes are explicit: `disabled`, `fixture`, `live`. Live sends only source IDs, kinds and text to the fixed OpenAI Responses endpoint with strict output, no tools and `store=false`. The model never receives/selects the baseline or callback, returns verdicts or records verification. Unknown fields, malformed JSON/schema, fabricated/nonunique excerpts and clipped account evidence fail closed. Missing stays missing. Timeouts/provider failures are explicit unsuccessful attempts; live never falls back to fixtures. Provider/model compatibility and live accuracy are **unmeasured**. See [LIVE_EXTRACTION.md](docs/LIVE_EXTRACTION.md).
+Modes are explicit: `disabled`, `fixture`, `live`. Live sends only source IDs, kinds and text to the configured provider: OpenAI Responses requests strict JSON schema and `store=false`; Featherless chat completions requests JSON-object mode with the schema in the prompt. Both require the same strict local schema/grounding and do not execute tools. The model never receives/selects the baseline or callback, returns verdicts or records verification. Unknown fields, malformed JSON/schema, fabricated/nonunique excerpts and clipped account evidence fail closed. Missing stays missing. Timeouts/provider failures are explicit unsuccessful attempts; live never falls back to fixtures. Provider/model compatibility and live accuracy are **unmeasured**. See [LIVE_EXTRACTION.md](docs/LIVE_EXTRACTION.md).
 
 ### Deterministic safety layer
 
@@ -125,7 +125,7 @@ make build
 
 ### Configuration
 
-Process environment is authoritative; `.env` is not loaded automatically. `.env.example` is an empty credential/model template. Supply secrets privately through the host environment; never commit or paste them into source, documents, URLs or logs.
+Process environment is authoritative; the local launcher used by `make serve` loads ignored `.env` defaults without shell evaluation. Library/test calls do not load it automatically. `.env.example` is an empty credential/model template. Supply secrets privately through the host environment; never commit or paste them into source, documents, URLs or logs.
 
 | Variable | Default / requirement |
 | --- | --- |
@@ -134,9 +134,13 @@ Process environment is authoritative; `.env` is not loaded automatically. `.env.
 | `PAYPROOF_DATA_DIR` | `./data`, private persistent SQLite directory |
 | `PAYPROOF_EXTRACTION_MODE` | `disabled`; `fixture` matches exact bundled development text; `live` needs key/model |
 | `PAYPROOF_PROVIDER_API_KEY` | Absent; server-only; never reuse exposed history |
-| `PAYPROOF_PROVIDER_MODEL` | Absent; explicit compatible model for fixed `https://api.openai.com/v1/responses` and strict output |
+| `PAYPROOF_PROVIDER` | `openai` default; use `featherless` for chat completions |
+| `PAYPROOF_PROVIDER_BASE_URL` | Official HTTPS `/v1` API root matching selected provider |
+| `PAYPROOF_PROVIDER_MODEL` | Exact selected provider model ID; no default or guessed ID |
 | `PAYPROOF_EXTRACTION_TIMEOUT_SECONDS` | `30`, ASCII digits, 1–60 |
 | `PAYPROOF_SECRET_KEY` | Absent; random 32+ characters for production/operator workflow |
 | `PAYPROOF_OPERATOR_TOKEN` | Absent; distinct random 32+ character passphrase plus signing secret for operator pages |
 
 Unknown `PAYPROOF_*`, invalid values, missing live key/model and missing production signing secret reject startup with sanitized errors. Health initializes neither storage nor provider. Production cookies require HTTPS. CSRF, same-origin checks, strict forms, escaped evidence, CSP, no-store pages, expected revisions and configured-secret guards protect the writable workflow. Operator labels are attribution, not proof of individual identity or an actual callback.
+
+Live Featherless configuration and current foundation limits: [provider boundary](docs/PHASE3_PROVIDER_AND_FOUNDATION.md). Local `make serve` loads ignored `.env` through `scripts/run_local.py`; process environment wins. `make verify` runs all gates and retains failures without overwriting saved benchmarks.

@@ -1,10 +1,14 @@
+# Current provider boundary
+
+Featherless chat completions and OpenAI Responses now share strict local extraction/grounding. See [provider configuration and actual current evidence](PHASE3_PROVIDER_AND_FOUNDATION.md). The original Responses-specific account below describes that adapter, not Featherless. The configured Featherless model returned HTTP403; no successful live extraction has been measured in the current environment.
+
 # Live extraction
 
 PayProof's existing live path uses the OpenAI Responses HTTPS adapter, canonical `PaymentRequestEvidence` and source-bound evidence validation. This mission keeps the transport schema, prompt, normalization, comparison rules and safety states unchanged. No SDK or dependency was added.
 
 ## Actual provider and configuration
 
-The single endpoint is fixed to `https://api.openai.com/v1/responses`; the provider attribution is `openai`. There is no alternate base URL, automatic provider discovery, model substitution or fixture fallback in live mode. A credential/model for another service does not establish compatibility with this endpoint.
+The OpenAI adapter uses `https://api.openai.com/v1/responses`; Featherless uses `https://api.featherless.ai/v1/chat/completions`. `PAYPROOF_PROVIDER` and its matching official `PAYPROOF_PROVIDER_BASE_URL` select the wire protocol. No automatic discovery, model substitution or fixture fallback occurs.
 
 Configuration is read only from process environment:
 
@@ -16,9 +20,9 @@ Configuration is read only from process environment:
 | `PAYPROOF_EXTRACTION_TIMEOUT_SECONDS` | Socket I/O timeout, 1–60 seconds, default 30 |
 | `PAYPROOF_ENV` / `PAYPROOF_SECRET_KEY` | Production also requires the existing independently supplied signing secret |
 
-`.env` and `.env.example` are not automatically loaded. A key in a file is not a configured process environment. Keep secret fields in the tracked example empty; supply credentials through the host's secret/environment mechanism. Do not pass keys as command arguments, paste them into source documents or enable HTTP/header debug logging. Unknown `PAYPROOF_*` variables and invalid live/production settings reject startup with sanitized errors. A model value containing the configured credential is rejected, so credential text cannot become public model metadata.
+Library calls do not automatically load `.env`; `scripts/run_local.py` explicitly loads ignored local defaults into the child process without shell execution. `.env.example` is never loaded automatically. Keep secret fields in the tracked example empty; supply credentials through the host's secret/environment mechanism. Do not pass keys as command arguments, paste them into source documents or enable HTTP/header debug logging. Unknown `PAYPROOF_*` variables and invalid live/production settings reject startup with sanitized errors. A model value containing the configured credential is rejected, so credential text cannot become public model metadata.
 
-The request uses `text.format` with `json_schema` and `strict=true`. Every extraction property is required and extra properties are forbidden. Refusals, incomplete results and unsupported schema/model errors are handled as failures; the adapter does not downgrade to free text or JSON-only mode. These request and refusal conventions were checked against [official OpenAI structured-output documentation](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses).
+The OpenAI request uses `text.format` with `json_schema` and `strict=true`; Featherless requests documented JSON-object mode with the existing schema in the prompt. Both require strict local schema validation. Every extraction property is required and extra properties are forbidden. Refusals, incomplete results and unsupported schema/model errors are handled as failures; the adapter does not downgrade to free text or JSON-only mode. These request and refusal conventions were checked against [official OpenAI structured-output documentation](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses).
 
 ## End-to-end boundary
 

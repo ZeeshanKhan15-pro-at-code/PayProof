@@ -1,0 +1,21 @@
+{% extends 'operator_base.html' %}{% block content %}
+<h2>{{ 'Revise previously trusted vendor' if vendor else 'Establish a previously trusted baseline' }}</h2>
+<p>First collect A: previously trusted information. Uploading or extracting it does not establish trust. You must inspect the draft and explicitly assert prior trust and an independently established contact. B: the current request is entered separately after this step.</p>
+{% if vendor %}<p>Current revision {{ vendor.revision_id }}. Confirming a revision makes existing cases stale; they require refresh, source review and comparison.</p>{% endif %}
+<form method="post" enctype="multipart/form-data"><input type="hidden" name="csrf" value="{{ session.csrf }}">{% if vendor %}<input type="hidden" name="expected_revision_id" value="{{ vendor.revision_id }}">{% endif %}<input type="hidden" name="submission_id" value="{{ new_action_id() }}">
+<label>Vendor name <input name="name" value="{{ vendor.canonical_vendor_name if vendor else '' }}" required maxlength="256"></label>
+<label>Optional trusted bank name <input name="bank_name" maxlength="256" value="{{ vendor.bank_name or '' if vendor else '' }}"></label>
+<label>Optional trusted email <input name="trusted_email" maxlength="256" value="{{ vendor.trusted_email or '' if vendor else '' }}"></label>
+<label>Optional trusted domain <input name="trusted_domain" maxlength="256" value="{{ vendor.trusted_domain or '' if vendor else '' }}"></label>
+<label>Optional trusted currency (ISO code) <input name="currency" maxlength="3" value="{{ vendor.currency or '' if vendor else '' }}"></label>
+<label>Prior trusted source reference <input name="source_reference" required maxlength="20000"></label>
+<label>How prior trust was established <textarea name="description" required maxlength="20000"></textarea></label>
+<label>Previously checked at (UTC) <input name="verified_at" required placeholder="2026-10-01T08:00:00Z"></label>
+<h3>Choose manual destination OR previous source text</h3>
+<label>Manual full GB/DE IBAN <input name="account" maxlength="256"></label>
+<label>Previous email text <textarea name="email" maxlength="20000"></textarea></label>
+<label>Previous invoice text <textarea name="invoice" maxlength="20000"></textarea></label>
+<label>Previous plain text <textarea name="plain_text" maxlength="20000"></textarea></label>
+<label>Supported UTF8 .txt/.eml upload <input name="upload" type="file" multiple accept=".txt,.eml"></label>
+<label>Upload kind <select name="upload_kind"><option>PLAIN_TEXT</option><option>EMAIL</option><option>INVOICE</option><option>VENDOR_NOTICE</option></select></label>
+<button>Create untrusted draft for review</button></form>{% endblock %}

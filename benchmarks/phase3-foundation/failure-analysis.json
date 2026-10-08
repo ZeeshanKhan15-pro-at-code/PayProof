@@ -1,0 +1,543 @@
+{
+  "evidence_class": "GOLD_HELD_OUT_SYNTHETIC",
+  "labels_changed": false,
+  "semantics_changed": false,
+  "failures": [
+    {
+      "case_id": "PP-17",
+      "expected": {
+        "state": "VERIFY",
+        "reason_codes": [
+          "DESTINATION_CHANGED"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected VERIFY; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-18",
+      "expected": {
+        "state": "VERIFY",
+        "reason_codes": [
+          "DESTINATION_CHANGED"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected VERIFY; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-19",
+      "expected": {
+        "state": "VERIFY",
+        "reason_codes": [
+          "DESTINATION_CHANGED"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected VERIFY; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-20",
+      "expected": {
+        "state": "VERIFY",
+        "reason_codes": [
+          "DESTINATION_CHANGED"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected VERIFY; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-41",
+      "expected": {
+        "state": "UNCHANGED",
+        "reason_codes": [
+          "DESTINATION_MATCH"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected UNCHANGED; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_MATCH',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-42",
+      "expected": {
+        "state": "UNCHANGED",
+        "reason_codes": [
+          "DESTINATION_MATCH"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected UNCHANGED; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_MATCH',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-43",
+      "expected": {
+        "state": "VERIFY",
+        "reason_codes": [
+          "DESTINATION_CHANGED"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected VERIFY; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-44",
+      "expected": {
+        "state": "VERIFY",
+        "reason_codes": [
+          "DESTINATION_CHANGED"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected VERIFY; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-45",
+      "expected": {
+        "state": "VERIFY",
+        "reason_codes": [
+          "DESTINATION_CHANGED"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected VERIFY; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-46",
+      "expected": {
+        "state": "VERIFY",
+        "reason_codes": [
+          "DESTINATION_CHANGED"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected VERIFY; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-47",
+      "expected": {
+        "state": "UNCHANGED",
+        "reason_codes": [
+          "DESTINATION_MATCH"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected UNCHANGED; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_MATCH',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-48",
+      "expected": {
+        "state": "UNCHANGED",
+        "reason_codes": [
+          "DESTINATION_MATCH"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected UNCHANGED; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_MATCH',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-57",
+      "expected": {
+        "state": "UNCERTAIN",
+        "reason_codes": [
+          "UNSUPPORTED_DESTINATION"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "UNSUPPORTED_DESTINATION",
+        "DESTINATION_INVALID"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('UNSUPPORTED_DESTINATION',); observed ('UNSUPPORTED_DESTINATION', 'DESTINATION_INVALID')."
+        }
+      ],
+      "diagnosis": "additional invalid-identifier diagnostic on unsupported scheme",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-58",
+      "expected": {
+        "state": "UNCERTAIN",
+        "reason_codes": [
+          "UNSUPPORTED_DESTINATION"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "UNSUPPORTED_DESTINATION",
+        "DESTINATION_INVALID"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('UNSUPPORTED_DESTINATION',); observed ('UNSUPPORTED_DESTINATION', 'DESTINATION_INVALID')."
+        }
+      ],
+      "diagnosis": "additional invalid-identifier diagnostic on unsupported scheme",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-60",
+      "expected": {
+        "state": "UNCERTAIN",
+        "reason_codes": [
+          "UNSUPPORTED_DESTINATION"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "UNSUPPORTED_DESTINATION",
+        "DESTINATION_INVALID"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('UNSUPPORTED_DESTINATION',); observed ('UNSUPPORTED_DESTINATION', 'DESTINATION_INVALID')."
+        }
+      ],
+      "diagnosis": "additional invalid-identifier diagnostic on unsupported scheme",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-65",
+      "expected": {
+        "state": "VERIFY",
+        "reason_codes": [
+          "DESTINATION_CHANGED"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected VERIFY; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-66",
+      "expected": {
+        "state": "VERIFY",
+        "reason_codes": [
+          "DESTINATION_CHANGED"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected VERIFY; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-67",
+      "expected": {
+        "state": "VERIFY",
+        "reason_codes": [
+          "DESTINATION_CHANGED"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected VERIFY; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    },
+    {
+      "case_id": "PP-68",
+      "expected": {
+        "state": "VERIFY",
+        "reason_codes": [
+          "DESTINATION_CHANGED"
+        ]
+      },
+      "observed_state": "UNCERTAIN",
+      "observed_reasons": [
+        "DESTINATION_AMBIGUOUS"
+      ],
+      "issues": [
+        {
+          "stage": "comparison",
+          "code": "STATE_MISMATCH",
+          "field": null,
+          "detail": "Expected VERIFY; observed UNCERTAIN."
+        },
+        {
+          "stage": "comparison",
+          "code": "REASON_MISMATCH",
+          "field": null,
+          "detail": "Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',)."
+        }
+      ],
+      "diagnosis": "conservative competing-source guard vs selected gold observation",
+      "implementation_action": "preserve uncertainty; independent evaluation review required"
+    }
+  ]
+}

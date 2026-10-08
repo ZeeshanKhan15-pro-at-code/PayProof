@@ -32,6 +32,34 @@ def create_app(settings: Settings | None = None) -> Flask:
             stage="operator_workflow" if settings.operator_token else "skeleton",
         )
 
+    @app.get("/readyz")
+    def readiness() -> tuple[Response, int]:
+        import sqlite3
+
+        from payproof.storage import SQLiteStore, WorkflowError
+
+        available = False
+        try:
+            database = SQLiteStore(settings.data_dir / "payproof.sqlite3")
+            try:
+                available = database.db.execute("SELECT 1").fetchone()[0] == 1
+            finally:
+                database.close()
+        except (sqlite3.Error, OSError, WorkflowError):
+            pass
+        ready = (
+            available
+            and settings.operator_token is not None
+            and settings.extraction_mode != "disabled"
+        )
+        return jsonify(
+            status="ready" if ready else "not_ready",
+            storage=available,
+            operator_configured=settings.operator_token is not None,
+            extraction_mode=settings.extraction_mode,
+            provider_connectivity="NOT_CHECKED",
+        ), 200 if ready else 503
+
     @app.get("/")
     def debug_index() -> Response:
         if request.accept_mimetypes.best == "text/html":

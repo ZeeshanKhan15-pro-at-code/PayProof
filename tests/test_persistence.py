@@ -62,7 +62,7 @@ def test_restart_and_confirmation(tmp_path: Path):
     store = SQLiteStore(path)
     assert store.get_case(case.case_id) == saved
     assert store.verification_events(case.case_id) == (event,)
-    assert store.db.execute("PRAGMA user_version").fetchone()[0] == 1
+    assert store.db.execute("PRAGMA user_version").fetchone()[0] == 2
     assert path.stat().st_mode & 0o777 == 0o600
     store.close()
 

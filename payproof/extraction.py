@@ -13,11 +13,11 @@ from payproof.config import Settings, load_settings
 from payproof.extraction_contract import PROMPT_VERSION, WireExtractionPayload
 from payproof.openai_extraction import (
     FailureCode,
-    OpenAIExtractionProvider,
     ProviderFailure,
     _reject_credential_echo,
 )
 from payproof.provenance import account_quote_is_complete
+from payproof.providers import create_provider
 from payproof.schemas import (
     EVIDENCE_FIELDS,
     CaseContract,
@@ -198,15 +198,11 @@ def extract_attempt(
             method="AI",
             extracted_at=metadata.extracted_at,
             schema_version="1",
-            provider="openai",
+            provider=settings.provider,
             model=settings.provider_model,
             prompt_version=PROMPT_VERSION,
         )
-        provider = OpenAIExtractionProvider(
-            api_key=settings.provider_api_key,
-            model=settings.provider_model,
-            timeout_seconds=settings.extraction_timeout_seconds,
-        )
+        provider = create_provider(settings)
         try:
             completion = provider.complete(sources)
             for secret in (settings.provider_api_key, settings.secret_key, settings.operator_token):
@@ -221,7 +217,7 @@ def extract_attempt(
                 method="AI",
                 extracted_at=metadata.extracted_at,
                 schema_version="1",
-                provider="openai",
+                provider=settings.provider,
                 model=completion.model,
                 prompt_version=PROMPT_VERSION,
             )

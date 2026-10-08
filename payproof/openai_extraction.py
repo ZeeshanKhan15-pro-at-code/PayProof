@@ -5,7 +5,8 @@ from dataclasses import dataclass, field
 from http.client import HTTPException, HTTPMessage
 from typing import IO, Literal
 from urllib.error import HTTPError, URLError
-from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, Request
+from urllib.request import build_opener as build_opener
 
 from pydantic import BaseModel, ConfigDict, SecretStr
 
@@ -99,6 +100,7 @@ class OpenAIExtractionProvider:
     api_key: SecretStr = field(repr=False)
     model: str
     timeout_seconds: int = 30
+    base_url: str = "https://api.openai.com/v1"
 
     def complete(self, sources: tuple[SourceDocument, ...]) -> ProviderCompletion:
         body = {
@@ -140,7 +142,7 @@ class OpenAIExtractionProvider:
         if len(encoded) > MAX_PROVIDER_BYTES:
             raise ProviderFailure("INVALID_RESPONSE")
         request = Request(
-            API_URL,
+            self.base_url.rstrip("/") + "/responses",
             data=encoded,
             method="POST",
             headers={

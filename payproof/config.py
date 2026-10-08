@@ -3,6 +3,7 @@
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Literal
+from urllib.parse import urlsplit
 
 from pydantic import Field, SecretStr, ValidationError, model_validator
 
@@ -21,11 +22,24 @@ class Settings(Contract):
     secret_key: SecretStr | None = Field(default=None, repr=False, exclude=True)
     operator_token: SecretStr | None = Field(default=None, repr=False, exclude=True)
     provider_api_key: SecretStr | None = Field(default=None, repr=False, exclude=True)
+    provider: Literal["openai", "featherless"] = "openai"
+    provider_base_url: str | None = None
     provider_model: str | None = Field(default=None, min_length=1, max_length=256)
     extraction_timeout_seconds: int = Field(default=30, ge=1, le=60)
 
     @model_validator(mode="after")
     def production_secret(self) -> "Settings":
+        if self.provider_base_url is not None:
+            url = urlsplit(self.provider_base_url)
+            host = "api.featherless.ai" if self.provider == "featherless" else "api.openai.com"
+            if (
+                url.scheme != "https"
+                or url.netloc != host
+                or url.path.rstrip("/") != "/v1"
+                or url.query
+                or url.fragment
+            ):
+                raise ValueError("provider URL must be the selected provider HTTPS API root")
         if self.provider_model is not None and any(
             secret is not None
             and secret.get_secret_value()
@@ -75,6 +89,8 @@ def load_settings(environ: Mapping[str, str]) -> Settings:
         "PAYPROOF_SECRET_KEY",
         "PAYPROOF_OPERATOR_TOKEN",
         "PAYPROOF_PROVIDER_API_KEY",
+        "PAYPROOF_PROVIDER",
+        "PAYPROOF_PROVIDER_BASE_URL",
         "PAYPROOF_PROVIDER_MODEL",
         "PAYPROOF_EXTRACTION_TIMEOUT_SECONDS",
     }
@@ -103,6 +119,8 @@ def load_settings(environ: Mapping[str, str]) -> Settings:
                 "operator_token": SecretStr(environ["PAYPROOF_OPERATOR_TOKEN"])
                 if environ.get("PAYPROOF_OPERATOR_TOKEN")
                 else None,
+                "provider": environ.get("PAYPROOF_PROVIDER", "openai"),
+                "provider_base_url": environ.get("PAYPROOF_PROVIDER_BASE_URL") or None,
                 "provider_api_key": SecretStr(raw_api_key) if raw_api_key else None,
                 "provider_model": raw_model or None,
                 "extraction_timeout_seconds": int(raw_timeout),

@@ -403,7 +403,7 @@ def test_timeout_does_not_allow_review_or_verification(monkeypatch, live_setting
     def timed_out(*args, **kwargs):
         raise ProviderFailure("TIMEOUT")
 
-    monkeypatch.setattr("payproof.extraction.OpenAIExtractionProvider.complete", timed_out)
+    monkeypatch.setattr("payproof.openai_extraction.OpenAIExtractionProvider.complete", timed_out)
     source = capture_text(f"Pay {DE_IBAN}.", operator_id="test")
     evidence = extract_documents((source,), settings=live_settings)
     case = reviewed_result(source, evidence)
