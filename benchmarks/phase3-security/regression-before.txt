@@ -1,0 +1,163 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_______ test_active_workspace_is_not_deleted_by_another_session_cleanup ________
+
+tmp_path = PosixPath('/tmp/pytest-of-zeeshan-khan/pytest-11/test_active_workspace_is_not_d0')
+
+    def test_active_workspace_is_not_deleted_by_another_session_cleanup(tmp_path):
+        import os
+        import time
+    
+        app = create_app(app_settings(tmp_path))
+        owner, visitor = app.test_client(), app.test_client()
+        path, _, _ = open_example(owner, "changed")
+        folder = next((tmp_path / "public-sessions").iterdir())
+        # Gallery activity renews the session registry without touching its database directory.
+        os.utime(folder, (time.time() - 2000, time.time() - 2000))
+        assert owner.get("/workspace/examples").status_code == 200
+        assert visitor.get("/workspace/").status_code == 200
+>       assert owner.get(path).status_code == 200
+E       AssertionError: assert 409 == 200
+E        +  where 409 = <WrapperTestResponse streamed [409 CONFLICT]>.status_code
+E        +    where <WrapperTestResponse streamed [409 CONFLICT]> = get('/workspace/cases/118f6b5f-c962-5bd6-a857-0ca31ff391a9')
+E        +      where get = <FlaskClient <Flask 'payproof.web'>>.get
+
+tests/test_phase3_security.py:30: AssertionError
+________ test_concurrent_duplicate_live_submission_calls_provider_once _________
+
+tmp_path = PosixPath('/tmp/pytest-of-zeeshan-khan/pytest-11/test_concurrent_duplicate_live0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ce08eca88a0>
+
+    def test_concurrent_duplicate_live_submission_calls_provider_once(tmp_path, monkeypatch):
+        app = create_app(app_settings(tmp_path, live=True, cap=10))
+        client = app.test_client()
+        vendor, _ = manual_baseline(client)
+        token = csrf(client)
+        cookie = client.get_cookie("payproof_public", path="/workspace").value
+        entered, finish = Event(), Event()
+        calls = []
+    
+        def slow_provider(provider, sources):
+            from payproof.openai_extraction import ProviderFailure
+    
+            calls.append(sources)
+            entered.set()
+            assert finish.wait(timeout=5)
+            raise ProviderFailure("TIMEOUT")
+    
+        monkeypatch.setattr("payproof.providers.FeatherlessExtractionProvider.complete", slow_provider)
+        data = {
+            "csrf": token,
+            "vendor_id": vendor,
+            "email": "Pay to IBAN GB57TEST00000000009928.",
+            "submission_id": str(uuid4()),
+        }
+    
+        def submit():
+            other = app.test_client()
+            other.set_cookie("payproof_public", cookie, path="/workspace")
+            return other.post("/workspace/cases/new", data=data)
+    
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            first = pool.submit(submit)
+            assert entered.wait(timeout=5)
+            try:
+>               second = pool.submit(submit).result(timeout=2)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_phase3_security.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = None, timeout = 2
+
+    def result(self, timeout=None):
+        """Return the result of the call that the future represents.
+    
+        Args:
+            timeout: The number of seconds to wait for the result if the future
+                isn't done. If None, then there is no limit on the wait time.
+    
+        Returns:
+            The result of the call that the future represents.
+    
+        Raises:
+            CancelledError: If the future was cancelled.
+            TimeoutError: If the future didn't finish executing before the given
+                timeout.
+            Exception: If the call raised then that exception will be raised.
+        """
+        try:
+            with self._condition:
+                if self._state in [CANCELLED, CANCELLED_AND_NOTIFIED]:
+                    raise CancelledError()
+                elif self._state == FINISHED:
+                    return self.__get_result()
+    
+                self._condition.wait(timeout)
+    
+                if self._state in [CANCELLED, CANCELLED_AND_NOTIFIED]:
+                    raise CancelledError()
+                elif self._state == FINISHED:
+                    return self.__get_result()
+                else:
+>                   raise TimeoutError()
+E                   TimeoutError
+
+/usr/lib/python3.14/concurrent/futures/_base.py:452: TimeoutError
+__________ test_duplicate_durable_live_reservation_cannot_spend_twice __________
+
+tmp_path = PosixPath('/tmp/pytest-of-zeeshan-khan/pytest-11/test_duplicate_durable_live_re0')
+
+    def test_duplicate_durable_live_reservation_cannot_spend_twice(tmp_path):
+        settings = app_settings(tmp_path, live=True, cap=10)
+        operation = uuid4()
+>       reserve_live_call(settings, operation_id=operation)
+E       TypeError: reserve_live_call() got an unexpected keyword argument 'operation_id'
+
+tests/test_phase3_security.py:82: TypeError
+________________ test_general_public_mutation_burst_is_bounded _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-zeeshan-khan/pytest-11/test_general_public_mutation_b0')
+
+    def test_general_public_mutation_burst_is_bounded(tmp_path):
+        app = create_app(app_settings(tmp_path))
+        client = app.test_client()
+        token = csrf(client)
+        codes = []
+        for _ in range(40):
+            response = client.post(
+                f"/workspace/cases/{uuid4()}/compare", data={"csrf": token, "revision_id": str(uuid4())}
+            )
+            codes.append(response.status_code)
+>       assert 429 in codes
+E       assert 429 in [409, 409, 409, 409, 409, 409, ...]
+
+tests/test_phase3_security.py:97: AssertionError
+___ test_production_rejects_plaintext_workspace_and_spoofed_forwarded_header ___
+
+tmp_path = PosixPath('/tmp/pytest-of-zeeshan-khan/pytest-11/test_production_rejects_plaint0')
+
+    def test_production_rejects_plaintext_workspace_and_spoofed_forwarded_header(tmp_path):
+        settings = load_settings(
+            {
+                "PAYPROOF_ENV": "production",
+                "PAYPROOF_SECRET_KEY": secrets.token_urlsafe(48),
+                "PAYPROOF_DATA_DIR": str(tmp_path),
+            }
+        )
+        app = create_app(settings)
+        client = app.test_client()
+>       assert client.get("/workspace/", headers={"X-Forwarded-Proto": "https"}).status_code == 403
+E       AssertionError: assert 200 == 403
+E        +  where 200 = <WrapperTestResponse streamed [200 OK]>.status_code
+E        +    where <WrapperTestResponse streamed [200 OK]> = get('/workspace/', headers={'X-Forwarded-Proto': 'https'})
+E        +      where get = <FlaskClient <Flask 'payproof.web'>>.get
+
+tests/test_phase3_security.py:112: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_phase3_security.py::test_active_workspace_is_not_deleted_by_another_session_cleanup
+FAILED tests/test_phase3_security.py::test_concurrent_duplicate_live_submission_calls_provider_once
+FAILED tests/test_phase3_security.py::test_duplicate_durable_live_reservation_cannot_spend_twice
+FAILED tests/test_phase3_security.py::test_general_public_mutation_burst_is_bounded
+FAILED tests/test_phase3_security.py::test_production_rejects_plaintext_workspace_and_spoofed_forwarded_header
+5 failed, 14 deselected in 2.91s

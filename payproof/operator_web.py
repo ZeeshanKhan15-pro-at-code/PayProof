@@ -67,6 +67,7 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
     # old sessions. Revocation is immediate on logout, without a new auth service.
     epoch = secrets.token_urlsafe(32)
     active_sessions: dict[str, float] = {}
+    public_writes: dict[str, int] = {}
 
     def bounded_rate(key: str, limit: int) -> None:
         with lock:
@@ -118,6 +119,8 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
             return None
         if public and request.endpoint == "static":
             return None
+        if settings.environment == "production" and not request.is_secure:
+            abort(403)
         if not public and settings.operator_token is None:
             return Response(
                 "Operator workflow is not configured. Set PAYPROOF_OPERATOR_TOKEN and PAYPROOF_SECRET_KEY.",
@@ -129,6 +132,7 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
             for identifier in tuple(active_sessions):
                 if active_sessions[identifier] <= now:
                     del active_sessions[identifier]
+                    public_writes.pop(identifier, None)
             sid = str(session.get("rate_id", ""))
             valid = session.get("gate_epoch") == epoch and sid in active_sessions
             if valid:
@@ -141,12 +145,16 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
             from payproof.public_workspace import MAX_PUBLIC_SESSIONS, cleanup_sessions
 
             bounded_rate("public-session:" + (request.remote_addr or "unknown"), 4)
-            cleanup_sessions(settings.data_dir / "public-sessions")
             with lock:
                 if len(active_sessions) >= MAX_PUBLIC_SESSIONS:
                     abort(429)
+                cleanup_sessions(
+                    settings.data_dir / "public-sessions",
+                    active_ids=frozenset(active_sessions),
+                )
                 sid = uuid4().hex
                 active_sessions[sid] = time.monotonic() + 1800
+                public_writes[sid] = 0
             session.clear()
             session.update(
                 operator="anonymous-human",
@@ -155,6 +163,10 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
                 gate_epoch=epoch,
             )
             session.permanent = True
+        if public and request.method == "GET":
+            bounded_rate("public-reads:" + sid, 120)
+            bounded_rate("public-reads-ip:" + (request.remote_addr or "unknown"), 240)
+            bounded_rate("public-reads-global", 480)
         if request.method == "POST":
             if request.endpoint != "operator_login" and not session.get("operator"):
                 abort(401)
@@ -167,6 +179,16 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
                 value = request.headers.get(header)
                 if value and urlsplit(value)[:2] != urlsplit(request.host_url)[:2]:
                     abort(403)
+            if public and request.endpoint != "operator_logout":
+                bounded_rate("public-writes:" + sid, 30)
+                bounded_rate("public-writes-ip:" + (request.remote_addr or "unknown"), 60)
+                bounded_rate("public-writes-global", 120)
+                with lock:
+                    if public_writes.get(sid, 0) >= 128:
+                        raise TooManyRequests(
+                            description="This temporary workspace's write allowance is exhausted. Read-only history and ending the workspace remain available."
+                        )
+                    public_writes[sid] = public_writes.get(sid, 0) + 1
         if request.endpoint != "operator_login" and not session.get("operator"):
             return redirect(url_for("operator_login"))
         if "csrf" not in session:
@@ -217,6 +239,8 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
         )
         if isinstance(error, SourceInputError):
             message = str(error)
+        if code == 403 and settings.environment == "production" and not request.is_secure:
+            message = "HTTPS is required. Use the HTTPS site; the host must configure a trusted TLS proxy before serving this workflow."
         if public and isinstance(error, TooManyRequests):
             message = error.description
         return render_template("operator_error.html", message=message), code or 500
@@ -238,14 +262,24 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
     def no_secrets(value: object) -> None:
         reject_configured_secrets(value, settings)
 
-    def before_extraction() -> None:
+    def before_extraction(operation_id: UUID) -> None:
         if public and settings.extraction_mode == "live":
-            from payproof.public_workspace import reserve_live_call
+            from payproof.public_workspace import PublicLiveCallDenied, reserve_live_call
 
             bounded_rate("public-extract:" + (request.remote_addr or "unknown"), 3)
             try:
-                reserve_live_call(settings)
-            except WorkflowError:
+                reserve_live_call(
+                    settings,
+                    operation_id=uuid5(
+                        NAMESPACE_URL,
+                        "public-live:" + str(session["rate_id"]) + ":" + str(operation_id),
+                    ),
+                )
+            except PublicLiveCallDenied as error:
+                if error.reason == "DUPLICATE_OPERATION":
+                    raise TooManyRequests(
+                        description="An extraction for this submission or revision has already been reserved. No second provider request was made. Reload the case or original submission result."
+                    ) from None
                 raise TooManyRequests(
                     description="Public live request allowance is exhausted. No provider request was made; the owner must replenish the configured allowance."
                 ) from None
@@ -317,7 +351,9 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
             if not operator or len(operator) > 256:
                 raise ValueError("operator label required")
             with lock:
-                active_sessions.pop(str(session.get("rate_id", "")), None)
+                old_sid = str(session.get("rate_id", ""))
+                active_sessions.pop(old_sid, None)
+                public_writes.pop(old_sid, None)
                 if len(active_sessions) >= 512:
                     abort(429)
                 sid = secrets.token_urlsafe(32)
@@ -335,7 +371,9 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
     def operator_logout() -> Response:
         fields(set())
         with lock:
-            active_sessions.pop(str(session.get("rate_id", "")), None)
+            old_sid = str(session.get("rate_id", ""))
+            active_sessions.pop(old_sid, None)
+            public_writes.pop(old_sid, None)
         session.clear()
         return redirect(url_for("operator_home" if public else "operator_login"))
 
@@ -477,7 +515,7 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
         inputs = None
         if sources:
             bounded_rate("extract:" + str(session["rate_id"]), 6)
-            before_extraction()
+            before_extraction(draft_id)
             evidence = extract_documents(sources, settings=settings)
             inputs = CaseInputs(sources=sources, evidence=evidence)
         draft = BaselineDraft(
@@ -565,6 +603,11 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
                 inventory=source_inventory(recorded.sources),
                 extracted_destination_keys=extracted_keys(recorded.evidence),
                 observation_key=observation_key,
+                **(
+                    {"extraction_label": "SYNTHETIC DEMONSTRATION · replayed observations"}
+                    if recorded.evidence.extraction.method == "FIXTURE"
+                    else {}
+                ),
             )
         return jsonify(receipt)
 
@@ -635,7 +678,7 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
         if previous is not None:
             return redirect(url_for("operator_case", case_id=previous))
         # Existing capture and source-bound contracts enforce aggregate bounds too.
-        before_extraction()
+        before_extraction(submission)
         snapshot = start_case(baseline, tuple(sources), settings=settings)
         no_secrets(snapshot.model_dump(mode="json"))
         case = store().create_case(
@@ -671,7 +714,7 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
             raise WorkflowError("stale case: reload the source form")
         bounded_rate("extract:" + str(session["rate_id"]), 6)
         sources = read_sources(required=True)
-        before_extraction()
+        before_extraction(uuid5(case_id, "revision-extraction:" + str(revision)))
         evidence = extract_documents(sources, settings=settings, request_id=case_id)
         inputs = CaseInputs(sources=sources, evidence=evidence)
         no_secrets(inputs.model_dump(mode="json"))
@@ -702,6 +745,11 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
             attempts=attempts,
             fields=EVIDENCE_FIELDS,
             reason_explanations=REASON_EXPLANATIONS,
+            **(
+                {"extraction_label": "SYNTHETIC DEMONSTRATION · replayed observations"}
+                if case.snapshot.evidence.extraction.method == "FIXTURE"
+                else {}
+            ),
         )
 
     @app.post(prefix + "/cases/<uuid:case_id>/<action>" or "/")
@@ -748,7 +796,7 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
                 capture_text(s.text, kind=s.kind, operator_id=human())
                 for s in current.snapshot.sources
             )
-            before_extraction()
+            before_extraction(uuid5(case_id, "revision-extraction:" + str(revision)))
             evidence = extract_documents(sources, settings=settings, request_id=case_id)
             inputs = CaseInputs(sources=sources, evidence=evidence)
             no_secrets(inputs.model_dump(mode="json"))
@@ -777,27 +825,62 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
             abort(404)
         return redirect(url_for("operator_case", case_id=case_id))
 
-    @app.route((prefix + "/example"), methods=["GET", "POST"])
-    def public_example() -> str | Response:
-        from payproof.demo_proof import load_demo
+    @app.get(prefix + "/examples")
+    def public_examples() -> str:
+        from payproof.demo_examples import load_examples
 
-        bundle = load_demo()
-        item = bundle.cases[0]
+        return render_template(
+            "public_examples.html",
+            catalog=load_examples(),
+            extraction_label="SYNTHETIC DEMONSTRATION · replayed observations",
+        )
+
+    @app.route(prefix + "/example", defaults={"example_id": "changed"}, methods=["GET", "POST"])
+    @app.route(prefix + "/examples/<example_id>", methods=["GET", "POST"])
+    def public_example(example_id: str) -> str | Response:
+        from payproof.demo_examples import instantiate_example, load_examples
+
+        catalog = load_examples()
+        item = next((c for c in catalog.cases if c.case_id == example_id), None)
+        if item is None:
+            abort(404)
         if request.method == "POST":
-            fields(set())
-            store().put_vendor(bundle.vendor, operator_id=human())
-            existing = (
-                store()
-                .db.execute(
-                    "SELECT 1 FROM case_heads WHERE case_id=?",
-                    (str(item.inputs.evidence.request_id),),
+            fields({"submission_id"})
+            submission = uuid5(
+                NAMESPACE_URL,
+                "public-example:"
+                + str(
+                    UUID(request.form["submission_id"])
+                    if request.form.get("submission_id")
+                    else example_id
                 )
-                .fetchone()
+                + ":"
+                + human(),
             )
-            if not existing:
-                store().create_case(item.inputs, bundle.vendor.vendor_id, operator_id=human())
-            return redirect(url_for("operator_case", case_id=item.inputs.evidence.request_id))
-        return render_template("public_example.html", bundle=bundle, item=item)
+            digest = sha256((catalog.model_dump_json() + ":" + example_id).encode()).hexdigest()
+            database = store()
+            previous = database.submission(submission, "CASE", digest)
+            if previous is not None:
+                return redirect(url_for("operator_case", case_id=previous))
+            bounded_rate("examples:" + str(session["rate_id"]), 12)
+            baseline, inputs = instantiate_example(catalog, item, submission)
+            no_secrets(inputs.model_dump(mode="json"))
+            database.put_vendor(baseline, operator_id=human())
+            case = database.create_case(
+                inputs,
+                baseline.vendor_id,
+                operator_id=human(),
+                expected_vendor_revision_id=baseline.revision_id,
+                submission_id=submission,
+                submission_digest=digest,
+            )
+            return redirect(url_for("operator_case", case_id=case.case_id))
+        return render_template(
+            "public_example.html",
+            catalog=catalog,
+            item=item,
+            extraction_label="SYNTHETIC DEMONSTRATION · replayed observations",
+        )
 
     @app.context_processor
     def operator_context() -> dict[str, object]:

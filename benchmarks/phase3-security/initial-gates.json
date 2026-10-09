@@ -1,0 +1,104 @@
+{
+  "lint": {
+    "status": "PASS",
+    "exit_code": 0,
+    "command": [
+      "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+      "-m",
+      "ruff",
+      "check",
+      "."
+    ]
+  },
+  "format": {
+    "status": "PASS",
+    "exit_code": 0,
+    "command": [
+      "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+      "-m",
+      "ruff",
+      "format",
+      "--check",
+      "."
+    ]
+  },
+  "typecheck": {
+    "status": "PASS",
+    "exit_code": 0,
+    "command": [
+      "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+      "-m",
+      "mypy"
+    ]
+  },
+  "tests": {
+    "status": "FAIL",
+    "exit_code": 1,
+    "command": [
+      "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+    ]
+  },
+  "configuration": {
+    "status": "PASS",
+    "exit_code": 0,
+    "command": [
+      "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+      "-m",
+      "payproof",
+      "check"
+    ]
+  },
+  "gold_diagnostic": {
+    "status": "FAIL",
+    "exit_code": 1,
+    "command": [
+      "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+      "-m",
+      "payproof",
+      "benchmark",
+      "--output",
+      "/tmp/payproof-phase3-security-final-20261009/diagnostic"
+    ]
+  },
+  "gold_heldout": {
+    "status": "FAIL",
+    "exit_code": 1,
+    "command": [
+      "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+      "-m",
+      "payproof.heldout_benchmark",
+      "--evaluate-gold",
+      "--output",
+      "/tmp/payproof-phase3-security-final-20261009/heldout"
+    ]
+  },
+  "frozen_protocol": {
+    "status": "PASS",
+    "exit_code": 0,
+    "command": [
+      "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+      "scripts/compile_heldout.py"
+    ]
+  },
+  "build": {
+    "status": "PASS",
+    "exit_code": 0,
+    "command": [
+      "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+      "-m",
+      "build",
+      "--no-isolation"
+    ]
+  },
+  "package_smoke": {
+    "status": "PASS",
+    "exit_code": 0,
+    "command": [
+      "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+      "scripts/check_wheel.py"
+    ]
+  }
+}

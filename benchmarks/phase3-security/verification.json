@@ -1,0 +1,162 @@
+{
+  "scope": "Phase-3 anonymous Flask/SQLite security regressions; synthetic fixtures and mocked provider responses; no real live benchmark",
+  "starting_commit": "e8d0abe38d6ef2ce8dcae60cb0687a764cc619f3",
+  "dirty_worktree": true,
+  "verification_output": "/tmp/payproof-phase3-security-verified-20261009",
+  "gates": {
+    "lint": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ]
+    },
+    "format": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ]
+    },
+    "typecheck": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "mypy"
+      ]
+    },
+    "tests": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q"
+      ]
+    },
+    "configuration": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "payproof",
+        "check"
+      ]
+    },
+    "gold_diagnostic": {
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "payproof",
+        "benchmark",
+        "--output",
+        "/tmp/payproof-phase3-security-verified-20261009/diagnostic"
+      ]
+    },
+    "gold_heldout": {
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "payproof.heldout_benchmark",
+        "--evaluate-gold",
+        "--output",
+        "/tmp/payproof-phase3-security-verified-20261009/heldout"
+      ]
+    },
+    "frozen_protocol": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "scripts/compile_heldout.py"
+      ]
+    },
+    "build": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "-m",
+        "build",
+        "--no-isolation"
+      ]
+    },
+    "package_smoke": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/home/zeeshan-khan/Desktop/PayProof/.venv/bin/python",
+        "scripts/check_wheel.py"
+      ]
+    }
+  },
+  "tests": {
+    "passed": 847,
+    "failed": 0,
+    "skipped": 0,
+    "elapsed_seconds": 29.68,
+    "new_security_cases": 40
+  },
+  "http": [
+    {
+      "wheel": "installed_and_initialized",
+      "dependencies": "existing_interpreter",
+      "vendors": 4,
+      "requests": 10,
+      "production_wsgi_health": 200,
+      "http_binding": "NOT_TESTED",
+      "sqlite_migration_restart": "PASS",
+      "gated_operator_pages_assets": "PASS"
+    },
+    {
+      "installed_console_entrypoint": "PASS",
+      "provider_called": false
+    },
+    {
+      "http_binding": "PASS",
+      "server": "installed_package_gunicorn",
+      "health_status": 200,
+      "capability_status": 200,
+      "writable": false,
+      "plaintext_workspace_status": 403,
+      "trusted_loopback_tls_marker_workspace_status": 200,
+      "external_https": "NOT_TESTED"
+    }
+  ],
+  "sandbox_http": {
+    "status": "BLOCKED",
+    "errno": 1,
+    "reason": "PermissionError"
+  },
+  "secret_history": {
+    "scanner_exit": 2,
+    "result": "FINDINGS",
+    "owner_status": "Unknown \u2014 needs checking",
+    "rotation_status": "OWNER_CONFIRMATION_REQUIRED"
+  },
+  "real_provider_security_tests": "NOT_RUN",
+  "public_https": "NOT_VERIFIED",
+  "open_findings": {
+    "P0_found_in_tested_paths": 0,
+    "public_demo_P1_code": 0,
+    "potential_historical_credential_P1": 1
+  },
+  "overall": "PARTIAL"
+}

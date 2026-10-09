@@ -16,8 +16,8 @@ import tarfile
 import tempfile
 import time
 from pathlib import Path
-from urllib.error import URLError
-from urllib.request import ProxyHandler, build_opener
+from urllib.error import HTTPError, URLError
+from urllib.request import ProxyHandler, Request, build_opener
 
 
 def check_source_archive(source: Path) -> None:
@@ -86,12 +86,33 @@ def check_http(environment: dict[str, str], directory: Path) -> dict[str, object
                     with opener.open(f"http://127.0.0.1:{port}/", timeout=1) as response:
                         capabilities = json.loads(response.read(16384))
                         assert response.status == 200 and capabilities["writable"] is False
+                    try:
+                        opener.open(f"http://127.0.0.1:{port}/workspace/", timeout=1).close()
+                    except HTTPError as error:
+                        plaintext_status = error.code
+                        error.close()
+                    else:
+                        plaintext_status = 200
+                    assert plaintext_status == 403
+                    # Simulate the TLS marker from Gunicorn's trusted loopback proxy.
+                    # This is not external HTTPS or a public deployment check.
+                    secure_request = Request(
+                        f"http://127.0.0.1:{port}/workspace/",
+                        headers={"X-Forwarded-Proto": "https"},
+                    )
+                    with opener.open(secure_request, timeout=1) as response:
+                        assert response.status == 200
+                        assert "Secure" in response.headers.get("Set-Cookie", "")
+                        assert "HttpOnly" in response.headers.get("Set-Cookie", "")
                     return {
                         "http_binding": "PASS",
                         "server": "installed_package_gunicorn",
                         "health_status": 200,
                         "capability_status": 200,
                         "writable": False,
+                        "plaintext_workspace_status": plaintext_status,
+                        "trusted_loopback_tls_marker_workspace_status": 200,
+                        "external_https": "NOT_TESTED",
                     }
                 except (OSError, URLError):
                     time.sleep(0.1)
@@ -187,6 +208,18 @@ assert public_client.get('/workspace/baselines/new', base_url='https://localhost
 assert public_client.get('/workspace/static/operator.css', base_url='https://localhost').status_code == 200
 assert public_client.get('/workspace/static/receipt.js', base_url='https://localhost').status_code == 200
 assert public_client.get('/workspace/login', base_url='https://localhost').status_code == 404
+from payproof.demo_examples import load_examples
+assert len(load_examples().cases) == 6
+examples = public_client.get('/workspace/examples', base_url='https://localhost')
+assert examples.status_code == 200 and b'SYNTHETIC DEMONSTRATION' in examples.data
+assert b'LIVE EXTRACTION' not in examples.data
+import re
+public_csrf = re.search(r'name="csrf" value="([^"]+)"', public_home.text)[1]
+opened = public_client.post('/workspace/example', base_url='https://localhost', data={'csrf': public_csrf})
+assert opened.status_code == 302
+sample_page = public_client.get(opened.location, base_url='https://localhost')
+assert sample_page.status_code == 200 and b'SYNTHETIC DEMONSTRATION' in sample_page.data
+assert b'LIVE EXTRACTION' not in sample_page.data
 assert operator_token.encode() not in page.data
 from contextlib import redirect_stdout
 from io import StringIO

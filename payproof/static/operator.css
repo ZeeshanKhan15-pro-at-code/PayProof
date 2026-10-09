@@ -76,3 +76,8 @@ summary { font-weight: 600; cursor: pointer; }
   .receipt a { color: #000; text-decoration: none; }
   .receipt-source { display: none; }
 }
+
+/* Optional examples never replace the own-data entry point. */
+.example-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,18rem),1fr)); gap: 1rem; }
+.example-grid article { margin: 0; }
+.optional-examples { background: #edf3f8; border-color: var(--line); }

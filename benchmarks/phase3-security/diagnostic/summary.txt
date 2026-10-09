@@ -1,0 +1,40 @@
+PayProof benchmark
+Dataset: payproof-phase1-diagnostic-30-v1
+Corpus SHA-256: 3bc6dcafaeb661b00cf22fd06fc86802c8db642c41d9228676faae3b546a0c7f
+Label review: PENDING; PUBLIC_DIAGNOSTIC_NOT_HELD_OUT
+Human-action enforcement and independent verification: NOT_EVALUATED
+
+Track: gold_comparison (FAIL; SIMULATED_GOLD_SOURCE_REVIEW)
+Total cases: 30
+Correct states: 28/30
+Exact correct (state/reasons/values/evidence): 28/30
+Consequential changes: 13
+Detected: 8
+Missed (not detected as correct VERIFY): 5
+Supported changes detected: 8/10
+Changed cases abstained: 5
+Changed cases failed: 0
+Critical missed changes (false UNCHANGED): 0
+False escalations (incorrect VERIFY): 0
+Uncertain handled correctly: 13/13
+Extraction failures: NOT_RUN (gold inputs)
+Extraction error cases: NOT_RUN
+Deterministic-comparison failures: 2
+Failed operations: 0
+FAIL PP-09: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+FAIL PP-12: comparison:STATE_MISMATCH: Expected VERIFY; observed UNCERTAIN.; comparison:REASON_MISMATCH: Expected ('DESTINATION_CHANGED',); observed ('DESTINATION_AMBIGUOUS',).
+
+Track: gold_review_gate (FAIL; NO_SOURCE_REVIEW)
+Total cases: 30
+Correct states: 30/30
+Exact correct (state/reasons/values/evidence): 28/30
+Extraction failures: NOT_RUN (gold inputs)
+Extraction error cases: NOT_RUN
+Deterministic-comparison failures: 2
+Failed operations: 0
+FAIL PP-09: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+FAIL PP-12: comparison:REASON_MISMATCH: Expected ('REVIEW_REQUIRED',); observed ('REVIEW_REQUIRED', 'DESTINATION_AMBIGUOUS').
+
+Extraction: NOT_RUN; mode=NOT_RUN; source=NOT_RUN
+Gold results are not live extraction accuracy. UNCERTAIN is not successful change detection.
+Scoring SHA-256: 37abde16d5287e306e6fc8d46135ae632ad5445703d02c7eff2e95bd26584701

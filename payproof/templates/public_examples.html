@@ -1,0 +1,6 @@
+{% extends 'operator_base.html' %}{% block content %}
+<h2>Try an example</h2><p>Optional example payment requests for learning and demonstration. You can <a href="{{ url_for('baseline_new') }}">verify your own payment request</a> instead.</p>
+<aside class="public-notice"><strong>SYNTHETIC DEMONSTRATION</strong> · fictional vendor, destinations and callback. These examples use saved, source-grounded fixture observations, never a live model. They remain available when the live provider is unavailable. No example creates independent human verification.</aside>
+<div class="example-grid">{% for item in catalog.cases %}<article><p class="eyebrow">EXAMPLE PAYMENT REQUEST · {{ loop.index }}</p><h3>{{ item.title }}</h3><p>Expected after explicit source review and comparison: <strong>{{ item.expected_state }}</strong>{% if item.inputs.evidence.extraction.failure_code %} · simulated {{ item.inputs.evidence.extraction.failure_code }}{% endif %}</p><p><a href="{{ url_for('public_example', example_id=item.case_id) }}">Inspect this example</a></p></article>{% endfor %}</div>
+<p>Fixture results demonstrate the mechanism, not live AI accuracy or real-world payment safety. Payment authorization is outside PayProof.</p>
+{% endblock %}

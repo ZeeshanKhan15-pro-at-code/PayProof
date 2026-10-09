@@ -482,7 +482,9 @@ def test_login_burst_limit_and_production_cookies(web):
             "operator_token": settings.operator_token,
         }
     )
-    response = create_app(production).test_client().get("/operator/login")
+    production_client = create_app(production).test_client()
+    assert production_client.get("/operator/login").status_code == 403
+    response = production_client.get("/operator/login", base_url="https://localhost")
     cookie = response.headers["Set-Cookie"]
     assert "Secure" in cookie and "HttpOnly" in cookie and "SameSite=Strict" in cookie
 

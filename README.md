@@ -44,7 +44,7 @@ Full checksum-valid GB/DE IBANs only. Normalize ASCII spaces and letter case; pr
 
 An independent bounded lexical inventory exposes competing/omitted source regions. Model confidence and broad source acknowledgement cannot suppress them; context hints do not prove intent. Known competing instructions abstain toward `UNCERTAIN`.
 
-`VERIFIED` is never an AI/comparison state. Only an explicit human action recording the exact check, previously trusted contact, outcome, person/role, server time and optional notes can create a scoped confirmation. The comparison is preserved. Stale case/vendor/contact/engine revisions require fresh review/comparison. Negative/inconclusive outcomes do not confirm. Human action IDs are idempotent; case creation is not. See [DATA_MODEL.md](docs/DATA_MODEL.md).
+`VERIFIED` is never an AI/comparison state. Only an explicit human action recording the exact check, previously trusted contact, outcome, person/role, server time and optional notes can create a scoped confirmation. The comparison is preserved. Stale case/vendor/contact/engine revisions require fresh review/comparison. Negative/inconclusive outcomes do not confirm. Human actions and supported baseline/case submissions are revision-bound and idempotent. Anonymous live operations also have durable claims preventing concurrent duplicate provider calls. See [DATA_MODEL.md](docs/DATA_MODEL.md).
 
 ### Current benchmark
 
@@ -84,9 +84,9 @@ Use new directories. The [saved report](benchmarks/demo-proof-v1/report.html) re
 - Synthetic evaluation; independent label review pending; failed strict gold gate; no live accuracy. Discovery cannot prove exhaustive coverage/intent, and unrecognized OCR/role/omission errors remain possible.
 - One shared operator passphrase and attribution labels, process-local session registry. Logout/restart revoke sessions. One Gunicorn worker required; no multi-user identity/tenant isolation.
 - UTF-8 text, 16 sources/20,000 aggregate characters, 100,000-byte HTTP body. No PDF/OCR, integrations, other schemes or automatic vendor matching.
-- Socket I/O timeout is not a complete provider wall-clock deadline. No automatic retries. Duplicate case creation can incur repeated extraction costs, bounded by burst limits.
+- Socket I/O timeout is not a complete provider wall-clock deadline. No automatic retries. New independent submissions can incur further extraction costs within the durable anonymous call ceiling; concurrent duplicate operations are reserved once.
 - Host/database administrators are trusted; application history is not cryptographically tamperproof. Private SQLite/WAL/backups need access controls. Stronger validators can reject old unsafe snapshots; never silently relabel them.
-- Current credential fields are blank; historical credential-like material needs owner revocation/synthetic-status confirmation. Pattern scans cannot prove absence/revocation. Guards do not detect every encoded/unknown secret.
+- Public credential examples are blank; private provider configuration is separate; historical credential-like material needs owner revocation/synthetic-status confirmation. Pattern scans cannot prove absence/revocation. Guards do not detect every encoded/unknown secret.
 - Fresh pinned install is blocked here by package-index DNS/network access. Installed-wheel checks use the existing pinned interpreter. Real production socket startup is blocked by sandbox EPERM; passing in-process health/request tests are separate evidence.
 
 See [PHASE2_REDTEAM_REPORT.md](docs/PHASE2_REDTEAM_REPORT.md) for fixed P0/P1 findings and residual risks. Phase 3 starts with operational gates and independent evaluation, then presentation polish without weakening safety.
@@ -102,7 +102,7 @@ make build
 .venv/bin/python -m payproof check
 ```
 
-`make verify` is the older aggregate: its diagnostic benchmark exits 1 and stops before build. Run the explicit commands above and benchmark separately to exercise every gate; never count that failure as a pass.
+`make verify` runs all independent gates even when a benchmark fails, preserves new output directories, and returns a nonzero overall exit when any gate fails. Never count failed gold results as a pass.
 
 | Command | Actual behavior |
 | --- | --- |
@@ -149,4 +149,8 @@ Live Featherless configuration and current foundation limits: [provider boundary
 
 Start at the browser landing page: **VERIFY A PAYMENT REQUEST**. Establish A: previously trusted information, then provide B: the new request. Baseline uploads/extraction remain untrusted drafts until explicit human source/prior-trust/contact assertions. Public workspaces use separate temporary stores and never expose private operator records. Use synthetic/test data only; sessions expire after 30 minutes of inactivity and access ends on restart.
 
-Anonymous live extraction is off by default. Enable `PAYPROOF_PUBLIC_LIVE_ENABLED=true` only with live mode/key/model and a chosen `PAYPROOF_PUBLIC_LIVE_MAX_CALLS` lifetime allowance (default20, shared and durable across sessions/restarts). Current Featherless access remains unverified after HTTP403. The secondary Acme sample is labeled DEMO EXAMPLE and uses fixtures. Details: [public isolation, workflow and limits](docs/PUBLIC_WORKSPACE.md). `/healthz` is liveness; `/readyz` is local storage/configuration readiness and does not probe the provider.
+Anonymous live extraction is off by default. Enable `PAYPROOF_PUBLIC_LIVE_ENABLED=true` only with live mode/key/model and a chosen `PAYPROOF_PUBLIC_LIVE_MAX_CALLS` lifetime allowance (default20, shared and durable across sessions/restarts). Current Featherless access remains unverified after HTTP403. The secondary [Try an example gallery](docs/DEMO_FALLBACK.md) offers six SYNTHETIC DEMONSTRATION requests: changed, unchanged, conflicting, missing details, simulated provider failure and an indirect forbidden-verdict instruction. Replayed observations never use or masquerade as live AI; examples remain functional during a live-provider outage without replacing the user's failed live case. Details: [public isolation, workflow and limits](docs/PUBLIC_WORKSPACE.md). `/healthz` is liveness; `/readyz` is local storage/configuration readiness and does not probe the provider.
+
+### Anonymous-workspace security
+
+Public live extraction remains opt-in with a durable shared lifetime invocation cap. Session, peer-IP and global read/write burst limits plus128 writes/session bound anonymous history growth. Durable operation claims stop concurrent duplicate provider calls; provider errors consume the allowance and never become fixture success. Production workflows reject plaintext requests and require a correctly restricted TLS proxy. See [the security report](docs/PHASE3_SECURITY_REPORT.md) for tested attacks, exact limits and remaining blockers, including unresolved historical credential status. No external HTTPS or real-model security certification is claimed.
