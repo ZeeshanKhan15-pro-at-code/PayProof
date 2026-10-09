@@ -648,6 +648,17 @@ class SQLiteStore:
             if row is None:
                 raise WorkflowError("verification receipt not found")
             event = IndependentCheckEvent.model_validate_json(row[0])
+            recorded = self.get_case(case_id, event.source_revision_id)
+            snapshot = recorded.snapshot
+            if (
+                snapshot.comparison is None
+                or snapshot.baseline is None
+                or snapshot.comparison.comparison_id != event.comparison_id
+                or snapshot.baseline.revision_id != event.baseline_revision_id
+                or snapshot.baseline.callback_contact != event.trusted_contact
+                or snapshot.comparison.requested_identity != event.checked_identity
+            ):
+                raise WorkflowError("receipt does not match its recorded comparison")
             result = current.snapshot.comparison
             active = (
                 not current.stale
@@ -660,6 +671,11 @@ class SQLiteStore:
             return {
                 "receipt_version": "human-attestation-v1",
                 "event": event.model_dump(mode="json"),
+                "snapshot": snapshot.model_dump(mode="json"),
+                "case_revision_id": str(event.source_revision_id),
+                "case_version": recorded.version,
+                "recorded_comparison_state": snapshot.comparison.state,
+                "generated_at": datetime.now(UTC).isoformat(),
                 "current": active,
                 "status": "CURRENT" if active else "HISTORICAL_STALE",
                 "comparison_state": result.state if result and active else None,

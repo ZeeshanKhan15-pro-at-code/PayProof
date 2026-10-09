@@ -1,6 +1,6 @@
 # PayProof
 
-PayProof compares requested payment destinations with previously trusted vendor information and requires independent human checking when they differ. The current implementation includes a no-login isolated temporary public workspace and a persistent private operator workflow. Release assessment: **PARTIAL**, with a failed gold evaluation gate and blocked clean-install, live-provider, actual HTTP and credential-revocation gates. See the [release report](docs/PHASE2_RELEASE_REPORT.md), [handoff](docs/PHASE2_HANDOFF.md) and [integrator context](docs/AI_HANDOFF.md). No production-readiness or security certification is claimed.
+PayProof compares requested payment destinations with previously trusted vendor information and requires independent human checking when they differ. The current implementation includes a no-login isolated temporary public workspace and a persistent private operator workflow. Current assessment: **PARTIAL**. The no-login workflow, tests and synthetic installed-package HTTP startup pass. Gold evaluation still fails, successful live extraction remains unverified after Featherless HTTP403, and clean-install/credential-revocation closure remains pending. The earlier phase reports are historical evidence. See the [release report](docs/PHASE2_RELEASE_REPORT.md), [handoff](docs/PHASE2_HANDOFF.md) and [integrator context](docs/AI_HANDOFF.md). No production-readiness or security certification is claimed.
 
 ### Problem
 

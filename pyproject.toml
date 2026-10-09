@@ -24,7 +24,7 @@ include = ["payproof*"]
 namespaces = false
 
 [tool.setuptools.package-data]
-payproof = ["py.typed", "migrations/*.sql", "templates/*.html", "static/*.css", "fixtures/trusted_vendors/*.json", "fixtures/requests/*.json", "fixtures/demo_proof/*.json"]
+payproof = ["py.typed", "migrations/*.sql", "templates/*.html", "static/*.css", "static/*.js", "fixtures/trusted_vendors/*.json", "fixtures/requests/*.json", "fixtures/demo_proof/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

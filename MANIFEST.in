@@ -6,6 +6,6 @@ recursive-include scripts *.py
 recursive-include payproof/fixtures *.json
 recursive-include payproof/migrations *.sql
 recursive-include payproof/templates *.html
-recursive-include payproof/static *.css
+recursive-include payproof/static *.css *.js
 
 global-exclude .env .env.* *.pem *.key

@@ -24,6 +24,7 @@ from payproof.instruction_safety import extracted_keys, observation_key, source_
 from payproof.normalization import canonical_iban
 from payproof.schemas import (
     EVIDENCE_FIELDS,
+    CaseContract,
     NormalizedPaymentIdentity,
     SourceDocument,
     SourceKind,
@@ -178,8 +179,13 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
             response.headers["Cache-Control"] = "no-store"
             response.headers["X-Content-Type-Options"] = "nosniff"
             response.headers["Referrer-Policy"] = "same-origin"
+            script_policy = (
+                "script-src 'self'; " if request.endpoint == "verification_receipt" else ""
+            )
             response.headers["Content-Security-Policy"] = (
-                "default-src 'none'; style-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'"
+                "default-src 'none'; style-src 'self'; "
+                + script_policy
+                + "form-action 'self'; frame-ancestors 'none'; base-uri 'none'"
             )
         return response
 
@@ -550,7 +556,16 @@ def register_operator_workflow(app: Flask, settings: Settings, *, public: bool =
         receipt = store().verification_receipt(case_id, event_id)
         no_secrets(receipt)
         if request.accept_mimetypes.best == "text/html":
-            return render_template("verification_receipt.html", receipt=receipt, case_id=case_id)
+            recorded = CaseContract.model_validate_json(json.dumps(receipt["snapshot"]))
+            return render_template(
+                "verification_receipt.html",
+                receipt=receipt,
+                case_id=case_id,
+                reason_explanations=REASON_EXPLANATIONS,
+                inventory=source_inventory(recorded.sources),
+                extracted_destination_keys=extracted_keys(recorded.evidence),
+                observation_key=observation_key,
+            )
         return jsonify(receipt)
 
     @app.post(prefix + "/demo-vendor" or "/")
